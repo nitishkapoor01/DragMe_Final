@@ -118,12 +118,17 @@ const MediaProcessor = {
       throw new Error(`The format '${detected.mimeType}' is not allowed for ${uploadType}. Supported: ${limits.allowedMimes.join(', ')}`);
     }
 
-    // 3. Premium Entitlement Check
+    // 3. Strict Animated Media Check (Prevent bypassing Nitro VIP via normal avatar/banner)
+    if ((uploadType === 'avatar' || uploadType === 'banner') && (detected.isAnimated || detected.isVideo || detected.mimeType === 'image/gif')) {
+      throw new Error('Animated avatars and motion banners can only be uploaded via the DRAGME Nitro VIP section.');
+    }
+
+    // 4. Premium Entitlement Check
     if (limits.requiresPremium && (!user || !user.is_premium)) {
       throw new Error(`Animated and video ${uploadType} is a DRAGME Nitro VIP feature. Upgrade to unlock.`);
     }
 
-    // 4. Safety / Polyglot Check
+    // 5. Safety / Polyglot Check
     this.safetyCheck(buffer);
 
     return detected;

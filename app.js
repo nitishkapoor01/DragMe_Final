@@ -4527,6 +4527,13 @@ document.addEventListener('DOMContentLoaded', () => {
       avatarFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        // Strictly prevent animated GIF / video upload via normal avatar input
+        if (file.type === 'image/gif' || file.type.startsWith('video/')) {
+          showToast('Animated avatars and videos can only be uploaded in the DRAGME Nitro VIP section.');
+          switchSettingsView('nitro');
+          e.target.value = '';
+          return;
+        }
         MediaStudioManager.open(file, 'avatar');
         e.target.value = ''; // Reset so same file can be selected again
       });
@@ -4599,6 +4606,13 @@ document.addEventListener('DOMContentLoaded', () => {
       bannerFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        // Strictly prevent animated GIF / video upload via normal banner input
+        if (file.type === 'image/gif' || file.type.startsWith('video/')) {
+          showToast('Animated wallpapers and motion banners can only be uploaded in the DRAGME Nitro VIP section.');
+          switchSettingsView('nitro');
+          e.target.value = '';
+          return;
+        }
         MediaStudioManager.open(file, 'banner');
         e.target.value = '';
       });

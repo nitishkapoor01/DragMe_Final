@@ -86,6 +86,15 @@ async function runMediaPipelineTests() {
     const gifOutPath = path.join(__dirname, gifResult.storageUrl.replace(/^\//, ''));
     assert(fs.existsSync(gifOutPath), 'Output animated media exists on disk');
 
+    // Verify that attempting to upload animated GIF under normal 'avatar' is rejected
+    let normalBypassError = null;
+    try {
+      await MediaProcessor.processMedia(gifBuffer, 'avatar', { id: 1, is_premium: 0 });
+    } catch (err) {
+      normalBypassError = err;
+    }
+    assert(normalBypassError !== null, 'Attempt to upload animated GIF via normal avatar is rejected');
+
     // -------------------------------------------------------------
     // Test 4: Magic Byte Validation & Malicious File Rejection
     // -------------------------------------------------------------
