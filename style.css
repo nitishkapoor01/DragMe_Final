@@ -8716,23 +8716,33 @@ button {
 /* Crop Grid Overlays */
 .crop-grid-overlay {
   position: absolute;
-  inset: 24px 30px;
+  width: calc(100% - 48px);
+  max-width: 540px;
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
   border: 2px dashed rgba(163, 230, 53, 0.85);
   border-radius: 12px;
   pointer-events: none;
-  box-shadow: 0 0 0 9999px rgba(5, 8, 14, 0.75);
+  box-shadow: 0 0 0 9999px rgba(5, 8, 14, 0.78);
+  z-index: 5;
 }
 
 .crop-grid-overlay.avatar-mode {
-  border-radius: 50%;
   width: 210px;
   height: 210px;
+  border-radius: 50%;
   top: 50%;
   left: 50%;
+  right: auto;
+  bottom: auto;
   transform: translate(-50%, -50%);
-  inset: auto;
-  border: 2px solid #a3e635;
-  box-shadow: 0 0 0 9999px rgba(5, 8, 14, 0.8), 0 0 25px rgba(163, 230, 53, 0.25);
+  border: 2.5px solid #a3e635;
+  box-shadow: 0 0 0 9999px rgba(5, 8, 14, 0.82), 0 0 30px rgba(163, 230, 53, 0.3);
+  z-index: 5;
 }
 
 /* Floating Stage HUD Badges */
