@@ -167,6 +167,80 @@ const ROOMS_DATA = {
 // =============================================================================
 // AUTH & API SERVICE CLIENT (JWT + Real-time Session Interceptor)
 // =============================================================================
+// =============================================================================
+// CLIENT-SIDE PRE-UPLOAD COMPRESSION ENGINE (CANVAS + WEBP + SMART DOWNSCALE)
+// =============================================================================
+const ClientMediaCompressor = {
+  maxDimensions: {
+    avatar: { maxWidth: 512, maxHeight: 512, quality: 0.88 },
+    animatedAvatar: { maxWidth: 512, maxHeight: 512, quality: 0.85 },
+    banner: { maxWidth: 1920, maxHeight: 640, quality: 0.88 },
+    animatedBanner: { maxWidth: 1920, maxHeight: 640, quality: 0.85 },
+    postImage: { maxWidth: 1920, maxHeight: 1920, quality: 0.85 }
+  },
+
+  async compress(file, type = 'avatar') {
+    // Keep raw file for GIF animation loops or video streams
+    if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/gif') {
+      return file;
+    }
+
+    const config = this.maxDimensions[type] || this.maxDimensions.postImage;
+
+    return new Promise((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        let { width, height } = img;
+        const { maxWidth, maxHeight, quality } = config;
+
+        // Calculate aspect ratio preserving downscale
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          return resolve(file);
+        }
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const outputMime = 'image/webp';
+        canvas.toBlob((blob) => {
+          if (!blob || blob.size >= file.size) {
+            return resolve(file);
+          }
+          const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
+            type: outputMime,
+            lastModified: Date.now()
+          });
+          const reductionPct = Math.round(((file.size - blob.size) / file.size) * 100);
+          console.log(`⚡ Pre-Upload Compression: ${file.name} reduced from ${(file.size / 1024).toFixed(1)}KB to ${(blob.size / 1024).toFixed(1)}KB (-${reductionPct}%)`);
+          resolve(compressedFile);
+        }, outputMime, quality);
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+
+      img.src = objectUrl;
+    });
+  }
+};
+
 const AuthAPI = {
   _limitsCache: null,
   getToken() {
@@ -195,32 +269,40 @@ const AuthAPI = {
   async uploadMedia(file, type = 'avatar') {
     if (!file) throw new Error('No media file provided');
 
-    // Centralized client size validation
+    // 1. Client-Side Pre-Upload Smart Compression (reduces 15MB-30MB files to ~100-300KB before transmission)
+    let processedFile = file;
+    try {
+      processedFile = await ClientMediaCompressor.compress(file, type);
+    } catch (compErr) {
+      console.warn('Client compression fallback:', compErr);
+    }
+
+    // 2. Centralized client size validation
     const maxSizes = {
-      avatar: 5 * 1024 * 1024,
-      animatedAvatar: 10 * 1024 * 1024,
-      banner: 8 * 1024 * 1024,
-      animatedBanner: 15 * 1024 * 1024,
-      postImage: 10 * 1024 * 1024,
-      postVideo: 50 * 1024 * 1024,
-      profileVideo: 50 * 1024 * 1024
+      avatar: 15 * 1024 * 1024,
+      animatedAvatar: 30 * 1024 * 1024,
+      banner: 30 * 1024 * 1024,
+      animatedBanner: 50 * 1024 * 1024,
+      postImage: 25 * 1024 * 1024,
+      postVideo: 250 * 1024 * 1024,
+      profileVideo: 100 * 1024 * 1024
     };
-    const limit = maxSizes[type] || 10 * 1024 * 1024;
-    if (file.size > limit) {
+    const limit = maxSizes[type] || 25 * 1024 * 1024;
+    if (processedFile.size > limit) {
       const mb = Math.round(limit / (1024 * 1024));
-      throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds maximum limit of ${mb}MB for ${type}.`);
+      throw new Error(`File size (${(processedFile.size / (1024 * 1024)).toFixed(1)}MB) exceeds maximum limit of ${mb}MB for ${type}.`);
     }
 
     const base64Data = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
       reader.onerror = () => reject(new Error('Failed to read media file'));
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(processedFile);
     });
 
     const payload = {
-      filename: file.name || `${type}_${Date.now()}`,
-      mimeType: file.type || 'image/jpeg',
+      filename: processedFile.name || `${type}_${Date.now()}`,
+      mimeType: processedFile.type || 'image/jpeg',
       base64Data,
       type
     };
