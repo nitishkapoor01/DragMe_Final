@@ -8582,14 +8582,15 @@ button {
 .media-studio-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 7, 12, 0.82);
+  background: rgba(4, 7, 12, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 10px;
+  overflow-y: auto;
   animation: fadeInModal 0.2s ease-out;
 }
 
@@ -8601,20 +8602,23 @@ button {
 .media-studio-window {
   background: #0d121c;
   border: 1px solid #202b3d;
-  border-radius: 20px;
+  border-radius: 18px;
   width: 100%;
-  max-width: 620px;
+  max-width: 590px;
+  max-height: calc(100vh - 20px);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(163, 230, 53, 0.12);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  margin: auto;
 }
 
 .media-studio-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 22px;
+  padding: 10px 18px;
   border-bottom: 1px solid #182232;
   background: #0d121c;
 }
@@ -8622,16 +8626,16 @@ button {
 .media-studio-title-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .media-studio-title-group i {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .media-studio-title {
   font-family: var(--font-heading);
-  font-size: 1.12rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
@@ -8639,20 +8643,20 @@ button {
 }
 
 .media-studio-sub {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   color: #64748b;
   font-weight: 500;
   display: block;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .btn-close-studio {
   background: transparent;
   border: none;
   color: #64748b;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: 8px;
   transition: all 0.15s;
 }
@@ -8665,7 +8669,8 @@ button {
 .media-studio-stage {
   position: relative;
   width: 100%;
-  height: 310px;
+  height: clamp(160px, 25vh, 220px);
+  flex-shrink: 0;
   background: radial-gradient(circle at center, #0e1626 0%, #05080e 100%);
   display: flex;
   align-items: center;
@@ -8716,9 +8721,9 @@ button {
 /* Crop Grid Overlays */
 .crop-grid-overlay {
   position: absolute;
-  width: calc(100% - 48px);
-  max-width: 540px;
-  height: 180px;
+  width: calc(100% - 40px);
+  max-width: 500px;
+  height: clamp(120px, 16vh, 150px);
   top: 50%;
   left: 50%;
   right: auto;
@@ -8732,8 +8737,8 @@ button {
 }
 
 .crop-grid-overlay.avatar-mode {
-  width: 210px;
-  height: 210px;
+  width: clamp(140px, 20vh, 175px);
+  height: clamp(140px, 20vh, 175px);
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -8748,11 +8753,11 @@ button {
 /* Floating Stage HUD Badges */
 .stage-floating-badges {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   z-index: 10;
   pointer-events: none;
 }
@@ -8763,13 +8768,13 @@ button {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f1f5f9;
-  padding: 3px 8px;
-  border-radius: 16px;
-  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 14px;
+  font-size: 0.68rem;
   font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
@@ -8779,22 +8784,23 @@ button {
 
 /* Studio Controls Panel */
 .studio-controls-panel {
-  padding: 14px 20px;
+  padding: 8px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   background: #0a0e16;
   border-top: 1px solid #182232;
+  overflow-y: auto;
 }
 
 .control-section-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.04em;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -8806,36 +8812,36 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   width: 100%;
 }
 
 .zoom-deck-row {
-  padding-bottom: 10px;
+  padding-bottom: 6px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .zoom-slider-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
-  min-width: 220px;
+  min-width: 180px;
 }
 
 .btn-step-ctrl {
   background: #141c2b;
   border: 1px solid #253147;
   color: #cbd5e1;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   transition: all 0.15s;
 }
 
@@ -8849,7 +8855,7 @@ button {
   position: static;
   flex: 1;
   pointer-events: auto;
-  height: 6px;
+  height: 5px;
   background: #1e293b;
   border-radius: 4px;
   -webkit-appearance: none;
@@ -8860,8 +8866,8 @@ button {
 .zoom-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #a3e635;
   border: 2px solid #090d15;
@@ -8871,22 +8877,22 @@ button {
 }
 
 .zoom-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
 .zoom-preset-pills {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .btn-preset-zoom {
   background: #141c2b;
   border: 1px solid #253147;
   color: #94a3b8;
-  padding: 4px 9px;
-  border-radius: 6px;
-  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.68rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.15s;
@@ -8904,23 +8910,23 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
 .pan-dpad-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .pan-dpad-grid {
   display: grid;
-  grid-template-columns: repeat(3, 26px);
-  grid-template-rows: repeat(3, 24px);
+  grid-template-columns: repeat(3, 22px);
+  grid-template-rows: repeat(3, 20px);
   gap: 2px;
   background: #0f1724;
-  padding: 3px;
-  border-radius: 8px;
+  padding: 2px;
+  border-radius: 6px;
   border: 1px solid #1e293b;
 }
 
@@ -8928,12 +8934,12 @@ button {
   background: #141c2b;
   border: 1px solid #253147;
   color: #94a3b8;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   padding: 0;
   transition: all 0.15s;
 }
@@ -8953,7 +8959,7 @@ button {
 .orientation-tools-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
   justify-content: flex-end;
   flex-wrap: wrap;
@@ -8962,20 +8968,20 @@ button {
 .action-buttons-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
 .btn-studio-tool {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 9px;
+  gap: 4px;
+  padding: 4px 8px;
   background: #141c2b;
   border: 1px solid #253147;
-  border-radius: 7px;
+  border-radius: 6px;
   color: #cbd5e1;
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -9002,21 +9008,20 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
   width: 100%;
-  padding-top: 4px;
 }
 
 .gesture-hint-pill {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: #64748b;
   background: rgba(20, 28, 43, 0.7);
-  padding: 3px 8px;
-  border-radius: 10px;
+  padding: 2px 7px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -9027,25 +9032,26 @@ button {
 /* Video Controls Panel */
 .video-trim-panel {
   background: #0a0e16;
+  padding-top: 6px;
 }
 
 .playback-action-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .btn-studio-preview-play {
   background: rgba(163, 230, 53, 0.15);
   border: 1px solid rgba(163, 230, 53, 0.5);
   color: #a3e635;
-  padding: 5px 14px;
-  border-radius: 16px;
-  font-size: 0.78rem;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 0.74rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -9057,7 +9063,7 @@ button {
 
 .playback-timer {
   font-family: monospace;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #94a3b8;
 }
@@ -9065,35 +9071,35 @@ button {
 .range-selector-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .range-section-title {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   color: #94a3b8;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .dual-range-track-box {
   position: relative;
-  height: 22px;
+  height: 20px;
   display: flex;
   align-items: center;
   background: #141c2b;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 0 4px;
 }
 
 .range-highlight-bar {
   position: absolute;
-  top: 5px;
-  bottom: 5px;
+  top: 4px;
+  bottom: 4px;
   left: 0;
   right: 0;
   background: #a3e635;
-  border-radius: 5px;
+  border-radius: 4px;
   box-shadow: 0 0 8px rgba(163, 230, 53, 0.5);
   pointer-events: none;
   z-index: 1;
@@ -9103,7 +9109,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .readout-col {
@@ -9121,14 +9127,14 @@ button {
 }
 
 .readout-label {
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
 }
 
 .readout-value {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
   color: #a3e635;
   font-family: monospace;
@@ -9138,31 +9144,32 @@ button {
   background: rgba(163, 230, 53, 0.15);
   border: 1px solid rgba(163, 230, 53, 0.4);
   color: #a3e635;
-  padding: 2px 10px;
-  border-radius: 16px;
-  font-size: 0.76rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
   font-weight: 800;
   font-family: monospace;
 }
 
 /* Studio Modal Actions Footer */
 .media-studio-footer {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  padding: 14px 22px;
+  padding: 10px 18px;
   border-top: 1px solid #182232;
   background: #0d121c;
 }
 
 .btn-studio-cancel {
-  padding: 8px 18px;
+  padding: 7px 16px;
   background: #141c2b;
   border: 1px solid #253147;
-  border-radius: 10px;
+  border-radius: 8px;
   color: #cbd5e1;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -9174,23 +9181,23 @@ button {
 }
 
 .btn-studio-apply {
-  padding: 8px 22px;
+  padding: 7px 20px;
   background: #a3e635;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   color: #090d15;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);
+  gap: 6px;
+  box-shadow: 0 0 18px rgba(163, 230, 53, 0.4);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-studio-apply:hover {
   background: #bbf451;
-  box-shadow: 0 0 28px rgba(163, 230, 53, 0.6);
+  box-shadow: 0 0 24px rgba(163, 230, 53, 0.6);
   transform: translateY(-1px);
 }
