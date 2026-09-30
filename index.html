@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRAGME — Next-Gen Social Arena & Community</title>
+  <meta name="description" content="DRAGME is a minimalist, modern community platform for tech roasts, anonymous confessions, unfiltered debates, and active rooms.">
+  <meta name="theme-color" content="#0e1117">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="crown_icon.png">
+
+  <!-- Google Fonts: Inter, Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=5.4">
+</head>
+<body>
+  <!-- EXACT TOP APP BAR MATCHING SCREENSHOT -->
+  <header class="top-nav" id="topNav">
+    <div class="nav-left">
+      <!-- Left sidebar toggle button -->
+      <button class="icon-btn-plain" id="toggleSidebarBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <!-- Official DRAGME Brand Logo -->
+      <a href="#" class="brand-logo" id="brandLogo">
+        <img src="crown_icon.png" alt="DRAGME Crown" class="brand-crown-icon">
+        <span class="logo-text">DRAGME</span>
+      </a>
+    </div>
+
+    <!-- Center Search Bar (Exact placeholder: Search rooms, topics or people... and / shortcut) -->
+    <div class="nav-center">
+      <div class="search-container" id="searchContainer">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="globalSearchInput" 
+          placeholder="Search rooms or topics..." 
+          autocomplete="off"
+        />
+        <div class="search-shortcut-wrap">
+          <kbd class="search-shortcut">/</kbd>
+          <button class="clear-search-btn" id="clearSearchBtn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right User & Action Center (Guest & Logged-in Switchable) -->
+    <div class="nav-right" id="navRightContainer">
+      <!-- GUEST HEADER ACTIONS -->
+      <div class="nav-right-guest" id="guestNavRight" style="display: none;">
+        <button type="button" class="btn-guest-auth-login" id="btnGuestHeaderLogin">
+          <span>Log In</span>
+        </button>
+        <button type="button" class="btn-guest-auth-signup" id="btnGuestHeaderSignup">
+          <i class="fa-solid fa-crown" style="font-size: 0.75rem;"></i>
+          <span>Sign Up</span>
+        </button>
+      </div>
+
+      <!-- LOGGED-IN HEADER ACTIONS -->
+      <div class="nav-right-auth" id="authNavRight" style="display: flex;">
+        <!-- Single Clean Plus Button Trigger -->
+        <button class="dragme-plus-trigger" id="btn-header-create-post" title="Create Post">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <!-- Vertical Divider -->
+        <div class="nav-vertical-divider"></div>
+
+        <!-- 12 COOKED Stat -->
+        <div class="stat-cooked-block" id="cookedMeterBadge" title="Cooked Level">
+          <i class="fa-solid fa-fire-flame-curved flame-cooked-icon"></i>
+          <div class="cooked-text-stack">
+            <span class="cooked-val" id="userCookedVal">12</span>
+            <span class="cooked-sub">COOKED</span>
+          </div>
+        </div>
+
+        <!-- Messages / Chat with Badge 3 -->
+        <button class="icon-nav-btn" id="chatBtn" title="Messages">
+          <i class="fa-regular fa-comment-dots"></i>
+          <span class="badge-red-circle">3</span>
+        </button>
+
+        <!-- Notifications with Badge 9 -->
+        <button class="icon-nav-btn" id="notifBtn" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-red-circle">9</span>
+        </button>
+
+        <!-- User Avatar with Caret -->
+        <button class="user-nav-dropdown" id="userProfileDropdown" type="button" title="Profile &amp; Arena Drawer" aria-controls="dragmeProfileDrawerHub" aria-haspopup="dialog" aria-expanded="false">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="nav-user-avatar" id="navHeaderUserAvatar">
+          <i class="fa-solid fa-chevron-down nav-user-caret"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP WRAPPER (3 COLUMNS) -->
+  <div class="app-layout-grid" id="appLayoutGrid">
+    
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-mobile-backdrop" id="sidebarMobileBackdrop"></div>
+
+    <!-- LEFT SIDEBAR (DRAGME SOCIAL ARENA) -->
+    <aside class="left-nav-drawer" id="leftNavDrawer">
+      <div class="left-nav-scroller">
+        
+        <!-- Navigation Menu List -->
+        <div class="nav-section-block">
+          <a href="#" class="sidebar-menu-row active" data-nav="home" id="navHome">
+            <i class="fa-solid fa-house menu-row-icon"></i>
+            <span class="menu-row-title">Home</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="communities" id="navCommunities">
+            <i class="fa-solid fa-user-group menu-row-icon"></i>
+            <span class="menu-row-title">Communities</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="rooms" id="navRooms">
+            <i class="fa-regular fa-comment-dots menu-row-icon"></i>
+            <span class="menu-row-title">Rooms</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="stories" id="navStories">
+            <i class="fa-solid fa-play menu-row-icon"></i>
+            <span class="menu-row-title">Stories</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="roast-battle" id="navRoastBattle">
+            <i class="fa-solid fa-fire-flame-curved menu-row-icon text-orange"></i>
+            <span class="menu-row-title">Roast Battle</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="daily-cooked" id="navDailyCooked">
+            <i class="fa-solid fa-fire menu-row-icon text-orange"></i>
+            <span class="menu-row-title">Daily Most Cooked</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="help-wanted" id="navHelpWanted">
+            <i class="fa-regular fa-circle-question menu-row-icon"></i>
+            <span class="menu-row-title">Help Wanted</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="need-answers" id="navNeedAnswers">
+            <i class="fa-solid fa-circle-info menu-row-icon"></i>
+            <span class="menu-row-title">Need Answers</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-filter="confessions" id="navConfessions">
+            <i class="fa-solid fa-lock menu-row-icon"></i>
+            <span class="menu-row-title">Confessions</span>
+          </a>
+          <a href="#" class="sidebar-menu-row" data-nav="before-after" id="navBeforeAfter">
+            <i class="fa-solid fa-arrow-right-arrow-left menu-row-icon"></i>
+            <span class="menu-row-title">Before → After</span>
+          </a>
+          <a href="#" class="sidebar-menu-row sidebar-profile-pill" data-nav="profile" id="navProfile">
+            <i class="fa-regular fa-user menu-row-icon"></i>
+            <span class="menu-row-title">Profile</span>
+          </a>
+        </div>
+
+        <!-- Create Room CTA Button -->
+        <div class="sidebar-action-wrap">
+          <button class="btn-sidebar-create-room" id="btnSidebarCreateRoom">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create Room</span>
+          </button>
+        </div>
+
+        <!-- YOUR ACTIVE ROOMS Section -->
+        <div class="nav-section-block active-rooms-section">
+          <div class="sidebar-section-label-cyan">YOUR ACTIVE ROOMS</div>
+          <div class="active-rooms-list">
+            <a href="#" class="active-room-pill active-selection" data-room="Tech & AI">
+              <span class="room-code-tag">&lt;/&gt;</span>
+              <span class="room-name-text">AI & Coding</span>
+              <span class="room-glow-dot"></span>
+            </a>
+            <a href="#" class="active-room-pill" data-room="Fitness & Health">
+              <i class="fa-solid fa-dumbbell room-icon-dim"></i>
+              <span class="room-name-text">Fitness & Health</span>
+            </a>
+            <a href="#" class="active-room-pill" data-room="Movie Buffs">
+              <i class="fa-solid fa-film room-icon-dim"></i>
+              <span class="room-name-text">Movie Buffs</span>
+            </a>
+          </div>
+          <a href="#" class="sidebar-view-all-link" id="btnViewAllRooms">View all →</a>
+        </div>
+
+        <!-- Bottom Mini User Profile Card -->
+        <div class="sidebar-bottom-user-card" id="sidebarBottomUserCard">
+          <div class="sb-user-row">
+            <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="sb-user-avatar" id="sbUserAvatar">
+            <div class="sb-user-meta">
+              <div class="sb-user-name" id="sbUserName">Tester Supreme</div>
+              <div class="sb-user-handle-row">
+                <span class="sb-user-handle" id="sbUserHandle">@tester</span>
+                <span class="sb-status-dots">●●</span>
+              </div>
+            </div>
+            <button class="sb-more-btn"><i class="fa-solid fa-ellipsis"></i></button>
+          </div>
+          <button class="btn-sb-view-profile" id="btnSidebarViewProfile">View Profile</button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- CENTER FEED & POST ARENA -->
+    <main class="main-content-flow" id="mainContentFlow">
+      
+      <!-- HOME FEED CONTAINER -->
+      <div class="home-feed-view" id="homeFeedContainer">
+        <!-- Quick Post Input Box (Reddit style) -->
+        <div class="reddit-create-bar" id="redditCreateBar">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="mini-avatar-bar" id="quickCreateAvatar">
+          <input 
+            type="text" 
+            class="create-bar-input" 
+            id="quickCreateTriggerInput" 
+            placeholder="Create Drag / Post a hot take..." 
+            readonly
+          />
+          <div class="create-bar-icons">
+            <button class="create-sub-icon" id="quickImgBtn" title="Post Image"><i class="fa-regular fa-image"></i></button>
+            <button class="create-sub-icon" id="quickLinkBtn" title="Post Link"><i class="fa-solid fa-link"></i></button>
+            <button class="create-sub-icon" id="quickAnonBtn" title="Anonymous Persona"><i class="fa-solid fa-user-secret text-gold"></i></button>
+          </div>
+        </div>
+
+        <!-- Feed Filter Tabs (Hot, New, Top) -->
+        <div class="feed-sort-header">
+          <div class="sort-tabs-group">
+            <button class="sort-tab active" data-sort="hot">
+              <i class="fa-solid fa-fire"></i>
+              <span>Hot</span>
+            </button>
+            <button class="sort-tab" data-sort="new">
+              <i class="fa-solid fa-sparkles"></i>
+              <span>New</span>
+            </button>
+            <button class="sort-tab" data-sort="top">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              <span>Top</span>
+            </button>
+            <button class="sort-tab" data-sort="confessions">
+              <i class="fa-solid fa-mask text-gold"></i>
+              <span>Confessions</span>
+            </button>
+          </div>
+
+          <div class="view-mode-selector">
+            <button class="btn-view-toggle active" id="viewCardBtn" title="Card View"><i class="fa-solid fa-table-cells-large"></i></button>
+            <button class="btn-view-toggle" id="viewCompactBtn" title="Compact View"><i class="fa-solid fa-bars-staggered"></i></button>
+          </div>
+        </div>
+
+        <!-- Active Filter Banner (When filtering by community/search) -->
+        <div class="active-filter-indicator" id="activeFilterIndicator" style="display: none;">
+          <div class="filter-text-left">
+            <span>Viewing posts in: <strong id="currentFilterLabel">r/design_roasts</strong></span>
+          </div>
+          <button class="btn-clear-feed-filter" id="btnClearFeedFilter"><i class="fa-solid fa-xmark"></i> Clear</button>
+        </div>
+
+        <!-- POSTS FEED CONTAINER -->
+        <div class="posts-stream" id="postsStream">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Loading State / Feed End -->
+        <div class="feed-end-indicator">
+          <i class="fa-solid fa-crown text-lime"></i>
+          <span>You're all caught up with the top drags!</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           PROFILE VIEW CONTAINER (MATCHING PRIMARY SCREENSHOT)
+           ========================================================================= -->
+      <div class="dragme-profile-container" id="profileViewContainer" style="display: none;">
+        
+        <!-- Profile Banner -->
+        <div class="profile-banner-wrapper">
+          <div class="profile-banner-media" id="profileBannerMedia">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80" alt="Banner" id="profileBannerImg" class="profile-banner-img">
+            <div class="profile-banner-overlay"></div>
+          </div>
+          <button class="btn-edit-banner" id="btnEditBanner" title="Edit Banner">
+            <i class="fa-solid fa-camera"></i>
+            <span>Edit Banner</span>
+          </button>
+        </div>
+
+        <!-- Profile Header Details Card -->
+        <div class="profile-header-card">
+          <div class="profile-header-top-row">
+            
+            <!-- Large Square Avatar with Camera Overlay -->
+            <div class="profile-avatar-anchor">
+              <div class="profile-avatar-frame">
+                <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300&auto=format&fit=crop&q=80" alt="Avatar" id="profileAvatarImg" class="profile-avatar-img">
+                <button class="profile-avatar-cam-btn" id="btnChangeAvatar" title="Change Avatar">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Buttons Right -->
+            <div class="profile-actions-cluster">
+              <button class="btn-profile-primary" id="btnOpenEditProfileModal">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Edit Profile</span>
+              </button>
+              <button class="btn-profile-icon" id="btnProfileSettings" title="Profile Settings">
+                <i class="fa-solid fa-gear"></i>
+              </button>
+              <button class="btn-profile-icon" id="btnProfileShare" title="Share Profile">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- User Identity Stack -->
+          <div class="profile-identity-stack">
+            <div class="profile-name-badge-row">
+              <h1 class="profile-display-name" id="profileDisplayName">Tester Supreme</h1>
+              <span class="profile-rank-badge" id="profileRankBadge">Senior Roaster</span>
+            </div>
+            <div class="profile-handle" id="profileHandle">@tester</div>
+            <p class="profile-bio-text" id="profileBioText">Master of Roasts &amp; Pixel-Perfect</p>
+            
+            <div class="profile-meta-row">
+              <span class="profile-meta-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="profileLocationText">Hamirpur, HP</span>
+              </span>
+              <span class="profile-meta-item">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="profileJoinedText">Joined May 2024</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Stats Bar -->
+          <div class="profile-stats-bar">
+            <div class="profile-stat-item">
+              <span class="stat-number" id="profileStatPosts">40</span>
+              <span class="stat-label">Posts</span>
+            </div>
+            <div class="profile-stat-item">
+              <span class="stat-number" id="profileStatFollowers">1</span>
+              <span class="stat-label">Followers</span>
+            </div>
+            <div class="profile-stat-item">
+              <span class="stat-number" id="profileStatFollowing">2</span>
+              <span class="stat-label">Following</span>
+            </div>
+            <div class="profile-stat-item">
+              <span class="stat-number" id="profileStatConfessions">2</span>
+              <span class="stat-label">Confessions</span>
+            </div>
+            <div class="profile-stat-item">
+              <span class="stat-number" id="profileStatReactions">23</span>
+              <span class="stat-label">Reactions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Navigation Tabs -->
+        <div class="profile-nav-tabs" id="profileNavTabs">
+          <button class="profile-tab-btn" data-tab="overview">Overview</button>
+          <button class="profile-tab-btn" data-tab="posts">Posts</button>
+          <button class="profile-tab-btn" data-tab="rooms">Rooms</button>
+          <button class="profile-tab-btn" data-tab="media">Media</button>
+          <button class="profile-tab-btn" data-tab="replies">Replies</button>
+          <button class="profile-tab-btn active" data-tab="confessions">Confessions</button>
+          <button class="profile-tab-btn tab-only-you" data-tab="saved">
+            <i class="fa-solid fa-lock"></i>
+            <span>Only You</span>
+          </button>
+        </div>
+
+        <!-- Profile Filtered Stream -->
+        <div class="profile-posts-stream" id="profilePostsStream">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR (COMMUNITY INFO & PROFILE WIDGETS) -->
+    <aside class="right-info-sidebar" id="rightInfoSidebar">
+      <div class="right-sidebar-sticky">
+        
+        <!-- HOME COMMUNITY WIDGETS -->
+        <div class="home-right-widgets" id="homeRightWidgets">
+          <!-- ABOUT COMMUNITY PANEL -->
+          <div class="reddit-card-widget" id="aboutCommunityWidget">
+            <div class="widget-head-banner"></div>
+            <div class="widget-content-body">
+              
+              <div class="community-profile-header">
+                <img src="logo.png" alt="DRAGME" class="community-avatar-img">
+                <div class="community-title-meta">
+                  <h3 class="community-headline" id="sidebarRoomTitle">r/dragme</h3>
+                  <span class="community-subhead">Official DragMe Arena</span>
+                </div>
+                <button class="btn-join-pill" id="btnJoinRoom">Join</button>
+              </div>
+
+              <p class="community-about-text" id="sidebarRoomDesc">
+                The premier platform for unfiltered debates, tech roasts, anonymous confessions, and hot takes. Server-authoritative and built for high-energy discussion.
+              </p>
+
+              <div class="community-meta-stats">
+                <div class="stat-col">
+                  <span class="stat-num" id="sidebarMemberCount">113K</span>
+                  <span class="stat-label">Members</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-num text-lime" id="sidebarOnlineCount">2.3K</span>
+                  <span class="stat-label"><span class="dot-online"></span>Online</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-num text-orange">92°</span>
+                  <span class="stat-label">Heat Avg</span>
+                </div>
+              </div>
+
+              <div class="widget-divider"></div>
+
+              <!-- User Flair Box -->
+              <div class="user-flair-preview">
+                <span class="flair-label">USER FLAIR</span>
+                <div class="flair-badge-row">
+                  <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=60&auto=format&fit=crop&q=80" alt="" class="flair-avatar">
+                  <span class="flair-username">Tester Supreme</span>
+                  <span class="flair-tag">👑 Tier 4 Roaster</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- COMMUNITY RULES ACCORDION WIDGET -->
+          <div class="reddit-card-widget">
+            <div class="widget-title-bar">
+              <i class="fa-solid fa-scale-balanced text-lime"></i>
+              <span>ARENA RULES</span>
+            </div>
+            <div class="rules-accordion-list">
+              <details class="rule-item">
+                <summary class="rule-summary">
+                  <span class="rule-num">1</span>
+                  <span class="rule-name">Roasts Must Be Relevant &amp; Clever</span>
+                </summary>
+                <p class="rule-body">No spam or low-effort generic hate. Make arguments substantiated and witty.</p>
+              </details>
+              <details class="rule-item">
+                <summary class="rule-summary">
+                  <span class="rule-num">2</span>
+                  <span class="rule-name">Masked Confessions Stay Masked</span>
+                </summary>
+                <p class="rule-body">Never attempt to doxx or reveal anonymous identities in confessions wall.</p>
+              </details>
+              <details class="rule-item">
+                <summary class="rule-summary">
+                  <span class="rule-num">3</span>
+                  <span class="rule-name">Respectful Community Vibe</span>
+                </summary>
+                <p class="rule-body">Keep attacks centered on ideas, designs, or code snippets—not hate speech.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================================
+             PROFILE RIGHT WIDGETS (EXACTLY MATCHING SCREENSHOT)
+             ========================================================================= -->
+        <div class="profile-right-widgets" id="profileRightWidgets" style="display: none;">
+          
+          <!-- Widget 1: Profile Highlights -->
+          <div class="profile-widget-card">
+            <div class="widget-header-title text-lime">
+              <i class="fa-solid fa-bolt"></i>
+              <span>PROFILE HIGHLIGHTS</span>
+            </div>
+            <div class="highlights-grid">
+              <div class="highlight-row">
+                <span class="highlight-label">Reputation Score</span>
+                <span class="highlight-val" id="hlReputation">1.8K</span>
+              </div>
+              <div class="highlight-row">
+                <span class="highlight-label">Cooked Ratio</span>
+                <span class="highlight-val" id="hlCookedRatio">100%</span>
+              </div>
+              <div class="highlight-row">
+                <span class="highlight-label">Judgment Accuracy</span>
+                <span class="highlight-val text-green" id="hlAccuracy">98%</span>
+              </div>
+              <div class="highlight-row">
+                <span class="highlight-label">Rank</span>
+                <span class="highlight-val text-gold" id="hlRank">#143 Senior Roaster</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget 2: Roast Level -->
+          <div class="profile-widget-card">
+            <div class="widget-subhead-muted">ROAST LEVEL</div>
+            <div class="roast-level-title" id="roastLevelTitle">SENIOR ROASTER</div>
+            <div class="roast-level-sub" id="roastLevelSub">Next level in 686 points</div>
+            <div class="roast-progress-track">
+              <div class="roast-progress-fill" style="width: 77%;"></div>
+            </div>
+          </div>
+
+          <!-- Widget 3: Top Badges -->
+          <div class="profile-widget-card">
+            <div class="widget-header-title-flex">
+              <div class="widget-header-title">TOP BADGES</div>
+              <a href="#" class="widget-link-action" id="btnViewAllBadges">View all →</a>
+            </div>
+            <div class="badges-row">
+              <div class="badge-bubble-wrap" title="Top Roaster">
+                <div class="badge-bubble bg-fire"><i class="fa-solid fa-fire"></i></div>
+                <span class="badge-label">Top Roas...</span>
+              </div>
+              <div class="badge-bubble-wrap" title="Battle Champ">
+                <div class="badge-bubble bg-purple"><i class="fa-solid fa-bolt"></i></div>
+                <span class="badge-label">Battle Ch...</span>
+              </div>
+              <div class="badge-bubble-wrap" title="Great Critic">
+                <div class="badge-bubble bg-gold"><i class="fa-solid fa-scale-balanced"></i></div>
+                <span class="badge-label">Great Cri...</span>
+              </div>
+              <div class="badge-bubble-wrap" title="Problem Solver">
+                <div class="badge-bubble bg-blue"><i class="fa-solid fa-door-open"></i></div>
+                <span class="badge-label">Problem ...</span>
+              </div>
+              <div class="badge-bubble-wrap" title="Helpful">
+                <div class="badge-bubble bg-amber"><i class="fa-solid fa-lightbulb"></i></div>
+                <span class="badge-label">Helpful</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget 4: Only You Can See -->
+          <div class="profile-widget-card widget-only-you">
+            <div class="widget-header-title text-gold">
+              <i class="fa-solid fa-lock"></i>
+              <span>ONLY YOU CAN SEE</span>
+            </div>
+            <div class="only-you-sub">Private owner-only activity</div>
+            
+            <div class="only-you-list">
+              <a href="#" class="only-you-row" data-tab="recent">
+                <div class="oy-icon"><i class="fa-regular fa-clock"></i></div>
+                <div class="oy-meta">
+                  <div class="oy-title">Recent Activity</div>
+                  <div class="oy-desc">Your private activity timeline</div>
+                </div>
+                <i class="fa-solid fa-lock oy-lock"></i>
+              </a>
+              <a href="#" class="only-you-row" data-tab="saved">
+                <div class="oy-icon"><i class="fa-regular fa-bookmark"></i></div>
+                <div class="oy-meta">
+                  <div class="oy-title">Saved</div>
+                  <div class="oy-desc">Posts, rooms &amp; content you saved</div>
+                </div>
+                <i class="fa-solid fa-lock oy-lock"></i>
+              </a>
+              <a href="#" class="only-you-row" data-tab="anonymous">
+                <div class="oy-icon"><i class="fa-solid fa-user-secret"></i></div>
+                <div class="oy-meta">
+                  <div class="oy-title">Anonymous Activity</div>
+                  <div class="oy-desc">Confessions and masked drags</div>
+                </div>
+                <i class="fa-solid fa-lock oy-lock"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PLATFORM FOOTER -->
+        <footer class="minimal-footer">
+          <div class="footer-links-row">
+            <a href="#">User Agreement</a> • <a href="#">Privacy Policy</a> • <a href="#">Content Rules</a>
+          </div>
+          <div class="footer-copy-text">DRAGME Inc. © 2026. All rights reserved.</div>
+        </footer>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- DRAGME APPLE-STYLE CREATE POST DRAWER MODAL -->
+  <div id="create-post-modal">
+    <div class="create-modal-window" role="dialog" aria-modal="true">
+      
+      <!-- Header -->
+      <div class="create-modal-header">
+        <div class="create-header-titles">
+          <div class="titles-realm-layer titles-realm-public">
+            <h2 class="create-modal-title">WHAT'S ON THE <span class="accent-line-text accent-lime">LINE</span> TODAY?</h2>
+            <p class="create-modal-subtitle">Choose what you want to share with the community.</p>
+          </div>
+          <div class="titles-realm-layer titles-realm-anon">
+            <h2 class="create-modal-title">SAY IT <span class="accent-line-text accent-purple">WITHOUT</span> THE LABEL.</h2>
+            <p class="create-modal-subtitle">Same thoughts. No identity attached.</p>
+          </div>
+        </div>
+        <button class="btn-close-modal-circle" id="btn-create-modal-close" title="Close">✕</button>
+      </div>
+
+      <!-- 8 Categories -->
+      <div class="create-category-grid" id="create-category-grid">
+        <div class="create-cat-card active" data-cat-id="general" data-label="CREATE POST" data-category="General">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+          <div class="cat-card-title">General</div>
+          <div class="cat-card-desc">Share anything</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="roast" data-label="DROP ROAST" data-category="Roast Me">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></div>
+          <div class="cat-card-title">Roast Me</div>
+          <div class="cat-card-desc">Roast & be roasted</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="help" data-label="GET HELP" data-category="Help Me">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line></svg></div>
+          <div class="cat-card-title">Help Me</div>
+          <div class="cat-card-desc">Get advice & help</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="answers" data-label="GET ANSWERS" data-category="I Need Answers">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+          <div class="cat-card-title">I Need Answers</div>
+          <div class="cat-card-desc">Ask. Get answers</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="hot_take" data-label="DROP HOT TAKE" data-category="Hot Take">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+          <div class="cat-card-title">Hot Take</div>
+          <div class="cat-card-desc">Agree or Disagree</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="poll" data-label="CREATE POLL" data-category="Poll + Judgment">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+          <div class="cat-card-title">Poll + Judgment</div>
+          <div class="cat-card-desc">Ask. Vote. Decide.</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="battles" data-label="START BATTLE" data-category="Battles">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line><line x1="16" y1="16" x2="20" y2="20"></line><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline></svg></div>
+          <div class="cat-card-title">Battles</div>
+          <div class="cat-card-desc">Two sides. 1 winner</div>
+        </div>
+
+        <div class="create-cat-card" data-cat-id="confession" data-label="WHISPER CONFESSION" data-category="Confession">
+          <div class="cat-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+          <div class="cat-card-title">Confession</div>
+          <div class="cat-card-desc">Share anonymously</div>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <form id="create-post-main-form" onsubmit="event.preventDefault();">
+        <div class="create-content-panel">
+          <input type="text" class="create-field-input" placeholder="Title / Subject (Optional)" id="composer-title-input">
+          <textarea class="create-field-textarea" placeholder="What's happening in the arena?" id="composer-content-input" required></textarea>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="create-bottom-bar">
+          <div class="create-post-as-block">
+            <div class="create-post-as-row">
+              <span class="create-post-as-label">POST AS:</span>
+              
+              <!-- DRAGME UNIVERSAL ME ↔ ANONYMOUS LIQUID IDENTITY SWITCHER PILL -->
+              <div class="dragme-identity-toggle mode-me" id="dragmeIdentityToggle" role="switch" aria-checked="false" tabindex="0">
+                
+                <!-- SVG Fluid Membrane Engine Stage -->
+                <svg class="identity-svg-stage" viewBox="0 0 220 44" preserveAspectRatio="none">
+                  <defs>
+                    <!-- Public / Me Gradient (Vibrant Lime) -->
+                    <linearGradient id="capsule-grad-me" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#C8FF00" />
+                      <stop offset="100%" stop-color="#84cc16" />
+                    </linearGradient>
+                    <linearGradient id="capsule-stroke-me" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
+                      <stop offset="100%" stop-color="#a3e635" stop-opacity="0.2" />
+                    </linearGradient>
+
+                    <!-- Ghost / Anonymous Gradient (Cyber Purple) -->
+                    <linearGradient id="capsule-grad-anon" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#c084fc" />
+                      <stop offset="50%" stop-color="#a855f7" />
+                      <stop offset="100%" stop-color="#7e22ce" />
+                    </linearGradient>
+                    <linearGradient id="capsule-stroke-anon" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+                      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.3" />
+                    </linearGradient>
+
+                    <!-- Radial Proximity Ambient Glow -->
+                    <radialGradient id="prox-glow-field" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#a3e635" stop-opacity="0.35" />
+                      <stop offset="100%" stop-color="#a3e635" stop-opacity="0" />
+                    </radialGradient>
+                  </defs>
+
+                  <!-- Background Base Track -->
+                  <rect class="identity-svg-track" x="2" y="2" width="216" height="40" rx="20" />
+                  <circle class="identity-svg-proximity-field" cx="110" cy="22" r="45" fill="url(#prox-glow-field)" opacity="0" />
+
+                  <!-- Organic Morphing Liquid Membrane -->
+                  <path 
+                    class="identity-morph-membrane" 
+                    d="M 22.5 4 L 74 4 A 18 18 0 0 1 92 22 A 18 18 0 0 1 74 40 L 22.5 40 A 18 18 0 0 1 4.5 22 A 18 18 0 0 1 22.5 4 Z" 
+                    fill="url(#capsule-grad-me)" 
+                    stroke="url(#capsule-stroke-me)" 
+                    stroke-width="1.2"
+                  />
+                </svg>
+
+                <div class="identity-particles-emitter" id="identityParticles"></div>
+
+                <!-- Left: Me Target -->
+                <button type="button" class="identity-side-target side-me" data-side="me" tabindex="-1">
+                  <div class="identity-side-icon">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" alt="Avatar" class="identity-user-dp">
+                  </div>
+                  <span class="identity-side-label">Me</span>
+                </button>
+
+                <!-- Right: Anonymous (Ghost) Target -->
+                <button type="button" class="identity-side-target side-anon" data-side="anonymous" tabindex="-1">
+                  <div class="identity-side-icon">
+                    <!-- Fedora & Glasses Mask SVG -->
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 11.5c0-3.8 1.8-5.5 4-5.5s4 1.7 4 5.5H8z"/>
+                      <path d="M3.5 13.2c1.2-1.2 3.5-1.7 8.5-1.7s7.3.5 8.5 1.7c-.8.8-3 1-8.5 1s-7.7-.2-8.5-1z"/>
+                      <ellipse cx="8" cy="16.5" rx="3" ry="2"/>
+                      <ellipse cx="16" cy="16.5" rx="3" ry="2"/>
+                      <path d="M11 16.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <span class="identity-side-label">Anonymous</span>
+                </button>
+
+              </div>
+            </div>
+            <div class="create-identity-hint">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span id="create-identity-hint-text">Post as yourself.</span>
+            </div>
+          </div>
+
+          <div class="create-bottom-actions">
+            <button type="button" class="btn-create-cancel" id="btn-create-modal-cancel">Cancel</button>
+            <button type="submit" class="btn-create-slanted" id="btn-create-submit">
+              <div class="btn-slanted-labels">
+                <span class="btn-slanted-label btn-label-public" id="btn-slanted-text-public">CREATE POST</span>
+                <span class="btn-slanted-label btn-label-anon" id="btn-slanted-text-anon">SHARE ANONYMOUSLY</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- CREATE ROOM MODAL -->
+  <div class="modal-overlay" id="createRoomModal" style="display: none;">
+    <div class="reddit-composer-dialog room-dialog-width">
+      <div class="composer-dialog-header">
+        <div class="dialog-title-flex">
+          <i class="fa-solid fa-plus-circle text-lime"></i>
+          <h3>Create a Room / Community</h3>
+        </div>
+        <button class="btn-close-modal" id="closeRoomModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="createRoomForm" class="composer-dialog-body">
+        <div class="form-input-block">
+          <label class="field-label">Name (without r/)</label>
+          <input type="text" id="newRoomNameInput" class="input-post-headline" placeholder="e.g. backend_roasts" required maxlength="30">
+        </div>
+        <div class="form-input-block">
+          <label class="field-label">Emoji Icon</label>
+          <input type="text" id="newRoomEmojiInput" class="input-url-field" placeholder="⚡ or 🤖" value="⚡" maxlength="4">
+        </div>
+        <div class="form-input-block">
+          <label class="field-label">Description & Topic</label>
+          <textarea id="newRoomDescInput" class="input-post-body" rows="3" placeholder="What's this room about?" required></textarea>
+        </div>
+
+        <div class="composer-dialog-footer">
+          <button type="button" class="btn-cancel-post" id="cancelRoomModalBtn">Cancel</button>
+          <button type="submit" class="btn-submit-post">
+            <span>Create Community</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- COMMENTS SLIDE-OVER DRAWER -->
+  <div class="modal-overlay" id="commentsDrawer" style="display: none;">
+    <div class="reddit-comments-panel">
+      <div class="comments-panel-header">
+        <div class="comments-header-title">
+          <i class="fa-regular fa-comment-dots text-lime"></i>
+          <span>Thread Discussion (<span id="drawerCommentCount">0</span>)</span>
+        </div>
+        <button class="btn-close-modal" id="closeCommentsBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="comments-post-summary" id="drawerPostSummary"></div>
+
+      <div class="comments-stream-list" id="drawerCommentsList"></div>
+
+      <form class="comments-compose-box" id="drawerCommentSubmitForm">
+        <input 
+          type="text" 
+          id="drawerCommentInput" 
+          class="comments-input-field" 
+          placeholder="What are your thoughts?" 
+          autocomplete="off" 
+          required
+        />
+        <button type="submit" class="btn-send-comment">
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM APP BAR (NATIVE PHONE UX) -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button class="mob-nav-item active" data-nav="home" id="mobNavHome">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button class="mob-nav-item" id="mobNavSearch">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </button>
+    <button class="mob-nav-create-btn" id="mobNavCreateBtn" title="Create Post">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+    <button class="mob-nav-item" data-filter="confessions" id="mobNavConfessions">
+      <i class="fa-solid fa-mask text-gold"></i>
+      <span>Ghost</span>
+    </button>
+    <button class="mob-nav-item" id="mobNavChat">
+      <i class="fa-regular fa-comment-dots"></i>
+      <span>Chat</span>
+    </button>
+  </nav>
+
+  <!-- MOBILE SEARCH OVERLAY -->
+  <div class="mobile-search-overlay" id="mobileSearchOverlay">
+    <div class="mob-search-header">
+      <div class="mob-search-input-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="mobileSearchInput" placeholder="Search rooms, topics, people..." autocomplete="off">
+        <button class="mob-clear-search-btn" id="mobClearSearchBtn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <button class="mob-search-close-btn" id="mobSearchCloseBtn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SIGNUP / ACCOUNT CREATION PAGE VIEW (MATCHING PRIMARY VISUAL REFERENCE)
+       ========================================================================= -->
+  <div class="dragme-auth-page" id="signupPageView" style="display: none;">
+    <!-- Top Bar Navigation -->
+    <header class="auth-top-header">
+      <div class="auth-top-left">
+        <a href="/" class="auth-brand-logo" id="signupBrandLogo">
+          <img src="crown_icon.png" alt="DRAGME Crown" class="auth-brand-crown">
+          <span class="auth-brand-text">DRAGME</span>
+        </a>
+      </div>
+      <div class="auth-top-right">
+        <span class="auth-top-hint">Already have an account?</span>
+        <button type="button" class="btn-auth-outline" id="authTopLoginBtn">Log in</button>
+      </div>
+    </header>
+
+    <!-- Main Auth Content Area (Two Columns on Desktop) -->
+    <main class="auth-main-layout">
+      
+      <!-- LEFT: Brand & Identity Panel -->
+      <section class="auth-brand-panel">
+        <div class="auth-brand-panel-inner">
+          
+          <!-- Hero Headline -->
+          <div class="brand-hero-block">
+            <h1 class="brand-hero-headline">
+              <span class="headline-line">Roast.</span>
+              <span class="headline-line text-lime">Connect.</span>
+              <span class="headline-line">Repeat.</span>
+            </h1>
+            <p class="brand-hero-subtext">
+              A community where real people share real thoughts.<br>
+              No filters. Just fire.
+            </p>
+          </div>
+
+          <!-- Feature List -->
+          <div class="brand-feature-list">
+            <!-- Feature 1: Roast & Express -->
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-crown text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Roast & Express</div>
+                <div class="brand-feature-desc">Speak your mind. Get real reactions.</div>
+              </div>
+            </div>
+
+            <!-- Feature 2: Real Connections -->
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-user-group text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Real Connections</div>
+                <div class="brand-feature-desc">Meet people who get you.</div>
+              </div>
+            </div>
+
+            <!-- Feature 3: Your Space -->
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-bookmark text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Your Space</div>
+                <div class="brand-feature-desc">Save, share and keep what matters.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subtle Brand Identity Motifs Outline Art -->
+          <div class="brand-decor-motifs" aria-hidden="true">
+            <svg class="brand-decor-svg" viewBox="0 0 280 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Small Crown Outline -->
+              <path d="M12 42 L20 20 L30 34 L40 18 L48 42 Z" stroke="rgba(163, 230, 53, 0.3)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <!-- Sparkle Marks -->
+              <path d="M56 12 L56 18 M53 15 L59 15" stroke="rgba(163, 230, 53, 0.4)" stroke-width="1.4" stroke-linecap="round" />
+              <path d="M260 55 L266 50 L260 45 L264 40" stroke="rgba(163, 230, 53, 0.35)" stroke-width="1.5" stroke-linecap="round" />
+              <!-- Chat Bubble with Dots -->
+              <rect x="25" y="55" width="85" height="55" rx="14" stroke="rgba(148, 163, 184, 0.28)" stroke-width="1.6" />
+              <path d="M40 110 L30 125 L55 110" stroke="rgba(148, 163, 184, 0.28)" stroke-width="1.6" stroke-linejoin="round" fill="#090c10" />
+              <circle cx="48" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <circle cx="67" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <circle cx="86" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <!-- Flame Outline -->
+              <path d="M142 115 C122 105 120 75 140 50 C143 62 152 68 152 68 C160 55 168 58 174 72 C182 86 172 112 142 115 Z" stroke="rgba(163, 230, 53, 0.35)" stroke-width="1.6" stroke-linejoin="round" />
+              <path d="M142 105 C132 98 132 82 143 72 C146 78 150 82 150 82 C154 75 158 78 160 86 C164 94 158 103 142 105 Z" stroke="rgba(163, 230, 53, 0.45)" stroke-width="1.4" stroke-linejoin="round" />
+            </svg>
+          </div>
+
+          <!-- Bottom Left Copyright -->
+          <footer class="brand-panel-footer">
+            <p>© 2026 DragMe. All rights reserved.</p>
+          </footer>
+        </div>
+      </section>
+
+      <!-- Vertical Section Divider -->
+      <div class="auth-vertical-divider" aria-hidden="true"></div>
+
+      <!-- RIGHT: Signup Flow Panel -->
+      <section class="auth-flow-panel">
+        <div class="signup-card-container">
+          
+          <!-- Signup Surface Card -->
+          <div class="signup-card">
+            
+            <!-- STEP INDICATOR -->
+            <div class="auth-stepper" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4">
+              
+              <!-- Step 1: Username (Active) -->
+              <div class="stepper-item active" data-step="1">
+                <div class="stepper-circle">
+                  <span>1</span>
+                </div>
+                <div class="stepper-label">Username</div>
+              </div>
+
+              <!-- Connector 1-2 -->
+              <div class="stepper-line active-line"></div>
+
+              <!-- Step 2: Details -->
+              <div class="stepper-item" data-step="2">
+                <div class="stepper-circle">
+                  <span>2</span>
+                </div>
+                <div class="stepper-label">Details</div>
+              </div>
+
+              <!-- Connector 2-3 -->
+              <div class="stepper-line"></div>
+
+              <!-- Step 3: Verify -->
+              <div class="stepper-item" data-step="3">
+                <div class="stepper-circle">
+                  <span>3</span>
+                </div>
+                <div class="stepper-label">Verify</div>
+              </div>
+
+              <!-- Connector 3-4 -->
+              <div class="stepper-line"></div>
+
+              <!-- Step 4: Complete -->
+              <div class="stepper-item" data-step="4">
+                <div class="stepper-circle">
+                  <span>4</span>
+                </div>
+                <div class="stepper-label">Complete</div>
+              </div>
+
+            </div>
+
+            <!-- CARD CONTENT (STEP 1: USERNAME) -->
+            <div class="signup-step-body" id="signupStep1Body">
+              
+              <!-- Card Header -->
+              <div class="signup-header">
+                <h2 class="signup-title">Choose your username</h2>
+                <p class="signup-subtitle">This will be your unique identity on DragMe.</p>
+              </div>
+
+              <form id="signupUsernameForm" class="signup-form" autocomplete="off" onsubmit="return false;">
+                
+                <!-- Specialized Username Field -->
+                <div class="username-field-group">
+                  <label for="signupUsernameInput" class="visually-hidden">Choose Username</label>
+                  <div class="username-input-box" id="usernameInputBox">
+                    <span class="username-domain-prefix">dragme.com/</span>
+                    <input 
+                      type="text" 
+                      id="signupUsernameInput" 
+                      class="username-input-element" 
+                      placeholder="nitish_kapoor" 
+                      value="nitish_kapoor"
+                      maxlength="20" 
+                      spellcheck="false" 
+                      autocomplete="off" 
+                      autocapitalize="none"
+                      aria-describedby="usernameValidationMsg usernameRulesList"
+                    />
+                    <div class="username-status-indicator" id="usernameStatusIndicator">
+                      <i class="fa-solid fa-circle-check text-lime"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Username Live Validation Feedback -->
+                <div class="username-feedback-area" id="usernameFeedbackArea">
+                  <div class="feedback-msg text-lime" id="usernameValidationMsg">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span id="feedbackMessageText"><strong id="feedbackUsernameBold">nitish_kapoor</strong> is available!</span>
+                  </div>
+                </div>
+
+                <!-- Rule Panel -->
+                <div class="signup-rules-card" id="usernameRulesList">
+                  <ul class="rules-list">
+                    <li class="rule-item" id="ruleLength">
+                      <span class="rule-bullet">•</span>
+                      <span>Usernames must be 4–20 characters long</span>
+                    </li>
+                    <li class="rule-item" id="ruleChars">
+                      <span class="rule-bullet">•</span>
+                      <span>Can only contain letters, numbers and underscores</span>
+                    </li>
+                    <li class="rule-item" id="ruleEdges">
+                      <span class="rule-bullet">•</span>
+                      <span>Can't start or end with an underscore</span>
+                    </li>
+                    <li class="rule-item" id="rulePermanent">
+                      <span class="rule-bullet">•</span>
+                      <span>Usernames can't be changed later</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Continue Button -->
+                <div class="signup-btn-wrapper">
+                  <button type="submit" id="btnSignupContinue" class="btn-primary-auth-continue">
+                    <span class="btn-text">Continue</span>
+                    <i class="fa-solid fa-arrow-right btn-arrow-icon"></i>
+                    <div class="btn-spinner" style="display: none;">
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Bottom Account Switch -->
+                <div class="signup-switch-footer">
+                  <span>Already have an account?</span>
+                  <button type="button" class="btn-inline-login" id="btnSignupBottomLogin">Log in</button>
+                </div>
+
+              </form>
+
+            </div>
+
+            <!-- CARD CONTENT (STEP 2: DETAILS) -->
+            <div class="signup-step-body" id="signupStep2Body" style="display: none;">
+              <!-- Card Header -->
+              <div class="signup-header">
+                <h2 class="signup-title">Enter your details</h2>
+                <p class="signup-subtitle">Complete your profile for <strong id="step2UsernameDisplay" class="text-lime">@nitish_kapoor</strong></p>
+              </div>
+
+              <form id="signupDetailsForm" class="signup-form" autocomplete="off">
+                
+                <!-- Email Field -->
+                <div class="auth-card-field-group">
+                  <label for="signupEmailInput" class="auth-card-label">Email Address</label>
+                  <div class="auth-card-input-box" id="signupEmailBox">
+                    <i class="fa-regular fa-envelope auth-field-icon"></i>
+                    <input 
+                      type="email" 
+                      id="signupEmailInput" 
+                      class="auth-card-input-el" 
+                      placeholder="name@domain.com" 
+                      required 
+                      autocomplete="email"
+                    />
+                  </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="auth-card-field-group">
+                  <label for="signupPasswordInput" class="auth-card-label">Password</label>
+                  <div class="auth-card-input-box" id="signupPasswordBox">
+                    <i class="fa-solid fa-lock auth-field-icon"></i>
+                    <input 
+                      type="password" 
+                      id="signupPasswordInput" 
+                      class="auth-card-input-el" 
+                      placeholder="At least 6 characters" 
+                      required 
+                      minlength="6"
+                      autocomplete="new-password"
+                    />
+                    <button type="button" class="btn-toggle-pwd" id="btnToggleSignupPwd" title="Show/Hide password">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Error area -->
+                <div class="auth-card-error-area" id="step2ErrorMsg" style="display: none;"></div>
+
+                <!-- Step 2 Submit Button -->
+                <div class="signup-btn-wrapper">
+                  <button type="submit" id="btnSignupSubmitDetails" class="btn-primary-auth-continue">
+                    <span class="btn-text">Create Account</span>
+                    <i class="fa-solid fa-arrow-right btn-arrow-icon"></i>
+                    <div class="btn-spinner" style="display: none;">
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Step 2 Back Link -->
+                <div class="signup-step-nav-footer">
+                  <button type="button" class="btn-back-step" id="btnBackToStep1">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to username</span>
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+            <!-- CARD CONTENT (STEP 3 & 4: COMPLETE) -->
+            <div class="signup-step-body" id="signupStepSuccessBody" style="display: none;">
+              <div class="signup-header">
+                <div class="success-icon-badge">
+                  <i class="fa-solid fa-circle-check text-lime"></i>
+                </div>
+                <h2 class="signup-title">Welcome to DRAGME!</h2>
+                <p class="signup-subtitle">Your account <strong id="stepSuccessUsernameDisplay" class="text-lime">@nitish_kapoor</strong> is ready.</p>
+              </div>
+
+              <div class="signup-btn-wrapper">
+                <button type="button" id="btnGoToFeedAfterSignup" class="btn-primary-auth-continue">
+                  <span class="btn-text">Enter the Arena</span>
+                  <i class="fa-solid fa-arrow-right btn-arrow-icon"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM TRUST STRIP -->
+    <footer class="auth-trust-strip">
+      <div class="trust-strip-container">
+        
+        <!-- Trust Item 1 -->
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-shield-halved text-lime"></i>
+          </div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">Your privacy matters</h4>
+            <p class="trust-item-sub">We keep your data safe and secure.</p>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="trust-divider" aria-hidden="true"></div>
+
+        <!-- Trust Item 2 -->
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-lock text-lime"></i>
+          </div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">No fake vibes</h4>
+            <p class="trust-item-sub">Real people. Real conversations.</p>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="trust-divider" aria-hidden="true"></div>
+
+        <!-- Trust Item 3 -->
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-user-group text-lime"></i>
+          </div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">Built for the community</h4>
+            <p class="trust-item-sub">By the community, for the community.</p>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- =========================================================================
+       LOGIN / SIGN-IN PAGE VIEW (DRAGME AUTH VIEW)
+       ========================================================================= -->
+  <div class="dragme-auth-page" id="loginPageView" style="display: none;">
+    <!-- Top Bar Navigation -->
+    <header class="auth-top-header">
+      <div class="auth-top-left">
+        <a href="/" class="auth-brand-logo" id="loginBrandLogo">
+          <img src="crown_icon.png" alt="DRAGME Crown" class="auth-brand-crown">
+          <span class="auth-brand-text">DRAGME</span>
+        </a>
+      </div>
+      <div class="auth-top-right">
+        <span class="auth-top-hint">Don't have an account?</span>
+        <button type="button" class="btn-auth-outline" id="loginTopSignupBtn">Sign up</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="auth-main-layout">
+      
+      <!-- LEFT: Brand Panel -->
+      <section class="auth-brand-panel">
+        <div class="auth-brand-panel-inner">
+          <div class="brand-hero-block">
+            <h1 class="brand-hero-headline">
+              <span class="headline-line">Speak.</span>
+              <span class="headline-line text-lime">Debate.</span>
+              <span class="headline-line">Dominate.</span>
+            </h1>
+            <p class="brand-hero-subtext">
+              Welcome back to DRAGME. Unfiltered thoughts, live arena debates, and active tech rooms.
+            </p>
+          </div>
+
+          <div class="brand-feature-list">
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-fire text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Your Heat & Drags</div>
+                <div class="brand-feature-desc">Track your votes, replies, and arena stats.</div>
+              </div>
+            </div>
+
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-mask text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Masked Personas</div>
+                <div class="brand-feature-desc">Switch between public and anonymous identities.</div>
+              </div>
+            </div>
+
+            <div class="brand-feature-row">
+              <div class="brand-feature-icon-box">
+                <i class="fa-solid fa-shield-halved text-lime"></i>
+              </div>
+              <div class="brand-feature-text">
+                <div class="brand-feature-title">Encrypted Sessions</div>
+                <div class="brand-feature-desc">Secure JWT tokens and verified server auth.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Motifs -->
+          <div class="brand-decor-motifs" aria-hidden="true">
+            <svg class="brand-decor-svg" viewBox="0 0 280 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 42 L20 20 L30 34 L40 18 L48 42 Z" stroke="rgba(163, 230, 53, 0.3)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M56 12 L56 18 M53 15 L59 15" stroke="rgba(163, 230, 53, 0.4)" stroke-width="1.4" stroke-linecap="round" />
+              <rect x="25" y="55" width="85" height="55" rx="14" stroke="rgba(148, 163, 184, 0.28)" stroke-width="1.6" />
+              <path d="M40 110 L30 125 L55 110" stroke="rgba(148, 163, 184, 0.28)" stroke-width="1.6" stroke-linejoin="round" fill="#090c10" />
+              <circle cx="48" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <circle cx="67" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <circle cx="86" cy="82" r="3" fill="rgba(148, 163, 184, 0.4)" />
+              <path d="M142 115 C122 105 120 75 140 50 C143 62 152 68 152 68 C160 55 168 58 174 72 C182 86 172 112 142 115 Z" stroke="rgba(163, 230, 53, 0.35)" stroke-width="1.6" stroke-linejoin="round" />
+            </svg>
+          </div>
+
+          <footer class="brand-panel-footer">
+            <p>© 2026 DragMe. All rights reserved.</p>
+          </footer>
+        </div>
+      </section>
+
+      <!-- Vertical Divider -->
+      <div class="auth-vertical-divider" aria-hidden="true"></div>
+
+      <!-- RIGHT: Login Card Panel -->
+      <section class="auth-flow-panel">
+        <div class="signup-card-container">
+          <div class="signup-card login-card-surface">
+            
+            <div class="signup-header">
+              <h2 class="signup-title">Welcome back</h2>
+              <p class="signup-subtitle">Sign in to your DRAGME account to continue.</p>
+            </div>
+
+            <form id="loginPageForm" class="signup-form" autocomplete="on">
+              
+              <!-- Login Identifier (Username or Email) -->
+              <div class="auth-card-field-group">
+                <label for="loginPageIdentifierInput" class="auth-card-label">Username or Email</label>
+                <div class="auth-card-input-box" id="loginIdentifierBox">
+                  <i class="fa-regular fa-user auth-field-icon"></i>
+                  <input 
+                    type="text" 
+                    id="loginPageIdentifierInput" 
+                    class="auth-card-input-el" 
+                    placeholder="e.g. nitish_kapoor or name@domain.com" 
+                    required 
+                    autocomplete="username"
+                  />
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="auth-card-field-group">
+                <div class="auth-card-label-row">
+                  <label for="loginPagePasswordInput" class="auth-card-label">Password</label>
+                  <a href="#" class="auth-forgot-link" id="loginPageForgotLink">Forgot?</a>
+                </div>
+                <div class="auth-card-input-box" id="loginPasswordBox">
+                  <i class="fa-solid fa-lock auth-field-icon"></i>
+                  <input 
+                    type="password" 
+                    id="loginPagePasswordInput" 
+                    class="auth-card-input-el" 
+                    placeholder="••••••••" 
+                    required 
+                    autocomplete="current-password"
+                  />
+                  <button type="button" class="btn-toggle-pwd" id="btnToggleLoginPwd" title="Show/Hide password">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember Me Row -->
+              <div class="auth-remember-row">
+                <label class="auth-remember-label">
+                  <input type="checkbox" id="loginPageRememberMe" checked>
+                  <span>Remember this device</span>
+                </label>
+              </div>
+
+              <!-- Error Alert -->
+              <div class="auth-card-error-area" id="loginPageErrorMsg" style="display: none;"></div>
+
+              <!-- Submit Button -->
+              <div class="signup-btn-wrapper">
+                <button type="submit" id="btnLoginSubmit" class="btn-primary-auth-continue">
+                  <span class="btn-text">Sign In</span>
+                  <i class="fa-solid fa-arrow-right btn-arrow-icon"></i>
+                  <div class="btn-spinner" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Switch to Sign Up -->
+              <div class="signup-switch-footer">
+                <span>Don't have an account?</span>
+                <button type="button" class="btn-inline-login" id="btnLoginBottomSignup">Sign up</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Trust Strip -->
+    <footer class="auth-trust-strip">
+      <div class="trust-strip-container">
+        <div class="trust-item">
+          <div class="trust-icon-box"><i class="fa-solid fa-shield-halved text-lime"></i></div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">Your privacy matters</h4>
+            <p class="trust-item-sub">We keep your data safe and secure.</p>
+          </div>
+        </div>
+        <div class="trust-divider" aria-hidden="true"></div>
+        <div class="trust-item">
+          <div class="trust-icon-box"><i class="fa-solid fa-lock text-lime"></i></div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">No fake vibes</h4>
+            <p class="trust-item-sub">Real people. Real conversations.</p>
+          </div>
+        </div>
+        <div class="trust-divider" aria-hidden="true"></div>
+        <div class="trust-item">
+          <div class="trust-icon-box"><i class="fa-solid fa-user-group text-lime"></i></div>
+          <div class="trust-text-stack">
+            <h4 class="trust-item-heading">Built for the community</h4>
+            <p class="trust-item-sub">By the community, for the community.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="editProfileModal" style="display: none;">
+    <div class="modal-window edit-profile-modal-window">
+      <div class="modal-header auth-modal-header">
+        <h3 class="auth-modal-title"><i class="fa-solid fa-pen-to-square text-lime"></i> Edit Profile</h3>
+        <button class="btn-close-modal" id="closeEditProfileModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body auth-modal-body">
+        <form id="editProfileForm" class="edit-profile-form">
+          <div class="auth-form-group">
+            <label class="auth-form-label">Display Name</label>
+            <input type="text" id="editDisplayNameInput" class="auth-form-input" maxlength="50" required placeholder="e.g. Tester Supreme">
+          </div>
+          <div class="auth-form-group">
+            <label class="auth-form-label">Bio</label>
+            <textarea id="editBioInput" class="auth-form-input" style="height: 70px; resize: vertical;" maxlength="250" placeholder="Master of Roasts & Pixel-Perfect"></textarea>
+          </div>
+          <div class="auth-form-group">
+            <label class="auth-form-label">Location</label>
+            <input type="text" id="editLocationInput" class="auth-form-input" maxlength="80" placeholder="e.g. Hamirpur, HP">
+          </div>
+          <div class="auth-form-group">
+            <label class="auth-form-label">Avatar URL</label>
+            <input type="url" id="editAvatarUrlInput" class="auth-form-input" placeholder="https://...">
+          </div>
+          <div class="auth-form-group">
+            <label class="auth-form-label">Banner URL</label>
+            <input type="url" id="editBannerUrlInput" class="auth-form-input" placeholder="https://...">
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <button type="button" class="btn-auth-outline" id="btnCancelEditProfile" style="flex: 1; padding: 12px;">Cancel</button>
+            <button type="submit" class="btn-auth-submit" id="btnSaveProfile" style="flex: 2; margin-top: 0;">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (SIGN IN / REGISTER) -->
+  <div class="modal-overlay" id="authModal" style="display: none;">
+    <div class="modal-window auth-modal-window">
+      <div class="modal-header auth-modal-header">
+        <h3 id="authModalTitle" class="auth-modal-title">Sign In to DRAGME</h3>
+        <button class="btn-close-modal" id="closeAuthModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="modal-body auth-modal-body">
+        <div class="auth-tab-container">
+          <button type="button" class="auth-tab-btn active" id="tabAuthLogin">Sign In</button>
+          <button type="button" class="auth-tab-btn" id="tabAuthRegister">Create Account</button>
+        </div>
+
+        <form id="authMainForm">
+          <!-- Registration username -->
+          <div class="auth-form-group" id="authRegUsernameGroup" style="display: none;">
+            <label class="auth-form-label">Username</label>
+            <input type="text" id="authInputUsername" class="auth-form-input" placeholder="e.g. shadow_ninja" autocomplete="username">
+          </div>
+
+          <!-- Email / Login -->
+          <div class="auth-form-group">
+            <label class="auth-form-label" id="authLabelLogin">Username or Email</label>
+            <input type="text" id="authInputLogin" class="auth-form-input" required placeholder="name@domain.com" autocomplete="username">
+          </div>
+
+          <!-- Password -->
+          <div class="auth-form-group">
+            <label class="auth-form-label">Password</label>
+            <input type="password" id="authInputPassword" class="auth-form-input" required placeholder="••••••••" autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">
+            Sign In
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       TRANSLUCENT GLASS PROFILE DRAWER (DRAGME ARENA HUB)
+       ========================================================================= -->
+  <div class="dragme-glass-drawer-backdrop" id="dragmeProfileDrawerHub" role="dialog" aria-modal="true" aria-label="Profile and Arena drawer" aria-hidden="true">
+    <div class="dragme-glass-drawer-panel" id="dragmeProfileDrawerPanel">
+      
+      <!-- Drawer Header -->
+      <div class="glass-drawer-header">
+        <div class="glass-drawer-badge">
+          <i class="fa-solid fa-crown text-gold"></i>
+          <span>DRAGME IDENTITY HUB</span>
+        </div>
+        <button class="btn-glass-drawer-close" id="btnCloseGlassProfileDrawer" title="Close Drawer (Esc)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- User Identity Glass Card -->
+      <div class="glass-user-hero-card" id="drawerUserHeroCard" title="Go to My Profile Arena">
+        <div class="glass-user-avatar-wrap">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=120&auto=format&fit=crop&q=80" alt="Avatar" class="glass-user-avatar" id="drawerUserAvatar">
+          <span class="avatar-online-beacon"></span>
+        </div>
+        <div class="glass-user-meta">
+          <div class="glass-user-name-line">
+            <h4 class="glass-user-name" id="drawerUserName">Tester Supreme</h4>
+            <span class="badge-role-gold" id="drawerUserBadge">Senior Roaster</span>
+          </div>
+          <div class="glass-user-handle-line" id="drawerUserHandle">@tester • Hamirpur, HP</div>
+        </div>
+        <i class="fa-solid fa-chevron-right glass-hero-arrow"></i>
+      </div>
+
+      <!-- Live Quick Stats Strip -->
+      <div class="glass-drawer-stats-strip">
+        <div class="glass-stat-card">
+          <span class="glass-stat-val" id="glassStatPosts">40</span>
+          <span class="glass-stat-lbl">POSTS</span>
+        </div>
+        <div class="glass-stat-card">
+          <span class="glass-stat-val text-lime" id="glassStatRep">1.8K</span>
+          <span class="glass-stat-lbl">REPUTATION</span>
+        </div>
+        <div class="glass-stat-card">
+          <span class="glass-stat-val text-orange" id="glassStatCooked">
+            <i class="fa-solid fa-fire-flame-curved" style="font-size: 0.8rem; margin-right: 2px;"></i>12
+          </span>
+          <span class="glass-stat-lbl">COOKED</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="glass-drawer-divider"></div>
+
+      <!-- Quick Action Buttons List -->
+      <div class="glass-drawer-actions">
+        
+        <button class="glass-drawer-action-btn primary-glow" id="btnDrawerMyProfile">
+          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-user-astronaut"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">My Profile Arena</span>
+            <span class="action-meta-sub">Rankings, top badges &amp; cooked level</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerMyConfessions">
+          <div class="action-icon-pill icon-gold"><i class="fa-solid fa-mask"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">My Anonymous Drops</span>
+            <span class="action-meta-sub">Masked confessions &amp; secrets</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerEditProfile">
+          <div class="action-icon-pill icon-cyan"><i class="fa-solid fa-pen-to-square"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Edit Profile Details</span>
+            <span class="action-meta-sub">Change avatar, banner, bio &amp; location</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerBookmarks">
+          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-bookmark"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Saved Bookmarks</span>
+            <span class="action-meta-sub">Private collection of saved posts</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerActivity">
+          <div class="action-icon-pill icon-gold"><i class="fa-solid fa-bolt"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Activity &amp; Upvotes</span>
+            <span class="action-meta-sub">Your crowns, replies and heat</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerSettings">
+          <div class="action-icon-pill"><i class="fa-solid fa-gear"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Account Settings</span>
+            <span class="action-meta-sub">Security, privacy &amp; preferences</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerHelp">
+          <div class="action-icon-pill"><i class="fa-solid fa-circle-question"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Help &amp; Support</span>
+            <span class="action-meta-sub">Arena rules, guides &amp; contact</span>
+          </div>
+          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+        </button>
+
+        <div class="glass-drawer-divider"></div>
+
+        <!-- Auth Section -->
+        <button class="glass-drawer-action-btn" id="btnDrawerSignIn">
+          <div class="action-icon-pill"><i class="fa-solid fa-right-to-bracket"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Sign In to DRAGME</span>
+            <span class="action-meta-sub">Switch account or login</span>
+          </div>
+        </button>
+
+        <button class="glass-drawer-action-btn" id="btnDrawerSignUp">
+          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-user-plus"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title">Create New Account</span>
+            <span class="action-meta-sub">Join the unfiltered arena</span>
+          </div>
+        </button>
+
+        <button class="glass-drawer-action-btn danger-glow" id="btnDrawerLogOut" style="display: none;">
+          <div class="action-icon-pill icon-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+          <div class="action-meta-col">
+            <span class="action-meta-title text-danger">Log Out</span>
+            <span class="action-meta-sub">End current active session</span>
+          </div>
+        </button>
+
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="glass-drawer-footer">
+        <span>DRAGME ARENA v2.4 • SECURE</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTEXTUAL GUEST AUTH PROMPT MODAL (DRAGME ACTION GATE) -->
+  <div class="modal-overlay" id="guestAuthPromptModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="promptModalTitle">
+    <div class="modal-window auth-prompt-modal-window">
+      <div class="auth-prompt-banner">
+        <div class="auth-prompt-badge">
+          <img src="crown_icon.png" alt="DRAGME Crown" class="auth-prompt-crown">
+        </div>
+        <button class="btn-close-modal" id="closeGuestPromptBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="auth-prompt-body">
+        <h3 class="auth-prompt-title" id="promptModalTitle">Join the conversation</h3>
+        <p class="auth-prompt-subtitle" id="promptModalSubtitle">Create an account or log in to interact on DRAGME.</p>
+        
+        <div class="auth-prompt-benefit-strip">
+          <div class="prompt-benefit-item">
+            <i class="fa-solid fa-crown text-lime"></i>
+            <span>Crown top roasts</span>
+          </div>
+          <div class="prompt-benefit-item">
+            <i class="fa-solid fa-mask text-lime"></i>
+            <span>Post anonymously</span>
+          </div>
+          <div class="prompt-benefit-item">
+            <i class="fa-solid fa-bookmark text-lime"></i>
+            <span>Bookmark favorites</span>
+          </div>
+        </div>
+
+        <div class="auth-prompt-actions">
+          <button type="button" class="btn-prompt-primary" id="btnPromptSignup">
+            <i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i>
+            <span>Create account</span>
+          </button>
+          <button type="button" class="btn-prompt-secondary" id="btnPromptLogin">
+            <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 6px;"></i>
+            <span>Log in</span>
+          </button>
+          <button type="button" class="btn-prompt-ghost" id="btnPromptContinueBrowsing">
+            <span>Continue browsing</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGOUT CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="logoutConfirmModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle">
+    <div class="modal-window logout-confirm-window">
+      <div class="logout-confirm-header">
+        <div class="logout-icon-circle">
+          <i class="fa-solid fa-arrow-right-from-bracket text-danger"></i>
+        </div>
+        <h3 class="logout-confirm-title" id="logoutConfirmTitle">Log out of DRAGME?</h3>
+        <p class="logout-confirm-sub">You will need to sign in again to vote, comment, save posts, or post anonymous confessions.</p>
+      </div>
+      <div class="logout-confirm-actions">
+        <button type="button" class="btn-logout-cancel" id="btnCancelLogout">Cancel</button>
+        <button type="button" class="btn-logout-confirm" id="btnConfirmLogout">Log out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION INITIALIZATION SPLASH (ELIMINATES AUTH FLICKER) -->
+  <div class="app-init-splash" id="appInitSplash">
+    <div class="init-splash-card">
+      <img src="crown_icon.png" alt="DRAGME" class="init-splash-crown">
+      <div class="init-splash-pulse"></div>
+      <span class="init-splash-text">DRAGME</span>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-hub" id="toastHub"></div>
+
+  <script src="app.js?v=5.5"></script>
+</body>
+</html>
+
