@@ -3550,6 +3550,15 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     init() {
+      // 0. Back button to return to profile
+      const btnBack = document.getElementById('btnEditProfileBack');
+      if (btnBack) {
+        btnBack.addEventListener('click', (e) => {
+          e.preventDefault();
+          Router.navigate('profile');
+        });
+      }
+
       // 1. Discard & Save buttons
       const btnDiscard = document.getElementById('btnEditorDiscard');
       if (btnDiscard) {
@@ -3567,7 +3576,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // 2. Editor Tabs Navigation
+      // 2. Editor Tabs Navigation (if present)
       const tabNav = document.getElementById('editorTabsNav');
       if (tabNav) {
         tabNav.querySelectorAll('.editor-nav-tab').forEach(tabBtn => {
@@ -3720,7 +3729,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // 4. File Upload Triggers (Instant Local Blob Preview)
       const avatarFileInput = document.getElementById('avatarFileInput');
       const btnTriggerAvatarUpload = document.getElementById('btnTriggerAvatarUpload');
+      const btnTriggerAvatarUpload2 = document.getElementById('btnTriggerAvatarUpload2');
       btnTriggerAvatarUpload?.addEventListener('click', () => avatarFileInput?.click());
+      btnTriggerAvatarUpload2?.addEventListener('click', () => avatarFileInput?.click());
 
       avatarFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
@@ -3956,10 +3967,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const mobileBottomNav = document.getElementById('mobileBottomNav');
       const signupPageView = document.getElementById('signupPageView');
       const loginPageView = document.getElementById('loginPageView');
+      const editProfilePageView = document.getElementById('editProfilePageView');
 
       const homeFeedContainer = document.getElementById('homeFeedContainer');
       const profileViewContainer = document.getElementById('profileViewContainer');
-      const editProfileViewContainer = document.getElementById('editProfileViewContainer');
       const homeRightWidgets = document.getElementById('homeRightWidgets');
       const profileRightWidgets = document.getElementById('profileRightWidgets');
       const rightInfoSidebar = document.getElementById('rightInfoSidebar');
@@ -3976,6 +3987,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appLayoutGrid) appLayoutGrid.style.display = 'none';
         if (mobileBottomNav) mobileBottomNav.style.display = 'none';
         if (loginPageView) loginPageView.style.display = 'none';
+        if (editProfilePageView) editProfilePageView.style.display = 'none';
         if (signupPageView) {
           signupPageView.style.display = 'flex';
           window.scrollTo(0, 0);
@@ -3989,6 +4001,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appLayoutGrid) appLayoutGrid.style.display = 'none';
         if (mobileBottomNav) mobileBottomNav.style.display = 'none';
         if (signupPageView) signupPageView.style.display = 'none';
+        if (editProfilePageView) editProfilePageView.style.display = 'none';
         if (loginPageView) {
           loginPageView.style.display = 'flex';
           window.scrollTo(0, 0);
@@ -4007,14 +4020,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (signupPageView) signupPageView.style.display = 'none';
         if (loginPageView) loginPageView.style.display = 'none';
-        if (topNav) topNav.style.display = '';
-        if (appLayoutGrid) appLayoutGrid.style.display = '';
-        if (mobileBottomNav) mobileBottomNav.style.display = '';
+        if (topNav) topNav.style.display = 'none';
+        if (appLayoutGrid) appLayoutGrid.style.display = 'none';
+        if (mobileBottomNav) mobileBottomNav.style.display = 'none';
 
-        if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'none', 'important');
-        if (profileViewContainer) profileViewContainer.style.setProperty('display', 'none', 'important');
-        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'block', 'important');
-        if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', 'none', 'important');
+        if (editProfilePageView) {
+          editProfilePageView.style.display = 'flex';
+        }
 
         if (navEditProfile) navEditProfile.classList.add('active');
 
@@ -4036,12 +4048,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (signupPageView) signupPageView.style.display = 'none';
         if (loginPageView) loginPageView.style.display = 'none';
+        if (editProfilePageView) editProfilePageView.style.display = 'none';
         if (topNav) topNav.style.display = '';
         if (appLayoutGrid) appLayoutGrid.style.display = '';
         if (mobileBottomNav) mobileBottomNav.style.display = '';
 
         if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'none', 'important');
-        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'none', 'important');
         if (profileViewContainer) profileViewContainer.style.setProperty('display', 'flex', 'important');
         if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', '', 'important');
         if (homeRightWidgets) homeRightWidgets.style.setProperty('display', 'none', 'important');
@@ -4059,13 +4071,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Home Feed
         if (signupPageView) signupPageView.style.display = 'none';
         if (loginPageView) loginPageView.style.display = 'none';
+        if (editProfilePageView) editProfilePageView.style.display = 'none';
         if (topNav) topNav.style.display = '';
         if (appLayoutGrid) appLayoutGrid.style.display = '';
         if (mobileBottomNav) mobileBottomNav.style.display = '';
 
         if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'flex', 'important');
         if (profileViewContainer) profileViewContainer.style.setProperty('display', 'none', 'important');
-        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'none', 'important');
         if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', '', 'important');
         if (homeRightWidgets) homeRightWidgets.style.setProperty('display', 'flex', 'important');
         if (profileRightWidgets) profileRightWidgets.style.setProperty('display', 'none', 'important');
