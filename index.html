@@ -2330,7 +2330,7 @@
   </div>
 
   <!-- =========================================================================
-       MEDIA TRIM & CROP STUDIO MODAL (VIDEO & PHOTO TRIMMING / CROPPING)
+       MEDIA TRIM & CROP STUDIO MODAL (UNIVERSAL PINCH-ZOOM, PAN, ROTATE & TRIM)
        ========================================================================= -->
   <div class="modal-overlay media-studio-overlay" id="mediaStudioModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="mediaStudioTitle">
     <div class="modal-window media-studio-window">
@@ -2338,17 +2338,24 @@
       <!-- Studio Header -->
       <div class="media-studio-header">
         <div class="media-studio-title-group">
-          <i class="fa-solid fa-video text-lime" id="mediaStudioIcon"></i>
-          <h3 class="media-studio-title" id="mediaStudioTitle">Trim Your Clip</h3>
+          <i class="fa-solid fa-crop-simple text-lime" id="mediaStudioIcon"></i>
+          <div>
+            <h3 class="media-studio-title" id="mediaStudioTitle">Adjust &amp; Position Media</h3>
+            <span class="media-studio-sub" id="mediaStudioSub">Pinch or scroll to zoom • Drag to frame your shot</span>
+          </div>
         </div>
         <button type="button" class="btn-close-studio" id="btnCloseMediaStudio" title="Close"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Studio Stage Viewport -->
+      <!-- Studio Stage Viewport (Unified Interactive Surface for Photo & Video) -->
       <div class="media-studio-stage" id="mediaStudioStage">
+        
         <!-- Video Viewport -->
         <div class="media-video-container" id="studioVideoWrap" style="display: none;">
-          <video id="studioVideoPlayer" playsinline loop preload="auto" class="studio-video-element"></video>
+          <div class="studio-crop-canvas-box" id="studioVideoCanvasBox">
+            <video id="studioVideoPlayer" playsinline loop preload="auto" class="studio-video-element"></video>
+            <div class="crop-grid-overlay" id="cropGridOverlayVideo"></div>
+          </div>
         </div>
 
         <!-- Image Crop & Pan Viewport -->
@@ -2358,21 +2365,96 @@
             <div class="crop-grid-overlay" id="cropGridOverlay"></div>
           </div>
         </div>
+
+        <!-- Floating Stage Interaction Badges -->
+        <div class="stage-floating-badges">
+          <span class="stage-badge-pill" id="stageZoomBadge"><i class="fa-solid fa-magnifying-glass"></i> <span id="valZoomLevelText">100%</span></span>
+          <span class="stage-badge-pill" id="stagePanBadge"><i class="fa-solid fa-arrows-up-down-left-right"></i> <span id="valPanPosText">0, 0</span></span>
+          <span class="stage-badge-pill" id="stageRotationBadge"><i class="fa-solid fa-arrows-rotate"></i> <span id="valRotationText">0°</span></span>
+        </div>
       </div>
 
-      <!-- Video Controls Bar -->
-      <div class="studio-controls-panel" id="studioVideoControls" style="display: none;">
+      <!-- Universal Transform Controls Bar (Zoom, Pan, Rotate, Flip, Presets) -->
+      <div class="studio-controls-panel" id="studioTransformControls">
+        
+        <!-- Zoom Suite Row -->
+        <div class="transform-deck-row zoom-deck-row">
+          <div class="zoom-slider-group">
+            <span class="control-section-label"><i class="fa-solid fa-magnifying-glass"></i> ZOOM</span>
+            <button type="button" class="btn-step-ctrl" id="btnZoomOut" title="Zoom Out (-10%)"><i class="fa-solid fa-minus"></i></button>
+            <input type="range" id="photoZoomSlider" min="1" max="4" step="0.02" value="1" class="studio-slider zoom-slider" aria-label="Zoom Level">
+            <button type="button" class="btn-step-ctrl" id="btnZoomIn" title="Zoom In (+10%)"><i class="fa-solid fa-plus"></i></button>
+          </div>
+
+          <!-- Quick Zoom Preset Pills -->
+          <div class="zoom-preset-pills" id="zoomPresetPills">
+            <button type="button" class="btn-preset-zoom active" data-scale="1.0">1x</button>
+            <button type="button" class="btn-preset-zoom" data-scale="1.25">1.25x</button>
+            <button type="button" class="btn-preset-zoom" data-scale="1.5">1.5x</button>
+            <button type="button" class="btn-preset-zoom" data-scale="2.0">2x</button>
+            <button type="button" class="btn-preset-zoom" data-scale="3.0">3x</button>
+          </div>
+        </div>
+
+        <!-- Position & Orientation Deck Row -->
+        <div class="transform-deck-row tools-deck-row">
+          
+          <!-- Precision Pan Nudge D-Pad -->
+          <div class="pan-dpad-container">
+            <span class="control-section-label"><i class="fa-solid fa-arrows-up-down-left-right"></i> POSITION</span>
+            <div class="pan-dpad-grid">
+              <button type="button" class="btn-dpad btn-dpad-up" id="btnPanUp" title="Pan Up"><i class="fa-solid fa-chevron-up"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-left" id="btnPanLeft" title="Pan Left"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-center" id="btnPanCenter" title="Re-center Pan"><i class="fa-solid fa-crosshairs"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-right" id="btnPanRight" title="Pan Right"><i class="fa-solid fa-chevron-right"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-down" id="btnPanDown" title="Pan Down"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+          </div>
+
+          <!-- Rotation & Flip Actions -->
+          <div class="orientation-tools-group">
+            <span class="control-section-label"><i class="fa-solid fa-rotate"></i> ROTATE &amp; FLIP</span>
+            <div class="action-buttons-wrap">
+              <button type="button" class="btn-studio-tool" id="btnRotateLeft" title="Rotate 90° Counter-Clockwise">
+                <i class="fa-solid fa-rotate-left"></i> -90°
+              </button>
+              <button type="button" class="btn-studio-tool" id="btnRotatePhoto" title="Rotate 90° Clockwise">
+                <i class="fa-solid fa-rotate-right"></i> +90°
+              </button>
+              <button type="button" class="btn-studio-tool" id="btnFlipH" title="Flip Horizontally">
+                <i class="fa-solid fa-arrows-left-right"></i> Flip H
+              </button>
+              <button type="button" class="btn-studio-tool" id="btnFlipV" title="Flip Vertically">
+                <i class="fa-solid fa-arrows-up-down"></i> Flip V
+              </button>
+              <button type="button" class="btn-studio-tool btn-reset-frame" id="btnResetTransform" title="Reset All Transforms">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="gesture-hint-row">
+          <span class="gesture-hint-pill"><i class="fa-solid fa-hand-pointer"></i> Touch / Drag or D-Pad to Pan</span>
+          <span class="gesture-hint-pill"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> 2-Finger Pinch or Scroll to Zoom</span>
+          <span class="gesture-hint-pill"><i class="fa-solid fa-expand"></i> Double-tap to Toggle 2x</span>
+        </div>
+      </div>
+
+      <!-- Video Duration Trim Bar (Visible Only for Video Clips) -->
+      <div class="studio-controls-panel video-trim-panel" id="studioVideoControls" style="display: none;">
         <div class="playback-action-row">
           <button type="button" class="btn-studio-preview-play" id="btnToggleVideoPlayback">
             <i class="fa-solid fa-play" id="iconVideoPlayState"></i>
-            <span>Preview</span>
+            <span>Play Clip</span>
           </button>
           <span class="playback-timer" id="videoPlaybackTimer">0:00.0 / 0:10.0</span>
         </div>
 
         <div class="range-selector-section">
           <div class="range-label-row">
-            <span class="range-section-title">SELECT RANGE (Max 10s)</span>
+            <span class="range-section-title">TRIM CLIP RANGE (Max 10s Loop)</span>
           </div>
 
           <div class="dual-range-track-box">
@@ -2397,29 +2479,12 @@
         </div>
       </div>
 
-      <!-- Photo Crop Controls Bar -->
-      <div class="studio-controls-panel" id="studioPhotoControls" style="display: none;">
-        <div class="photo-controls-row">
-          <div class="zoom-slider-group">
-            <span class="zoom-label">ZOOM:</span>
-            <button type="button" class="btn-zoom-step" id="btnZoomOut"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-            <input type="range" id="photoZoomSlider" min="1" max="3" step="0.05" value="1" class="studio-slider zoom-slider">
-            <button type="button" class="btn-zoom-step" id="btnZoomIn"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-          </div>
-          <button type="button" class="btn-rotate-photo" id="btnRotatePhoto">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Rotate 90°</span>
-          </button>
-        </div>
-        <p class="crop-drag-hint"><i class="fa-solid fa-hand"></i> Drag image to reposition inside frame</p>
-      </div>
-
       <!-- Studio Modal Actions Footer -->
       <div class="media-studio-footer">
         <button type="button" class="btn-studio-cancel" id="btnCancelMediaStudio">Cancel</button>
         <button type="button" class="btn-studio-apply" id="btnApplyMediaStudio">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i>
-          <span id="btnApplyStudioText">Trim &amp; Upload</span>
+          <i class="fa-solid fa-check"></i>
+          <span id="btnApplyStudioText">Apply &amp; Frame</span>
         </button>
       </div>
 

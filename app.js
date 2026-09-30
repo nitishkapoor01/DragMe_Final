@@ -3236,7 +3236,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // =========================================================================
-  // MEDIA CROP & TRIM STUDIO MANAGER (VIDEO CLIPS & PHOTO CROPPING)
+  // MEDIA CROP & TRIM STUDIO MANAGER (UNIVERSAL PINCH-ZOOM, PAN, ROTATE & TRIM)
   // =========================================================================
   const MediaStudioManager = {
     currentFile: null,
@@ -3247,18 +3247,25 @@ document.addEventListener('DOMContentLoaded', () => {
     endTime: 0,
     isPlaying: false,
     
-    // Photo crop state
+    // Transform state (applied to image, animated GIF, and video)
     zoomLevel: 1.0,
     rotationDeg: 0,
+    flipH: false,
+    flipV: false,
     panX: 0,
     panY: 0,
     isDragging: false,
     dragStartX: 0,
     dragStartY: 0,
-    imageObj: null,
+    
+    // Pinch & touch state
+    isPinching: false,
+    initialPinchDistance: 0,
+    initialZoom: 1.0,
+    lastTouchTime: 0,
 
     init() {
-      // Close & Cancel buttons
+      // Close & Cancel & Apply buttons
       const btnClose = document.getElementById('btnCloseMediaStudio');
       const btnCancel = document.getElementById('btnCancelMediaStudio');
       const btnApply = document.getElementById('btnApplyMediaStudio');
@@ -3291,9 +3298,9 @@ document.addEventListener('DOMContentLoaded', () => {
           val = Math.min(this.videoDuration, this.startTime + 0.5);
           e.target.value = val;
         }
-        // Max 10s constraint
-        if (val - this.startTime > 10) {
-          val = this.startTime + 10;
+        const maxLen = this.targetType === 'avatar' ? 10 : 15;
+        if (val - this.startTime > maxLen) {
+          val = this.startTime + maxLen;
           e.target.value = val;
         }
         this.endTime = val;
@@ -3312,72 +3319,224 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // Photo Controls
+      // Zoom Controls & Sliders
       const zoomSlider = document.getElementById('photoZoomSlider');
       const btnZoomIn = document.getElementById('btnZoomIn');
       const btnZoomOut = document.getElementById('btnZoomOut');
-      const btnRotate = document.getElementById('btnRotatePhoto');
-      const canvasBox = document.getElementById('studioCropCanvasBox');
+      const btnRotateRight = document.getElementById('btnRotatePhoto');
+      const btnRotateLeft = document.getElementById('btnRotateLeft');
+      const btnFlipH = document.getElementById('btnFlipH');
+      const btnFlipV = document.getElementById('btnFlipV');
+      const btnReset = document.getElementById('btnResetTransform');
 
       zoomSlider?.addEventListener('input', (e) => {
         this.zoomLevel = parseFloat(e.target.value);
-        this.renderImageTransform();
+        this.syncPresetActiveState();
+        this.renderTransform();
       });
 
       btnZoomIn?.addEventListener('click', () => {
-        this.zoomLevel = Math.min(3, this.zoomLevel + 0.2);
-        if (zoomSlider) zoomSlider.value = this.zoomLevel;
-        this.renderImageTransform();
+        this.setZoom(Math.min(4, this.zoomLevel + 0.15));
       });
 
       btnZoomOut?.addEventListener('click', () => {
-        this.zoomLevel = Math.max(1, this.zoomLevel - 0.2);
-        if (zoomSlider) zoomSlider.value = this.zoomLevel;
-        this.renderImageTransform();
+        this.setZoom(Math.max(1, this.zoomLevel - 0.15));
       });
 
-      btnRotate?.addEventListener('click', () => {
+      // Rotation & Flip
+      btnRotateRight?.addEventListener('click', () => {
         this.rotationDeg = (this.rotationDeg + 90) % 360;
-        this.renderImageTransform();
+        this.renderTransform();
       });
 
-      // Mouse / Touch Dragging on Image
-      canvasBox?.addEventListener('mousedown', (e) => {
-        if (this.isVideo) return;
-        this.isDragging = true;
-        this.dragStartX = e.clientX - this.panX;
-        this.dragStartY = e.clientY - this.panY;
+      btnRotateLeft?.addEventListener('click', () => {
+        this.rotationDeg = (this.rotationDeg - 90 + 360) % 360;
+        this.renderTransform();
+      });
+
+      btnFlipH?.addEventListener('click', () => {
+        this.flipH = !this.flipH;
+        this.renderTransform();
+        showToast(this.flipH ? 'Mirrored horizontally' : 'Horizontal mirror removed');
+      });
+
+      btnFlipV?.addEventListener('click', () => {
+        this.flipV = !this.flipV;
+        this.renderTransform();
+        showToast(this.flipV ? 'Flipped vertically' : 'Vertical flip removed');
+      });
+
+      btnReset?.addEventListener('click', () => {
+        this.resetTransform();
+      });
+
+      // Precision Pan D-Pad Nudge Buttons
+      const btnPanUp = document.getElementById('btnPanUp');
+      const btnPanDown = document.getElementById('btnPanDown');
+      const btnPanLeft = document.getElementById('btnPanLeft');
+      const btnPanRight = document.getElementById('btnPanRight');
+      const btnPanCenter = document.getElementById('btnPanCenter');
+
+      btnPanUp?.addEventListener('click', () => { this.panY -= 15; this.renderTransform(); });
+      btnPanDown?.addEventListener('click', () => { this.panY += 15; this.renderTransform(); });
+      btnPanLeft?.addEventListener('click', () => { this.panX -= 15; this.renderTransform(); });
+      btnPanRight?.addEventListener('click', () => { this.panX += 15; this.renderTransform(); });
+      btnPanCenter?.addEventListener('click', () => { this.panX = 0; this.panY = 0; this.renderTransform(); });
+
+      // Zoom preset pills
+      document.querySelectorAll('#zoomPresetPills .btn-preset-zoom').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const scale = parseFloat(btn.dataset.scale || '1.0');
+          this.setZoom(scale);
+        });
+      });
+
+      // Unified Mouse & Multi-Touch Gesture Handlers on stage containers
+      const stageBoxes = [
+        document.getElementById('studioCropCanvasBox'),
+        document.getElementById('studioVideoCanvasBox'),
+        document.getElementById('mediaStudioStage')
+      ];
+
+      stageBoxes.forEach(box => {
+        if (!box) return;
+
+        // Mouse Drag to Pan
+        box.addEventListener('mousedown', (e) => {
+          this.isDragging = true;
+          this.dragStartX = e.clientX - this.panX;
+          this.dragStartY = e.clientY - this.panY;
+        });
+
+        // Double Click to Toggle 1x / 2x Zoom
+        box.addEventListener('dblclick', () => {
+          this.setZoom(this.zoomLevel > 1.2 ? 1.0 : 2.0);
+        });
+
+        // Mouse Wheel to Zoom (Smooth, Passive: false to prevent background scroll)
+        box.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const delta = e.deltaY < 0 ? 0.12 : -0.12;
+          this.setZoom(Math.min(4, Math.max(1, this.zoomLevel + delta)));
+        }, { passive: false });
+
+        // Touch Gestures: 1 Finger Pan, 2 Fingers Pinch-to-Zoom, Double Tap to Toggle
+        box.addEventListener('touchstart', (e) => {
+          const now = Date.now();
+          if (e.touches.length === 1 && now - this.lastTouchTime < 300) {
+            // Double-tap detected
+            this.setZoom(this.zoomLevel > 1.2 ? 1.0 : 2.0);
+            this.lastTouchTime = 0;
+            return;
+          }
+          this.lastTouchTime = now;
+
+          if (e.touches.length === 2) {
+            this.isPinching = true;
+            this.isDragging = false;
+            this.initialPinchDistance = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            this.initialZoom = this.zoomLevel;
+          } else if (e.touches.length === 1) {
+            this.isDragging = true;
+            this.isPinching = false;
+            this.dragStartX = e.touches[0].clientX - this.panX;
+            this.dragStartY = e.touches[0].clientY - this.panY;
+          }
+        }, { passive: true });
+
+        box.addEventListener('touchmove', (e) => {
+          if (this.isPinching && e.touches.length === 2) {
+            const currentDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            if (this.initialPinchDistance > 0) {
+              const factor = currentDist / this.initialPinchDistance;
+              this.setZoom(Math.min(4, Math.max(1, this.initialZoom * factor)));
+            }
+          } else if (this.isDragging && e.touches.length === 1) {
+            this.panX = e.touches[0].clientX - this.dragStartX;
+            this.panY = e.touches[0].clientY - this.dragStartY;
+            this.renderTransform();
+          }
+        }, { passive: true });
+
+        box.addEventListener('touchend', (e) => {
+          if (e.touches.length < 2) this.isPinching = false;
+          if (e.touches.length === 0) this.isDragging = false;
+        });
       });
 
       window.addEventListener('mousemove', (e) => {
-        if (!this.isDragging || this.isVideo) return;
+        if (!this.isDragging) return;
         this.panX = e.clientX - this.dragStartX;
         this.panY = e.clientY - this.dragStartY;
-        this.renderImageTransform();
+        this.renderTransform();
       });
 
       window.addEventListener('mouseup', () => {
         this.isDragging = false;
       });
+    },
 
-      // Touch events for mobile
-      canvasBox?.addEventListener('touchstart', (e) => {
-        if (this.isVideo || !e.touches[0]) return;
-        this.isDragging = true;
-        this.dragStartX = e.touches[0].clientX - this.panX;
-        this.dragStartY = e.touches[0].clientY - this.panY;
-      }, { passive: true });
+    setZoom(val) {
+      this.zoomLevel = parseFloat(Math.min(4, Math.max(1, val)).toFixed(2));
+      const slider = document.getElementById('photoZoomSlider');
+      if (slider) slider.value = this.zoomLevel;
+      this.syncPresetActiveState();
+      this.renderTransform();
+    },
 
-      window.addEventListener('touchmove', (e) => {
-        if (!this.isDragging || this.isVideo || !e.touches[0]) return;
-        this.panX = e.touches[0].clientX - this.dragStartX;
-        this.panY = e.touches[0].clientY - this.dragStartY;
-        this.renderImageTransform();
-      }, { passive: true });
+    resetTransform() {
+      this.zoomLevel = 1.0;
+      this.rotationDeg = 0;
+      this.flipH = false;
+      this.flipV = false;
+      this.panX = 0;
+      this.panY = 0;
+      const slider = document.getElementById('photoZoomSlider');
+      if (slider) slider.value = 1.0;
+      this.syncPresetActiveState();
+      this.renderTransform();
+      showToast('Frame position, scale & orientation reset.');
+    },
 
-      window.addEventListener('touchend', () => {
-        this.isDragging = false;
+    syncPresetActiveState() {
+      document.querySelectorAll('#zoomPresetPills .btn-preset-zoom').forEach(btn => {
+        const scale = parseFloat(btn.dataset.scale);
+        btn.classList.toggle('active', Math.abs(scale - this.zoomLevel) < 0.08);
       });
+    },
+
+    renderTransform() {
+      const scaleX = this.zoomLevel * (this.flipH ? -1 : 1);
+      const scaleY = this.zoomLevel * (this.flipV ? -1 : 1);
+      const transformVal = `translate(${this.panX}px, ${this.panY}px) scale(${scaleX}, ${scaleY}) rotate(${this.rotationDeg}deg)`;
+      
+      const imgEl = document.getElementById('studioCropImg');
+      if (imgEl) imgEl.style.transform = transformVal;
+
+      const videoEl = document.getElementById('studioVideoPlayer');
+      if (videoEl) videoEl.style.transform = transformVal;
+
+      // Update floating stage badges
+      const zoomBadgeText = document.getElementById('valZoomLevelText');
+      if (zoomBadgeText) zoomBadgeText.textContent = `${Math.round(this.zoomLevel * 100)}%`;
+
+      const panBadgeText = document.getElementById('valPanPosText');
+      if (panBadgeText) panBadgeText.textContent = `${Math.round(this.panX)}, ${Math.round(this.panY)}`;
+
+      const rotBadgeText = document.getElementById('valRotationText');
+      if (rotBadgeText) {
+        let text = `${this.rotationDeg}°`;
+        if (this.flipH && this.flipV) text += ' (HV)';
+        else if (this.flipH) text += ' (H)';
+        else if (this.flipV) text += ' (V)';
+        rotBadgeText.textContent = text;
+      }
     },
 
     formatTime(sec) {
@@ -3399,20 +3558,33 @@ document.addEventListener('DOMContentLoaded', () => {
       const videoWrap = document.getElementById('studioVideoWrap');
       const imageWrap = document.getElementById('studioImageWrap');
       const videoControls = document.getElementById('studioVideoControls');
-      const photoControls = document.getElementById('studioPhotoControls');
       const cropOverlay = document.getElementById('cropGridOverlay');
+      const cropOverlayVideo = document.getElementById('cropGridOverlayVideo');
       const applyText = document.getElementById('btnApplyStudioText');
 
       if (modal) modal.style.display = 'flex';
 
+      // Reset transform on open
+      this.zoomLevel = 1.0;
+      this.rotationDeg = 0;
+      this.flipH = false;
+      this.flipV = false;
+      this.panX = 0;
+      this.panY = 0;
+      const zoomSlider = document.getElementById('photoZoomSlider');
+      if (zoomSlider) zoomSlider.value = 1.0;
+      this.syncPresetActiveState();
+
+      if (cropOverlay) cropOverlay.classList.toggle('avatar-mode', targetType === 'avatar');
+      if (cropOverlayVideo) cropOverlayVideo.classList.toggle('avatar-mode', targetType === 'avatar');
+
       if (this.isVideo) {
-        if (titleEl) titleEl.textContent = 'Trim Your Clip';
+        if (titleEl) titleEl.textContent = targetType === 'avatar' ? 'Frame & Trim Video Avatar' : 'Frame & Trim Motion Banner';
         if (iconEl) iconEl.className = 'fa-solid fa-video text-lime';
-        if (applyText) applyText.textContent = 'Trim & Upload';
+        if (applyText) applyText.textContent = 'Apply & Frame';
         if (videoWrap) videoWrap.style.display = 'flex';
         if (imageWrap) imageWrap.style.display = 'none';
         if (videoControls) videoControls.style.display = 'flex';
-        if (photoControls) photoControls.style.display = 'none';
 
         const videoEl = document.getElementById('studioVideoPlayer');
         if (videoEl) {
@@ -3423,7 +3595,8 @@ document.addEventListener('DOMContentLoaded', () => {
           videoEl.onloadedmetadata = () => {
             this.videoDuration = videoEl.duration || 10;
             this.startTime = 0;
-            this.endTime = Math.min(10, this.videoDuration);
+            const maxLen = targetType === 'avatar' ? 10 : 15;
+            this.endTime = Math.min(maxLen, this.videoDuration);
 
             const startSlider = document.getElementById('videoStartSlider');
             const endSlider = document.getElementById('videoEndSlider');
@@ -3447,26 +3620,15 @@ document.addEventListener('DOMContentLoaded', () => {
           };
         }
       } else {
-        // Image Crop Mode
-        const typeLabel = targetType === 'avatar' ? 'Avatar' : 'Banner';
+        // Image Mode (Static Photo or Animated GIF)
+        const isAnimated = file.type === 'image/gif' || file.type === 'image/webp';
+        const typeLabel = targetType === 'avatar' ? (isAnimated ? 'Animated Avatar' : 'Avatar Photo') : (isAnimated ? 'Animated Banner' : 'Banner Wallpaper');
         if (titleEl) titleEl.textContent = `Crop & Position ${typeLabel}`;
-        if (iconEl) iconEl.className = 'fa-solid fa-crop-simple text-lime';
-        if (applyText) applyText.textContent = 'Crop & Apply';
+        if (iconEl) iconEl.className = isAnimated ? 'fa-solid fa-wand-magic-sparkles text-lime' : 'fa-solid fa-crop-simple text-lime';
+        if (applyText) applyText.textContent = 'Apply & Frame';
         if (videoWrap) videoWrap.style.display = 'none';
         if (imageWrap) imageWrap.style.display = 'flex';
         if (videoControls) videoControls.style.display = 'none';
-        if (photoControls) photoControls.style.display = 'flex';
-
-        if (cropOverlay) {
-          cropOverlay.classList.toggle('avatar-mode', targetType === 'avatar');
-        }
-
-        this.zoomLevel = 1.0;
-        this.rotationDeg = 0;
-        this.panX = 0;
-        this.panY = 0;
-        const zoomSlider = document.getElementById('photoZoomSlider');
-        if (zoomSlider) zoomSlider.value = 1.0;
 
         const imgEl = document.getElementById('studioCropImg');
         if (imgEl) {
@@ -3475,8 +3637,8 @@ document.addEventListener('DOMContentLoaded', () => {
           this.imageObj = new Image();
           this.imageObj.src = blobUrl;
         }
-        this.renderImageTransform();
       }
+      this.renderTransform();
     },
 
     updateVideoUI() {
@@ -3519,13 +3681,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
 
-    renderImageTransform() {
-      const imgEl = document.getElementById('studioCropImg');
-      if (imgEl) {
-        imgEl.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoomLevel}) rotate(${this.rotationDeg}deg)`;
-      }
-    },
-
     close() {
       const modal = document.getElementById('mediaStudioModal');
       const videoEl = document.getElementById('studioVideoPlayer');
@@ -3541,7 +3696,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!this.currentFile) return;
 
       if (this.isVideo) {
-        // Video trimming applied
+        // Video trimming and positioning applied
         const videoEl = document.getElementById('studioVideoPlayer');
         if (videoEl) videoEl.pause();
 
@@ -3563,14 +3718,32 @@ document.addEventListener('DOMContentLoaded', () => {
         EditProfileManager.updateLivePreview();
         EditProfileManager.markDirty(true);
         this.close();
-        showToast(`Clip trimmed to ${clipLen}s and applied to preview!`);
+        showToast(`Motion clip framed & trimmed to ${clipLen}s!`);
+      } else if (this.currentFile.type === 'image/gif') {
+        // For animated GIF, maintain gif frames intact and update draft with transform preview
+        const localBlobUrl = URL.createObjectURL(this.currentFile);
+        if (this.targetType === 'avatar') {
+          EditProfileManager.pendingAvatarFile = this.currentFile;
+          EditProfileManager.draftProfile.avatarUrl = localBlobUrl;
+          const avThumb = document.getElementById('editorAvatarPreview');
+          if (avThumb) avThumb.src = localBlobUrl;
+        } else {
+          EditProfileManager.pendingBannerFile = this.currentFile;
+          EditProfileManager.draftProfile.bannerUrl = localBlobUrl;
+          const banThumb = document.getElementById('editorBannerPreview');
+          if (banThumb) banThumb.src = localBlobUrl;
+        }
+        EditProfileManager.updateLivePreview();
+        EditProfileManager.markDirty(true);
+        this.close();
+        showToast('Animated media framed & applied!');
       } else {
-        // Photo Crop & Pan Canvas Export
+        // Static Photo Crop, Pan, Zoom, Flip & Rotation Canvas Export
         try {
           const canvas = document.createElement('canvas');
           const isAvatar = this.targetType === 'avatar';
-          canvas.width = isAvatar ? 400 : 1200;
-          canvas.height = isAvatar ? 400 : 400;
+          canvas.width = isAvatar ? 512 : 1920;
+          canvas.height = isAvatar ? 512 : 640;
           const ctx = canvas.getContext('2d');
 
           const imgEl = document.getElementById('studioCropImg');
@@ -3580,7 +3753,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ctx.save();
             ctx.translate(canvas.width / 2 + this.panX, canvas.height / 2 + this.panY);
-            ctx.scale(this.zoomLevel, this.zoomLevel);
+            ctx.scale(this.zoomLevel * (this.flipH ? -1 : 1), this.zoomLevel * (this.flipV ? -1 : 1));
             ctx.rotate((this.rotationDeg * Math.PI) / 180);
 
             // Draw image centered
@@ -3599,7 +3772,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.close();
                 return;
               }
-              const croppedFile = new File([blob], `cropped_${this.targetType}.jpg`, { type: 'image/jpeg' });
+              const croppedFile = new File([blob], `framed_${this.targetType}.webp`, { type: 'image/webp' });
               const localBlobUrl = URL.createObjectURL(blob);
 
               if (this.targetType === 'avatar') {
@@ -3617,8 +3790,8 @@ document.addEventListener('DOMContentLoaded', () => {
               EditProfileManager.updateLivePreview();
               EditProfileManager.markDirty(true);
               this.close();
-              showToast('Photo cropped and applied to preview!');
-            }, 'image/jpeg', 0.92);
+              showToast('Media positioned, framed & applied!');
+            }, 'image/webp', 0.90);
           }
         } catch (err) {
           console.error('Crop export error:', err);
