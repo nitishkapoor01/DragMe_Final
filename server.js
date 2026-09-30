@@ -139,7 +139,7 @@ async function optionalAuth(req, res, next) {
   try {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await db.get('SELECT id, username, email, avatar_url, role, is_banned FROM users WHERE id = ?', [decoded.id]);
+    const user = await db.get('SELECT id, username, email, avatar_url, role, is_banned, is_premium FROM users WHERE id = ?', [decoded.id]);
     req.user = (user && !user.is_banned) ? user : null;
   } catch (err) {
     req.user = null;

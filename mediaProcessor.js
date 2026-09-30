@@ -124,7 +124,8 @@ const MediaProcessor = {
     }
 
     // 4. Premium Entitlement Check
-    if (limits.requiresPremium && (!user || !user.is_premium)) {
+    const isEntitled = Boolean(user && (user.is_premium || user.role === 'admin'));
+    if (limits.requiresPremium && !isEntitled) {
       throw new Error(`Animated and video ${uploadType} is a DRAGME Nitro VIP feature. Upgrade to unlock.`);
     }
 
