@@ -2972,7 +2972,8 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
           </article>
-        `).join('');
+        `;
+        }).join('');
 
         // Attach vote & save event listeners to the profile cards
         stream.querySelectorAll('.btn-vote-arrow').forEach(btn => {
