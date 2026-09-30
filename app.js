@@ -275,7 +275,7 @@ const AuthManager = {
   handleSessionExpired() {
     this.clearSession();
     if (typeof showToast === 'function') {
-      showToast('⚠️ Your session has expired. Please sign in again.');
+      showToast('Your session has expired. Please sign in again.');
     }
     if (typeof AuthPromptManager !== 'undefined') {
       AuthPromptManager.open({
@@ -307,7 +307,7 @@ const AuthManager = {
         if (intent.type === 'vote' && intent.postId && window.DRAGME_STORE) {
           window.DRAGME_STORE.toggleDrag(intent.postId).then(() => {
             if (typeof renderFeed === 'function') renderFeed();
-            if (typeof showToast === 'function') showToast('👑 Upvote applied!');
+            if (typeof showToast === 'function') showToast('Upvote applied!');
           });
         } else if (intent.type === 'save' && intent.postId && window.DRAGME_STORE) {
           window.DRAGME_STORE.toggleSave(intent.postId).then(() => {
@@ -324,7 +324,7 @@ const AuthManager = {
           }
         } else if (intent.type === 'create_room') {
           if (typeof showToast === 'function') {
-            showToast('🏛️ Community room creation unlocked!');
+            showToast('Community room creation unlocked!');
           }
         } else if (intent.type === 'profile') {
           if (typeof Router !== 'undefined') {
@@ -1421,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFeed();
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        showToast(this.isAnonymous ? 'Confession shared anonymously! 🎭' : 'Post published to the feed! 👑');
+        showToast(this.isAnonymous ? 'Confession shared anonymously!' : 'Post published to the feed! ');
       };
 
       form?.addEventListener('submit', (e) => {
@@ -1564,7 +1564,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('mobNavChat')?.addEventListener('click', () => {
-    showToast('💬 Real-time chat arena coming soon!');
+    showToast('Real-time chat arena coming soon!');
   });
 
   // Action Delegation on Posts Feed
@@ -1580,7 +1580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (updated) {
           if (updated.hasVoted) sfx.playVote();
           renderFeed();
-          showToast(updated.hasVoted ? '👑 Drag upvoted! +1' : 'Vote removed');
+          showToast(updated.hasVoted ? 'Drag upvoted! +1' : 'Vote removed');
         }
       } else if (action === 'save') {
         const updated = store.toggleSave(id);
@@ -1592,7 +1592,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openCommentsDrawer(id);
       } else if (action === 'share') {
         navigator.clipboard.writeText(window.location.href);
-        showToast('Link copied to clipboard! 🔗');
+        showToast('Link copied to clipboard!');
       }
       return;
     }
@@ -1681,7 +1681,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (nav === 'random') {
         // Shuffle posts for instant random arena discovery
         store.posts.sort(() => Math.random() - 0.5);
-        showToast('🎲 Arena shuffled randomly!');
+        showToast('Arena shuffled randomly!');
       } else if (nav === 'stories') {
         store.currentRoom = null;
         store.activeSort = 'hot';
@@ -1691,28 +1691,28 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (nav === 'roast-battle') {
         store.currentRoom = null;
         store.activeSort = 'hot';
-        if (currentFilterLabel) currentFilterLabel.textContent = '⚔️ Roast Battle Arena';
+        if (currentFilterLabel) currentFilterLabel.textContent = 'Roast Battle Arena';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'flex';
       } else if (nav === 'daily-cooked') {
         store.currentRoom = null;
         store.activeSort = 'top';
-        if (currentFilterLabel) currentFilterLabel.textContent = '🔥 Daily Most Cooked';
+        if (currentFilterLabel) currentFilterLabel.textContent = 'Daily Most Cooked';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'flex';
       } else if (nav === 'help-wanted') {
         store.currentRoom = 'tech_ai';
-        if (currentFilterLabel) currentFilterLabel.textContent = '💡 Help Wanted';
+        if (currentFilterLabel) currentFilterLabel.textContent = 'Help Wanted';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'flex';
       } else if (nav === 'need-answers') {
         store.currentRoom = null;
-        if (currentFilterLabel) currentFilterLabel.textContent = '❓ Need Answers';
+        if (currentFilterLabel) currentFilterLabel.textContent = 'Need Answers';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'flex';
       } else if (nav === 'before-after') {
         store.currentRoom = 'design_roasts';
-        if (currentFilterLabel) currentFilterLabel.textContent = '🔄 Before → After Redesigns';
+        if (currentFilterLabel) currentFilterLabel.textContent = 'Before → After Redesigns';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'flex';
       } else {
@@ -1819,7 +1819,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderComments(post);
       renderFeed();
     }
-    showToast('Comment posted! 💬');
+    showToast('Comment posted!');
   });
 
   // Action Delegation on Posts Feed
@@ -1838,7 +1838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (updated) {
           if (updated.hasVoted) sfx.playVote();
           renderFeed();
-          showToast(updated.hasVoted ? '👑 Drag upvoted! +1' : 'Vote removed');
+          showToast(updated.hasVoted ? 'Drag upvoted! +1' : 'Vote removed');
         }
       } else if (action === 'save') {
         if (!AuthManager.requireAuth({ type: 'save', postId: id }, 'Log in to save this post.', 'Save Post')) {
@@ -1854,7 +1854,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openCommentsDrawer(id);
       } else if (action === 'share') {
         navigator.clipboard.writeText(window.location.href);
-        showToast('Link copied to clipboard! 🔗');
+        showToast('Link copied to clipboard!');
       }
       return;
     }
@@ -2158,7 +2158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in to manage your account settings and privacy preferences.', 'Account Settings')) {
           return;
         }
-        showToast('⚙️ Account settings & privacy controls active.');
+        showToast('Account settings & privacy controls active.');
       });
 
       // Help & Support Action
@@ -2166,7 +2166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnHelp?.addEventListener('click', (e) => {
         e.preventDefault();
         this.close();
-        showToast('💡 Need help? DRAGME Arena Guide & Support is active.');
+        showToast('Need help? DRAGME Arena Guide & Support is active.');
       });
 
       // Sign In Action
@@ -2199,9 +2199,9 @@ document.addEventListener('DOMContentLoaded', () => {
   btnProtectedApiEl?.addEventListener('click', async () => {
     try {
       const res = await AuthAPI.request('/api/protected-data');
-      showToast(`🔐 JWT Verified: @${res.authenticatedUser.username} (${res.authenticatedUser.role})`);
+      showToast(`JWT Verified: @${res.authenticatedUser.username} (${res.authenticatedUser.role})`);
     } catch (err) {
-      showToast(`⚠️ Protected API Error: ${err.message}`);
+      showToast(`Protected API Error: ${err.message}`);
     }
   });
 
@@ -2667,7 +2667,7 @@ document.addEventListener('DOMContentLoaded', () => {
           AuthManager.setSession(res.token, res.user);
           renderFeed();
 
-          showToast(`Account created! Welcome @${currentUser.username} 🎉`);
+          showToast(`Account created! Welcome @${currentUser.username}!`);
           this.goToStep(4);
         } catch (err) {
           if (errorMsgArea) {
@@ -2778,7 +2778,7 @@ document.addEventListener('DOMContentLoaded', () => {
           AuthManager.setSession(res.token, res.user);
           renderFeed();
 
-          showToast(`Welcome back, @${currentUser.username}! 🚀`);
+          showToast(`Welcome back, @${currentUser.username}!`);
           Router.navigate('home');
         } catch (err) {
           this.showError(err.message || 'Invalid username/email or password.');
@@ -3454,7 +3454,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           } catch (uploadErr) {
             console.error('Avatar upload failed:', uploadErr);
-            showToast('⚠️ Avatar upload failed: ' + uploadErr.message);
+            showToast('Avatar upload failed: ' + uploadErr.message);
             return;
           }
         }
@@ -3470,7 +3470,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           } catch (uploadErr) {
             console.error('Banner upload failed:', uploadErr);
-            showToast('⚠️ Banner upload failed: ' + uploadErr.message);
+            showToast('Banner upload failed: ' + uploadErr.message);
             return;
           }
         }
@@ -3509,14 +3509,14 @@ document.addEventListener('DOMContentLoaded', () => {
           this.markDirty(false);
 
           updateUserSessionUI();
-          showToast('✅ Profile updated successfully!');
+          showToast('Profile updated successfully!');
           Router.navigate('profile', true, currentUser.username);
         } else {
           showToast(res.error || 'Failed to update profile.');
         }
       } catch (err) {
         console.error('Profile update error:', err);
-        showToast('❌ ' + (err.message || 'Failed to save changes.'));
+        showToast('' + (err.message || 'Failed to save changes.'));
       } finally {
         if (textSpan) textSpan.style.display = 'inline-block';
         if (spinSpan) spinSpan.style.display = 'none';
@@ -3726,7 +3726,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = e.target.files?.[0];
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
-          showToast('⚠️ Avatar image must be under 5MB.');
+          showToast('Avatar image must be under 5MB.');
           return;
         }
         this.pendingAvatarFile = file;
@@ -3780,7 +3780,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = e.target.files?.[0];
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
-          showToast('⚠️ Banner image must be under 5MB.');
+          showToast('Banner image must be under 5MB.');
           return;
         }
         this.pendingBannerFile = file;
@@ -3839,7 +3839,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
           const frame = card.dataset.frame || 'none';
           if (card.classList.contains('premium-locked') && !currentUser?.is_premium) {
-            showToast('👑 Unlock Royal Frames with DRAGME Premium!');
+            showToast('Unlock Royal Frames with DRAGME Premium!');
             return;
           }
           document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('active'));
@@ -3870,7 +3870,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
           const theme = card.dataset.theme || 'default';
           if (card.classList.contains('premium-theme') && !currentUser?.is_premium) {
-            showToast('👑 Unlock Premium Arena Themes with DRAGME Premium!');
+            showToast('Unlock Premium Arena Themes with DRAGME Premium!');
             return;
           }
           document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
@@ -4138,7 +4138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!AuthManager.requireAuth({ type: 'notifications' }, 'Sign in to access your direct messages and private rooms.', 'Messages')) {
       return;
     }
-    showToast('💬 Real-time arena chat active.');
+    showToast('Real-time arena chat active.');
   });
 
   const btnNotifNav = document.getElementById('notifBtn');
@@ -4147,7 +4147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!AuthManager.requireAuth({ type: 'notifications' }, 'Sign in to view your crowns, roasts, and notification alerts.', 'Notifications')) {
       return;
     }
-    showToast('🔔 9 new arena reactions & mentions.');
+    showToast('9 new arena reactions & mentions.');
   });
 
   // Sidebar Create Room Protected Button
@@ -4157,7 +4157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!AuthManager.requireAuth({ type: 'create_room' }, 'Create an account to start your own community room.', 'Create a Room')) {
       return;
     }
-    showToast('🏛️ Community room creator unlocked!');
+    showToast('Community room creator unlocked!');
   });
 
   const btnJoinRoom = document.getElementById('btnJoinRoom');
@@ -4166,7 +4166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!AuthManager.requireAuth({ type: 'join_room' }, 'Create an account or sign in to join community rooms and customize your feed.', 'Join Room')) {
       return;
     }
-    showToast('🎉 You have joined this room!');
+    showToast('You have joined this room!');
   });
 
   // Sidebar & Top Nav profile button listeners
