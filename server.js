@@ -17,8 +17,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_2026_dragme_p
 // 1. MIDDLEWARES, SECURITY HEADERS & SCALABLE RATE LIMITER
 // =============================================================================
 app.use(cors());
-app.use(express.json({ limit: '60mb' }));
-app.use(express.urlencoded({ extended: true, limit: '60mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 
 // High-Performance Immutable CDN & Static Serving for Media Uploads
 app.use('/uploads', (req, res, next) => {

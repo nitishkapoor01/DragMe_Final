@@ -277,17 +277,17 @@ const AuthAPI = {
       console.warn('Client compression fallback:', compErr);
     }
 
-    // 2. Centralized client size validation
+    // 2. Centralized client size validation (Generous thresholds allowing high-res 4K files)
     const maxSizes = {
-      avatar: 15 * 1024 * 1024,
-      animatedAvatar: 30 * 1024 * 1024,
-      banner: 30 * 1024 * 1024,
-      animatedBanner: 50 * 1024 * 1024,
-      postImage: 25 * 1024 * 1024,
-      postVideo: 250 * 1024 * 1024,
-      profileVideo: 100 * 1024 * 1024
+      avatar: 100 * 1024 * 1024,
+      animatedAvatar: 500 * 1024 * 1024,
+      banner: 150 * 1024 * 1024,
+      animatedBanner: 1024 * 1024 * 1024,
+      postImage: 150 * 1024 * 1024,
+      postVideo: 2048 * 1024 * 1024,
+      profileVideo: 1024 * 1024 * 1024
     };
-    const limit = maxSizes[type] || 25 * 1024 * 1024;
+    const limit = maxSizes[type] || (500 * 1024 * 1024);
     if (processedFile.size > limit) {
       const mb = Math.round(limit / (1024 * 1024));
       throw new Error(`File size (${(processedFile.size / (1024 * 1024)).toFixed(1)}MB) exceeds maximum limit of ${mb}MB for ${type}.`);

@@ -7,14 +7,14 @@ const path = require('path');
 
 const MEDIA_LIMITS = {
   avatar: {
-    maxFileSize: 15 * 1024 * 1024, // 15 MB
-    maxWidth: 2048,
-    maxHeight: 2048,
+    maxFileSize: 100 * 1024 * 1024, // 100 MB (Client pre-compresses to lightweight WebP)
+    maxWidth: 4096,
+    maxHeight: 4096,
     minWidth: 64,
     minHeight: 64,
     allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
     outputFormat: 'webp',
-    outputQuality: 85,
+    outputQuality: 88,
     variants: [
       { name: 'full', width: 512, height: 512, fit: 'cover' },
       { name: 'md', width: 256, height: 256, fit: 'cover' },
@@ -24,14 +24,14 @@ const MEDIA_LIMITS = {
   },
 
   banner: {
-    maxFileSize: 30 * 1024 * 1024, // 30 MB
-    maxWidth: 4096,
-    maxHeight: 2048,
+    maxFileSize: 150 * 1024 * 1024, // 150 MB (Client pre-compresses to lightweight WebP)
+    maxWidth: 8192,
+    maxHeight: 4096,
     minWidth: 480,
     minHeight: 160,
     allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
     outputFormat: 'webp',
-    outputQuality: 88,
+    outputQuality: 90,
     variants: [
       { name: 'full', width: 1920, height: 640, fit: 'cover' },
       { name: 'lg', width: 1200, height: 400, fit: 'cover' },
@@ -41,10 +41,10 @@ const MEDIA_LIMITS = {
   },
 
   animatedAvatar: {
-    maxFileSize: 30 * 1024 * 1024, // 30 MB
-    maxDuration: 10, // 10 seconds
-    maxWidth: 1024,
-    maxHeight: 1024,
+    maxFileSize: 500 * 1024 * 1024, // 500 MB (Large raw video/GIF support)
+    maxDuration: 10, // 10 seconds loop
+    maxWidth: 2048,
+    maxHeight: 2048,
     minWidth: 64,
     minHeight: 64,
     requiresPremium: true,
@@ -54,10 +54,10 @@ const MEDIA_LIMITS = {
   },
 
   animatedBanner: {
-    maxFileSize: 50 * 1024 * 1024, // 50 MB
-    maxDuration: 15, // 15 seconds
-    maxWidth: 2560,
-    maxHeight: 1440,
+    maxFileSize: 1024 * 1024 * 1024, // 1 GB / 1024 MB (4K / 60fps clip support)
+    maxDuration: 15, // 15 seconds loop
+    maxWidth: 3840,
+    maxHeight: 2160,
     minWidth: 480,
     minHeight: 160,
     requiresPremium: true,
@@ -67,14 +67,14 @@ const MEDIA_LIMITS = {
   },
 
   postImage: {
-    maxFileSize: 25 * 1024 * 1024, // 25 MB
+    maxFileSize: 150 * 1024 * 1024, // 150 MB
     maxWidth: 8192,
     maxHeight: 8192,
     minWidth: 100,
     minHeight: 100,
     allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'],
     outputFormat: 'webp',
-    outputQuality: 88,
+    outputQuality: 90,
     variants: [
       { name: 'full', width: 1920, fit: 'inside' },
       { name: 'lg', width: 1440, fit: 'inside' },
@@ -85,18 +85,18 @@ const MEDIA_LIMITS = {
   },
 
   postVideo: {
-    maxFileSize: 250 * 1024 * 1024, // 250 MB
-    maxDuration: 180, // 3 minutes
+    maxFileSize: 2048 * 1024 * 1024, // 2 GB (Long 4K clips)
+    maxDuration: 300, // 5 minutes
     maxWidth: 3840,
     maxHeight: 2160,
     allowedMimes: ['video/mp4', 'video/webm']
   },
 
   profileVideo: {
-    maxFileSize: 100 * 1024 * 1024, // 100 MB
-    maxDuration: 30, // 30 seconds
-    maxWidth: 1920,
-    maxHeight: 1080,
+    maxFileSize: 1024 * 1024 * 1024, // 1 GB
+    maxDuration: 60, // 60 seconds
+    maxWidth: 3840,
+    maxHeight: 2160,
     requiresPremium: true,
     allowedMimes: ['video/mp4', 'video/webm']
   }

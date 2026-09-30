@@ -38,8 +38,8 @@ async function runMediaPipelineTests() {
     // Test 1: Config & Centralized Limits Verification
     // -------------------------------------------------------------
     console.log('[TEST 1] Centralized Media Limits & Mime Config');
-    assert(MEDIA_LIMITS.avatar && MEDIA_LIMITS.avatar.maxFileSize === 15 * 1024 * 1024, 'Avatar max size is 15MB');
-    assert(MEDIA_LIMITS.animatedBanner && MEDIA_LIMITS.animatedBanner.maxFileSize === 50 * 1024 * 1024, 'Animated banner max size is 50MB');
+    assert(MEDIA_LIMITS.avatar && MEDIA_LIMITS.avatar.maxFileSize === 100 * 1024 * 1024, 'Avatar max size is 100MB');
+    assert(MEDIA_LIMITS.animatedBanner && MEDIA_LIMITS.animatedBanner.maxFileSize === 1024 * 1024 * 1024, 'Animated banner max size is 1GB');
     assert(MEDIA_LIMITS.avatar.allowedMimes.includes('image/webp') && MEDIA_LIMITS.animatedAvatar.allowedMimes.includes('image/gif'), 'Allowed mime types include webp and gif');
     assert(MEDIA_LIMITS.avatar.variants.some(v => v.name === 'md' && v.width === 256), 'Avatar variant md is 256px');
 
@@ -101,8 +101,8 @@ async function runMediaPipelineTests() {
     }
     assert(spoofError !== null, `Spoofed payload correctly rejected (${spoofError?.message})`);
 
-    // Oversized buffer rejection
-    const oversizedBuffer = Buffer.alloc(16 * 1024 * 1024); // 16MB > 15MB limit for avatar
+    // Oversized buffer rejection (101MB > 100MB limit for avatar)
+    const oversizedBuffer = Buffer.alloc(101 * 1024 * 1024);
     oversizedBuffer[0] = 0xFF;
     oversizedBuffer[1] = 0xD8;
     oversizedBuffer[2] = 0xFF;
@@ -112,7 +112,7 @@ async function runMediaPipelineTests() {
     } catch (err) {
       sizeError = err;
     }
-    assert(sizeError !== null, `Oversized avatar (16MB) rejected (${sizeError?.message})`);
+    assert(sizeError !== null, `Oversized avatar (101MB) rejected (${sizeError?.message})`);
 
     // -------------------------------------------------------------
     // Test 5: Database Persistence (`media_assets` table)
