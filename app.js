@@ -3334,6 +3334,16 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initApp() {
     window.DRAGME_STORE = store;
 
+    // Failsafe: Guaranteed splash removal within 300ms maximum
+    const dismissSplash = () => {
+      const splash = document.getElementById('appInitSplash');
+      if (splash) {
+        splash.classList.add('fade-out');
+        setTimeout(() => splash.remove(), 250);
+      }
+    };
+    setTimeout(dismissSplash, 350);
+
     // 1. Initialize Auth Prompt and Logout Managers
     try { AuthPromptManager.init(); } catch (e) { console.error('AuthPromptManager.init error:', e); }
     try { LogoutManager.init(); } catch (e) { console.error('LogoutManager.init error:', e); }
@@ -3364,7 +3374,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      await store.syncFromBackend();
+      if (store && typeof store.syncFromBackend === 'function') {
+        await store.syncFromBackend();
+      }
     } catch (err) {
       console.warn('Backend store sync failed, rendering local store:', err);
     }
@@ -3383,14 +3395,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try { EditProfileManager.init(); } catch (e) { console.error('EditProfileManager.init error:', e); }
     try { Router.init(); } catch (e) { console.error('Router.init error:', e); }
 
-    // 4. Smooth Fade-Out of App Initializer (Prevents any UI flicker)
-    const splash = document.getElementById('appInitSplash');
-    if (splash) {
-      setTimeout(() => {
-        splash.classList.add('fade-out');
-        setTimeout(() => splash.remove(), 350);
-      }, 180);
-    }
+    // 4. Dismiss splash screen cleanly
+    dismissSplash();
   }
 
   // Kick off application
