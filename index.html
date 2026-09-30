@@ -1029,7 +1029,7 @@
             <div class="interactive-banner-box">
               <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80" alt="Banner Preview" id="editorBannerPreview" class="interactive-banner-img">
               <div class="banner-controls-overlay">
-                <input type="file" id="bannerFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
+                <input type="file" id="bannerFileInput" accept="video/mp4,video/webm,image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
                 <button type="button" class="btn-banner-action" id="btnTriggerBannerUpload">
                   <i class="fa-solid fa-camera"></i>
                   <span>Upload Banner</span>
@@ -1073,7 +1073,7 @@
                 <button type="button" class="avatar-cam-badge" id="btnTriggerAvatarUpload" title="Upload Photo">
                   <i class="fa-solid fa-camera"></i>
                 </button>
-                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
+                <input type="file" id="avatarFileInput" accept="video/mp4,video/webm,image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
               </div>
 
               <div class="avatar-meta-actions">
@@ -1319,12 +1319,12 @@
             </div>
 
             <div class="nitro-custom-upload-bar">
-              <input type="file" id="nitroAvatarFileInput" accept="image/gif,image/webp,image/png" style="display: none;">
+              <input type="file" id="nitroAvatarFileInput" accept="video/mp4,video/webm,image/gif,image/webp,image/png,image/jpeg" style="display: none;">
               <button type="button" class="btn-nitro-custom-upload" id="btnTriggerNitroAvatar">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span>Upload Custom GIF Avatar</span>
+                <span>Upload Custom Clip / GIF Avatar</span>
               </button>
-              <span class="nitro-upload-hint">Supports loop animated .GIF &amp; .WEBP up to 10MB</span>
+              <span class="nitro-upload-hint">Supports MP4, WEBM, GIF &amp; WEBP (with built-in Video Trimmer)</span>
             </div>
           </div>
 
@@ -1379,12 +1379,12 @@
             </div>
 
             <div class="nitro-custom-upload-bar">
-              <input type="file" id="nitroBannerFileInput" accept="image/gif,image/webp,image/png" style="display: none;">
+              <input type="file" id="nitroBannerFileInput" accept="video/mp4,video/webm,image/gif,image/webp,image/png,image/jpeg" style="display: none;">
               <button type="button" class="btn-nitro-custom-upload" id="btnTriggerNitroBanner">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span>Upload Custom Motion Banner (GIF/Video)</span>
+                <span>Upload Custom Motion Banner (MP4/WebM/GIF)</span>
               </button>
-              <span class="nitro-upload-hint">Full widescreen loop animation display</span>
+              <span class="nitro-upload-hint">Full widescreen loop animation display with Clip Trimmer</span>
             </div>
           </div>
 
@@ -2326,6 +2326,103 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MEDIA TRIM & CROP STUDIO MODAL (VIDEO & PHOTO TRIMMING / CROPPING)
+       ========================================================================= -->
+  <div class="modal-overlay media-studio-overlay" id="mediaStudioModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="mediaStudioTitle">
+    <div class="modal-window media-studio-window">
+      
+      <!-- Studio Header -->
+      <div class="media-studio-header">
+        <div class="media-studio-title-group">
+          <i class="fa-solid fa-video text-lime" id="mediaStudioIcon"></i>
+          <h3 class="media-studio-title" id="mediaStudioTitle">Trim Your Clip</h3>
+        </div>
+        <button type="button" class="btn-close-studio" id="btnCloseMediaStudio" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Studio Stage Viewport -->
+      <div class="media-studio-stage" id="mediaStudioStage">
+        <!-- Video Viewport -->
+        <div class="media-video-container" id="studioVideoWrap" style="display: none;">
+          <video id="studioVideoPlayer" playsinline loop preload="auto" class="studio-video-element"></video>
+        </div>
+
+        <!-- Image Crop & Pan Viewport -->
+        <div class="media-crop-container" id="studioImageWrap" style="display: none;">
+          <div class="studio-crop-canvas-box" id="studioCropCanvasBox">
+            <img src="" alt="Crop Preview" id="studioCropImg" class="studio-crop-image">
+            <div class="crop-grid-overlay" id="cropGridOverlay"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Controls Bar -->
+      <div class="studio-controls-panel" id="studioVideoControls" style="display: none;">
+        <div class="playback-action-row">
+          <button type="button" class="btn-studio-preview-play" id="btnToggleVideoPlayback">
+            <i class="fa-solid fa-play" id="iconVideoPlayState"></i>
+            <span>Preview</span>
+          </button>
+          <span class="playback-timer" id="videoPlaybackTimer">0:00.0 / 0:10.0</span>
+        </div>
+
+        <div class="range-selector-section">
+          <div class="range-label-row">
+            <span class="range-section-title">SELECT RANGE (Max 10s)</span>
+          </div>
+
+          <div class="dual-range-track-box">
+            <div class="range-highlight-bar" id="rangeHighlightBar"></div>
+            <input type="range" id="videoStartSlider" min="0" max="100" step="0.1" value="0" class="studio-slider start-slider">
+            <input type="range" id="videoEndSlider" min="0" max="100" step="0.1" value="100" class="studio-slider end-slider">
+          </div>
+
+          <div class="range-readouts-row">
+            <div class="readout-col">
+              <span class="readout-label">START</span>
+              <span class="readout-value" id="valStartTimestamp">0:00.0</span>
+            </div>
+            <div class="readout-col center-badge">
+              <span class="clip-duration-badge" id="valClipDuration">Clip: 10.0s</span>
+            </div>
+            <div class="readout-col right-align">
+              <span class="readout-label">END</span>
+              <span class="readout-value" id="valEndTimestamp">0:10.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Photo Crop Controls Bar -->
+      <div class="studio-controls-panel" id="studioPhotoControls" style="display: none;">
+        <div class="photo-controls-row">
+          <div class="zoom-slider-group">
+            <span class="zoom-label">ZOOM:</span>
+            <button type="button" class="btn-zoom-step" id="btnZoomOut"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+            <input type="range" id="photoZoomSlider" min="1" max="3" step="0.05" value="1" class="studio-slider zoom-slider">
+            <button type="button" class="btn-zoom-step" id="btnZoomIn"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+          </div>
+          <button type="button" class="btn-rotate-photo" id="btnRotatePhoto">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>Rotate 90°</span>
+          </button>
+        </div>
+        <p class="crop-drag-hint"><i class="fa-solid fa-hand"></i> Drag image to reposition inside frame</p>
+      </div>
+
+      <!-- Studio Modal Actions Footer -->
+      <div class="media-studio-footer">
+        <button type="button" class="btn-studio-cancel" id="btnCancelMediaStudio">Cancel</button>
+        <button type="button" class="btn-studio-apply" id="btnApplyMediaStudio">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          <span id="btnApplyStudioText">Trim &amp; Upload</span>
+        </button>
+      </div>
+
     </div>
   </div>
 

@@ -352,17 +352,20 @@ app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 2
       'image/png': 'png',
       'image/webp': 'webp',
       'image/gif': 'gif',
-      'image/svg+xml': 'svg'
+      'image/svg+xml': 'svg',
+      'video/mp4': 'mp4',
+      'video/webm': 'webm'
     };
 
     if (!allowedMimes[mimeType]) {
-      return res.status(400).json({ error: 'Only JPG, PNG, WEBP, GIF, and SVG images are allowed.' });
+      return res.status(400).json({ error: 'Only JPG, PNG, WEBP, GIF, SVG, MP4, and WEBM media are allowed.' });
     }
     ext = allowedMimes[mimeType];
 
-    // File size check: Max 5MB
-    if (buffer.length > 5 * 1024 * 1024) {
-      return res.status(400).json({ error: 'File size exceeds maximum limit of 5MB.' });
+    // File size check: Max 15MB for video/media, 10MB for images
+    const maxLimit = (ext === 'mp4' || ext === 'webm') ? 15 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (buffer.length > maxLimit) {
+      return res.status(400).json({ error: `File size exceeds maximum limit of ${maxLimit / (1024 * 1024)}MB.` });
     }
 
     // Magic-byte signature verification
@@ -377,6 +380,16 @@ app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 2
     } else if (ext === 'gif') {
       if (buffer.toString('ascii', 0, 3) !== 'GIF') {
         return res.status(400).json({ error: 'Invalid GIF file signature.' });
+      }
+    } else if (ext === 'mp4') {
+      // MP4 ISO base media format has 'ftyp' at offset 4
+      if (buffer.length < 12 || buffer.toString('ascii', 4, 8) !== 'ftyp') {
+        return res.status(400).json({ error: 'Invalid MP4 video signature.' });
+      }
+    } else if (ext === 'webm') {
+      // EBML header signature 0x1A 0x45 0xDF 0xA3
+      if (buffer.length < 4 || buffer[0] !== 0x1A || buffer[1] !== 0x45 || buffer[2] !== 0xDF || buffer[3] !== 0xA3) {
+        return res.status(400).json({ error: 'Invalid WEBM video signature.' });
       }
     } else if (ext === 'svg') {
       const svgStr = buffer.toString('utf8');

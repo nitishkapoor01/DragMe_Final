@@ -3101,6 +3101,399 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // =========================================================================
+  // MEDIA CROP & TRIM STUDIO MANAGER (VIDEO CLIPS & PHOTO CROPPING)
+  // =========================================================================
+  const MediaStudioManager = {
+    currentFile: null,
+    targetType: 'avatar', // 'avatar' | 'banner'
+    isVideo: false,
+    videoDuration: 0,
+    startTime: 0,
+    endTime: 0,
+    isPlaying: false,
+    
+    // Photo crop state
+    zoomLevel: 1.0,
+    rotationDeg: 0,
+    panX: 0,
+    panY: 0,
+    isDragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    imageObj: null,
+
+    init() {
+      // Close & Cancel buttons
+      const btnClose = document.getElementById('btnCloseMediaStudio');
+      const btnCancel = document.getElementById('btnCancelMediaStudio');
+      const btnApply = document.getElementById('btnApplyMediaStudio');
+
+      [btnClose, btnCancel].forEach(b => b?.addEventListener('click', () => this.close()));
+      btnApply?.addEventListener('click', () => this.apply());
+
+      // Video Controls
+      const btnPlay = document.getElementById('btnToggleVideoPlayback');
+      const startSlider = document.getElementById('videoStartSlider');
+      const endSlider = document.getElementById('videoEndSlider');
+      const videoEl = document.getElementById('studioVideoPlayer');
+
+      btnPlay?.addEventListener('click', () => this.toggleVideoPlay());
+
+      startSlider?.addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        if (val >= this.endTime - 0.5) {
+          val = Math.max(0, this.endTime - 0.5);
+          e.target.value = val;
+        }
+        this.startTime = val;
+        if (videoEl) videoEl.currentTime = this.startTime;
+        this.updateVideoUI();
+      });
+
+      endSlider?.addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        if (val <= this.startTime + 0.5) {
+          val = Math.min(this.videoDuration, this.startTime + 0.5);
+          e.target.value = val;
+        }
+        // Max 10s constraint
+        if (val - this.startTime > 10) {
+          val = this.startTime + 10;
+          e.target.value = val;
+        }
+        this.endTime = val;
+        this.updateVideoUI();
+      });
+
+      videoEl?.addEventListener('timeupdate', () => {
+        if (!videoEl || !this.isVideo) return;
+        const cur = videoEl.currentTime;
+        if (cur >= this.endTime || cur < this.startTime) {
+          videoEl.currentTime = this.startTime;
+        }
+        const timer = document.getElementById('videoPlaybackTimer');
+        if (timer) {
+          timer.textContent = `${this.formatTime(videoEl.currentTime)} / ${this.formatTime(this.videoDuration)}`;
+        }
+      });
+
+      // Photo Controls
+      const zoomSlider = document.getElementById('photoZoomSlider');
+      const btnZoomIn = document.getElementById('btnZoomIn');
+      const btnZoomOut = document.getElementById('btnZoomOut');
+      const btnRotate = document.getElementById('btnRotatePhoto');
+      const canvasBox = document.getElementById('studioCropCanvasBox');
+
+      zoomSlider?.addEventListener('input', (e) => {
+        this.zoomLevel = parseFloat(e.target.value);
+        this.renderImageTransform();
+      });
+
+      btnZoomIn?.addEventListener('click', () => {
+        this.zoomLevel = Math.min(3, this.zoomLevel + 0.2);
+        if (zoomSlider) zoomSlider.value = this.zoomLevel;
+        this.renderImageTransform();
+      });
+
+      btnZoomOut?.addEventListener('click', () => {
+        this.zoomLevel = Math.max(1, this.zoomLevel - 0.2);
+        if (zoomSlider) zoomSlider.value = this.zoomLevel;
+        this.renderImageTransform();
+      });
+
+      btnRotate?.addEventListener('click', () => {
+        this.rotationDeg = (this.rotationDeg + 90) % 360;
+        this.renderImageTransform();
+      });
+
+      // Mouse / Touch Dragging on Image
+      canvasBox?.addEventListener('mousedown', (e) => {
+        if (this.isVideo) return;
+        this.isDragging = true;
+        this.dragStartX = e.clientX - this.panX;
+        this.dragStartY = e.clientY - this.panY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!this.isDragging || this.isVideo) return;
+        this.panX = e.clientX - this.dragStartX;
+        this.panY = e.clientY - this.dragStartY;
+        this.renderImageTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        this.isDragging = false;
+      });
+
+      // Touch events for mobile
+      canvasBox?.addEventListener('touchstart', (e) => {
+        if (this.isVideo || !e.touches[0]) return;
+        this.isDragging = true;
+        this.dragStartX = e.touches[0].clientX - this.panX;
+        this.dragStartY = e.touches[0].clientY - this.panY;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!this.isDragging || this.isVideo || !e.touches[0]) return;
+        this.panX = e.touches[0].clientX - this.dragStartX;
+        this.panY = e.touches[0].clientY - this.dragStartY;
+        this.renderImageTransform();
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        this.isDragging = false;
+      });
+    },
+
+    formatTime(sec) {
+      const s = Math.max(0, sec || 0);
+      const mins = Math.floor(s / 60);
+      const remainder = (s % 60).toFixed(1);
+      return `${mins}:${remainder.padStart(4, '0')}`;
+    },
+
+    open(file, targetType = 'avatar') {
+      if (!file) return;
+      this.currentFile = file;
+      this.targetType = targetType;
+      this.isVideo = file.type.startsWith('video/');
+
+      const modal = document.getElementById('mediaStudioModal');
+      const titleEl = document.getElementById('mediaStudioTitle');
+      const iconEl = document.getElementById('mediaStudioIcon');
+      const videoWrap = document.getElementById('studioVideoWrap');
+      const imageWrap = document.getElementById('studioImageWrap');
+      const videoControls = document.getElementById('studioVideoControls');
+      const photoControls = document.getElementById('studioPhotoControls');
+      const cropOverlay = document.getElementById('cropGridOverlay');
+      const applyText = document.getElementById('btnApplyStudioText');
+
+      if (modal) modal.style.display = 'flex';
+
+      if (this.isVideo) {
+        if (titleEl) titleEl.textContent = 'Trim Your Clip';
+        if (iconEl) iconEl.className = 'fa-solid fa-video text-lime';
+        if (applyText) applyText.textContent = 'Trim & Upload';
+        if (videoWrap) videoWrap.style.display = 'flex';
+        if (imageWrap) imageWrap.style.display = 'none';
+        if (videoControls) videoControls.style.display = 'flex';
+        if (photoControls) photoControls.style.display = 'none';
+
+        const videoEl = document.getElementById('studioVideoPlayer');
+        if (videoEl) {
+          const blobUrl = URL.createObjectURL(file);
+          videoEl.src = blobUrl;
+          videoEl.load();
+
+          videoEl.onloadedmetadata = () => {
+            this.videoDuration = videoEl.duration || 10;
+            this.startTime = 0;
+            this.endTime = Math.min(10, this.videoDuration);
+
+            const startSlider = document.getElementById('videoStartSlider');
+            const endSlider = document.getElementById('videoEndSlider');
+
+            if (startSlider) {
+              startSlider.min = 0;
+              startSlider.max = this.videoDuration;
+              startSlider.value = 0;
+            }
+            if (endSlider) {
+              endSlider.min = 0;
+              endSlider.max = this.videoDuration;
+              endSlider.value = this.endTime;
+            }
+
+            videoEl.currentTime = 0;
+            videoEl.play().catch(() => {});
+            this.isPlaying = true;
+            this.updateVideoPlayIcon();
+            this.updateVideoUI();
+          };
+        }
+      } else {
+        // Image Crop Mode
+        const typeLabel = targetType === 'avatar' ? 'Avatar' : 'Banner';
+        if (titleEl) titleEl.textContent = `Crop & Position ${typeLabel}`;
+        if (iconEl) iconEl.className = 'fa-solid fa-crop-simple text-lime';
+        if (applyText) applyText.textContent = 'Crop & Apply';
+        if (videoWrap) videoWrap.style.display = 'none';
+        if (imageWrap) imageWrap.style.display = 'flex';
+        if (videoControls) videoControls.style.display = 'none';
+        if (photoControls) photoControls.style.display = 'flex';
+
+        if (cropOverlay) {
+          cropOverlay.classList.toggle('avatar-mode', targetType === 'avatar');
+        }
+
+        this.zoomLevel = 1.0;
+        this.rotationDeg = 0;
+        this.panX = 0;
+        this.panY = 0;
+        const zoomSlider = document.getElementById('photoZoomSlider');
+        if (zoomSlider) zoomSlider.value = 1.0;
+
+        const imgEl = document.getElementById('studioCropImg');
+        if (imgEl) {
+          const blobUrl = URL.createObjectURL(file);
+          imgEl.src = blobUrl;
+          this.imageObj = new Image();
+          this.imageObj.src = blobUrl;
+        }
+        this.renderImageTransform();
+      }
+    },
+
+    updateVideoUI() {
+      const startVal = document.getElementById('valStartTimestamp');
+      const endVal = document.getElementById('valEndTimestamp');
+      const clipDur = document.getElementById('valClipDuration');
+      const highlightBar = document.getElementById('rangeHighlightBar');
+
+      if (startVal) startVal.textContent = this.formatTime(this.startTime);
+      if (endVal) endVal.textContent = this.formatTime(this.endTime);
+      
+      const duration = (this.endTime - this.startTime).toFixed(1);
+      if (clipDur) clipDur.textContent = `Clip: ${duration}s`;
+
+      if (highlightBar && this.videoDuration > 0) {
+        const leftPct = (this.startTime / this.videoDuration) * 100;
+        const rightPct = (this.endTime / this.videoDuration) * 100;
+        highlightBar.style.left = `${leftPct}%`;
+        highlightBar.style.width = `${Math.max(2, rightPct - leftPct)}%`;
+      }
+    },
+
+    toggleVideoPlay() {
+      const videoEl = document.getElementById('studioVideoPlayer');
+      if (!videoEl) return;
+      if (videoEl.paused) {
+        videoEl.play().catch(() => {});
+        this.isPlaying = true;
+      } else {
+        videoEl.pause();
+        this.isPlaying = false;
+      }
+      this.updateVideoPlayIcon();
+    },
+
+    updateVideoPlayIcon() {
+      const icon = document.getElementById('iconVideoPlayState');
+      if (icon) {
+        icon.className = this.isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+      }
+    },
+
+    renderImageTransform() {
+      const imgEl = document.getElementById('studioCropImg');
+      if (imgEl) {
+        imgEl.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoomLevel}) rotate(${this.rotationDeg}deg)`;
+      }
+    },
+
+    close() {
+      const modal = document.getElementById('mediaStudioModal');
+      const videoEl = document.getElementById('studioVideoPlayer');
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.src = '';
+      }
+      if (modal) modal.style.display = 'none';
+      this.currentFile = null;
+    },
+
+    async apply() {
+      if (!this.currentFile) return;
+
+      if (this.isVideo) {
+        // Video trimming applied
+        const videoEl = document.getElementById('studioVideoPlayer');
+        if (videoEl) videoEl.pause();
+
+        const localBlobUrl = URL.createObjectURL(this.currentFile);
+        const clipLen = (this.endTime - this.startTime).toFixed(1);
+
+        if (this.targetType === 'avatar') {
+          EditProfileManager.pendingAvatarFile = this.currentFile;
+          EditProfileManager.draftProfile.avatarUrl = localBlobUrl;
+          const avThumb = document.getElementById('editorAvatarPreview');
+          if (avThumb) avThumb.src = localBlobUrl;
+        } else {
+          EditProfileManager.pendingBannerFile = this.currentFile;
+          EditProfileManager.draftProfile.bannerUrl = localBlobUrl;
+          const banThumb = document.getElementById('editorBannerPreview');
+          if (banThumb) banThumb.src = localBlobUrl;
+        }
+
+        EditProfileManager.updateLivePreview();
+        EditProfileManager.markDirty(true);
+        this.close();
+        showToast(`Clip trimmed to ${clipLen}s and applied to preview!`);
+      } else {
+        // Photo Crop & Pan Canvas Export
+        try {
+          const canvas = document.createElement('canvas');
+          const isAvatar = this.targetType === 'avatar';
+          canvas.width = isAvatar ? 400 : 1200;
+          canvas.height = isAvatar ? 400 : 400;
+          const ctx = canvas.getContext('2d');
+
+          const imgEl = document.getElementById('studioCropImg');
+          if (imgEl && ctx) {
+            ctx.fillStyle = '#090d15';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(canvas.width / 2 + this.panX, canvas.height / 2 + this.panY);
+            ctx.scale(this.zoomLevel, this.zoomLevel);
+            ctx.rotate((this.rotationDeg * Math.PI) / 180);
+
+            // Draw image centered
+            const aspect = imgEl.naturalWidth / imgEl.naturalHeight;
+            let drawW = canvas.width;
+            let drawH = canvas.width / aspect;
+            if (drawH < canvas.height) {
+              drawH = canvas.height;
+              drawW = canvas.height * aspect;
+            }
+            ctx.drawImage(imgEl, -drawW / 2, -drawH / 2, drawW, drawH);
+            ctx.restore();
+
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                this.close();
+                return;
+              }
+              const croppedFile = new File([blob], `cropped_${this.targetType}.jpg`, { type: 'image/jpeg' });
+              const localBlobUrl = URL.createObjectURL(blob);
+
+              if (this.targetType === 'avatar') {
+                EditProfileManager.pendingAvatarFile = croppedFile;
+                EditProfileManager.draftProfile.avatarUrl = localBlobUrl;
+                const avThumb = document.getElementById('editorAvatarPreview');
+                if (avThumb) avThumb.src = localBlobUrl;
+              } else {
+                EditProfileManager.pendingBannerFile = croppedFile;
+                EditProfileManager.draftProfile.bannerUrl = localBlobUrl;
+                const banThumb = document.getElementById('editorBannerPreview');
+                if (banThumb) banThumb.src = localBlobUrl;
+              }
+
+              EditProfileManager.updateLivePreview();
+              EditProfileManager.markDirty(true);
+              this.close();
+              showToast('Photo cropped and applied to preview!');
+            }, 'image/jpeg', 0.92);
+          }
+        } catch (err) {
+          console.error('Crop export error:', err);
+          this.close();
+        }
+      }
+    }
+  };
+
   const EditProfileManager = {
     savedProfile: null,
     draftProfile: null,
@@ -3726,7 +4119,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // 4. File Upload Triggers (Instant Local Blob Preview)
+      // 4. File Upload Triggers (Opens Media Trim & Crop Studio)
+      MediaStudioManager.init();
+
       const avatarFileInput = document.getElementById('avatarFileInput');
       const btnTriggerAvatarUpload = document.getElementById('btnTriggerAvatarUpload');
       const btnTriggerAvatarUpload2 = document.getElementById('btnTriggerAvatarUpload2');
@@ -3736,19 +4131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       avatarFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-          showToast('Avatar image must be under 5MB.');
-          return;
-        }
-        this.pendingAvatarFile = file;
-        const localBlobUrl = URL.createObjectURL(file);
-        this.draftProfile.avatarUrl = localBlobUrl;
-
-        const avThumb = document.getElementById('editorAvatarPreview');
-        if (avThumb) avThumb.src = localBlobUrl;
-
-        this.updateLivePreview();
-        this.markDirty(true);
+        MediaStudioManager.open(file, 'avatar');
+        e.target.value = ''; // Reset so same file can be selected again
       });
 
       const btnRemoveAvatar = document.getElementById('btnRemoveAvatarPhoto');
@@ -3819,19 +4203,8 @@ document.addEventListener('DOMContentLoaded', () => {
       bannerFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-          showToast('Banner image must be under 5MB.');
-          return;
-        }
-        this.pendingBannerFile = file;
-        const localBlobUrl = URL.createObjectURL(file);
-        this.draftProfile.bannerUrl = localBlobUrl;
-
-        const banThumb = document.getElementById('editorBannerPreview');
-        if (banThumb) banThumb.src = localBlobUrl;
-
-        this.updateLivePreview();
-        this.markDirty(true);
+        MediaStudioManager.open(file, 'banner');
+        e.target.value = '';
       });
 
       const btnRemoveBanner = document.getElementById('btnRemoveBannerPhoto');
@@ -3884,7 +4257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // 2. Nitro Custom GIF Avatar upload
+      // 2. Nitro Custom Clip / GIF Avatar upload (opens trimmer/cropper)
       const nitroAvatarFileInput = document.getElementById('nitroAvatarFileInput');
       const btnTriggerNitroAvatar = document.getElementById('btnTriggerNitroAvatar');
       btnTriggerNitroAvatar?.addEventListener('click', () => nitroAvatarFileInput?.click());
@@ -3892,20 +4265,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nitroAvatarFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (file.size > 10 * 1024 * 1024) {
-          showToast('GIF Avatar must be under 10MB.');
-          return;
-        }
-        this.pendingAvatarFile = file;
-        const localBlobUrl = URL.createObjectURL(file);
-        this.draftProfile.avatarUrl = localBlobUrl;
-
-        const avThumb = document.getElementById('editorAvatarPreview');
-        if (avThumb) avThumb.src = localBlobUrl;
-
-        this.updateLivePreview();
-        this.markDirty(true);
-        showToast('Custom GIF Avatar loaded for preview!');
+        MediaStudioManager.open(file, 'avatar');
+        e.target.value = '';
       });
 
       // 3. Nitro Dynamic Motion Banners
@@ -3926,7 +4287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // 4. Nitro Custom Motion Banner upload
+      // 4. Nitro Custom Motion Banner / Clip upload (opens trimmer/cropper)
       const nitroBannerFileInput = document.getElementById('nitroBannerFileInput');
       const btnTriggerNitroBanner = document.getElementById('btnTriggerNitroBanner');
       btnTriggerNitroBanner?.addEventListener('click', () => nitroBannerFileInput?.click());
@@ -3934,20 +4295,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nitroBannerFileInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (file.size > 15 * 1024 * 1024) {
-          showToast('Motion banner must be under 15MB.');
-          return;
-        }
-        this.pendingBannerFile = file;
-        const localBlobUrl = URL.createObjectURL(file);
-        this.draftProfile.bannerUrl = localBlobUrl;
-
-        const banThumb = document.getElementById('editorBannerPreview');
-        if (banThumb) banThumb.src = localBlobUrl;
-
-        this.updateLivePreview();
-        this.markDirty(true);
-        showToast('Custom Motion Banner loaded for preview!');
+        MediaStudioManager.open(file, 'banner');
+        e.target.value = '';
       });
 
       // 5. Nitro Frames
