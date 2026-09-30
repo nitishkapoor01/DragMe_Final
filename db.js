@@ -174,6 +174,27 @@ const db = {
           PRIMARY KEY (user_id, post_id)
         );
 
+        CREATE TABLE IF NOT EXISTS media_assets (
+          id VARCHAR(100) PRIMARY KEY,
+          owner_id VARCHAR(100),
+          media_type VARCHAR(50) NOT NULL,
+          mime_type VARCHAR(100) NOT NULL,
+          original_filename TEXT,
+          file_size INTEGER NOT NULL,
+          width INTEGER,
+          height INTEGER,
+          duration REAL,
+          storage_url TEXT NOT NULL,
+          poster_url TEXT,
+          thumbnail_url TEXT,
+          variants TEXT DEFAULT '{}',
+          is_attached SMALLINT DEFAULT 0,
+          attached_entity_type VARCHAR(50),
+          attached_entity_id VARCHAR(100),
+          processing_status VARCHAR(30) DEFAULT 'READY',
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+
         -- PostgreSQL Million-User Scalability Indexes
         CREATE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
         CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users(LOWER(email));
@@ -182,6 +203,8 @@ const db = {
         CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id, created_at ASC);
         CREATE INDEX IF NOT EXISTS idx_votes_user_post ON votes(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_saved_user_post ON saved_posts(user_id, post_id);
+        CREATE INDEX IF NOT EXISTS idx_media_owner ON media_assets(owner_id, created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_media_unattached ON media_assets(is_attached, created_at);
       `);
 
       // Safe migration check for existing columns
@@ -282,6 +305,27 @@ const db = {
           PRIMARY KEY (user_id, post_id)
         );
 
+        CREATE TABLE IF NOT EXISTS media_assets (
+          id TEXT PRIMARY KEY,
+          owner_id TEXT,
+          media_type TEXT NOT NULL,
+          mime_type TEXT NOT NULL,
+          original_filename TEXT,
+          file_size INTEGER NOT NULL,
+          width INTEGER,
+          height INTEGER,
+          duration REAL,
+          storage_url TEXT NOT NULL,
+          poster_url TEXT,
+          thumbnail_url TEXT,
+          variants TEXT DEFAULT '{}',
+          is_attached INTEGER DEFAULT 0,
+          attached_entity_type TEXT,
+          attached_entity_id TEXT,
+          processing_status TEXT DEFAULT 'READY',
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
         CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users(LOWER(email));
         CREATE INDEX IF NOT EXISTS idx_posts_room_created ON posts(room, created_at DESC);
@@ -289,6 +333,8 @@ const db = {
         CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id, created_at ASC);
         CREATE INDEX IF NOT EXISTS idx_votes_user_post ON votes(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_saved_user_post ON saved_posts(user_id, post_id);
+        CREATE INDEX IF NOT EXISTS idx_media_owner ON media_assets(owner_id, created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_media_unattached ON media_assets(is_attached, created_at);
       `);
 
       // SQLite dynamic column migrations

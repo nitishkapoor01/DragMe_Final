@@ -168,6 +168,7 @@ const ROOMS_DATA = {
 // AUTH & API SERVICE CLIENT (JWT + Real-time Session Interceptor)
 // =============================================================================
 const AuthAPI = {
+  _limitsCache: null,
   getToken() {
     return localStorage.getItem('dragme_auth_token') || null;
   },
@@ -177,6 +178,57 @@ const AuthAPI = {
     } else {
       localStorage.removeItem('dragme_auth_token');
     }
+  },
+  async getMediaLimits() {
+    if (this._limitsCache) return this._limitsCache;
+    try {
+      const res = await fetch('/api/media/limits');
+      if (res.ok) {
+        this._limitsCache = await res.json();
+        return this._limitsCache;
+      }
+    } catch (e) {
+      console.warn('Failed to fetch media limits:', e);
+    }
+    return null;
+  },
+  async uploadMedia(file, type = 'avatar') {
+    if (!file) throw new Error('No media file provided');
+
+    // Centralized client size validation
+    const maxSizes = {
+      avatar: 5 * 1024 * 1024,
+      animatedAvatar: 10 * 1024 * 1024,
+      banner: 8 * 1024 * 1024,
+      animatedBanner: 15 * 1024 * 1024,
+      postImage: 10 * 1024 * 1024,
+      postVideo: 50 * 1024 * 1024,
+      profileVideo: 50 * 1024 * 1024
+    };
+    const limit = maxSizes[type] || 10 * 1024 * 1024;
+    if (file.size > limit) {
+      const mb = Math.round(limit / (1024 * 1024));
+      throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds maximum limit of ${mb}MB for ${type}.`);
+    }
+
+    const base64Data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read media file'));
+      reader.readAsDataURL(file);
+    });
+
+    const payload = {
+      filename: file.name || `${type}_${Date.now()}`,
+      mimeType: file.type || 'image/jpeg',
+      base64Data,
+      type
+    };
+
+    return await this.request('/api/upload/media', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   },
   async request(endpoint, options = {}) {
     const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
@@ -3677,17 +3729,100 @@ document.addEventListener('DOMContentLoaded', () => {
       const d = this.draftProfile;
       if (!d) return;
 
-      // Banner image & effect
-      const lpBannerImg = document.getElementById('lpBannerImg');
-      if (lpBannerImg) {
-        lpBannerImg.src = d.bannerUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
+      // Banner image / video
+      const bannerContainer = document.querySelector('.lp-banner-box');
+      if (bannerContainer) {
+        const bannerUrl = d.bannerUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
+        const isVideo = bannerUrl.endsWith('.mp4') || bannerUrl.endsWith('.webm') || (bannerUrl.startsWith('blob:') && this.pendingBannerFile?.type?.startsWith('video/'));
+        
+        let existingMedia = bannerContainer.querySelector('.lp-banner-media') || document.getElementById('lpBannerImg');
+        if (existingMedia) existingMedia.classList.add('lp-banner-media');
+
+        if (isVideo) {
+          if (!existingMedia || existingMedia.tagName !== 'VIDEO') {
+            const videoEl = document.createElement('video');
+            videoEl.id = 'lpBannerImg';
+            videoEl.className = 'lp-banner-img lp-banner-media';
+            videoEl.autoplay = true;
+            videoEl.loop = true;
+            videoEl.muted = true;
+            videoEl.playsInline = true;
+            videoEl.src = bannerUrl;
+            if (existingMedia) {
+              bannerContainer.replaceChild(videoEl, existingMedia);
+            } else {
+              bannerContainer.insertBefore(videoEl, bannerContainer.firstChild);
+            }
+          } else {
+            if (existingMedia.src !== bannerUrl) {
+              existingMedia.src = bannerUrl;
+              existingMedia.play().catch(() => {});
+            }
+          }
+        } else {
+          if (!existingMedia || existingMedia.tagName !== 'IMG') {
+            const imgEl = document.createElement('img');
+            imgEl.id = 'lpBannerImg';
+            imgEl.className = 'lp-banner-img lp-banner-media';
+            imgEl.src = bannerUrl;
+            imgEl.alt = 'Banner';
+            if (existingMedia) {
+              bannerContainer.replaceChild(imgEl, existingMedia);
+            } else {
+              bannerContainer.insertBefore(imgEl, bannerContainer.firstChild);
+            }
+          } else {
+            existingMedia.src = bannerUrl;
+          }
+        }
       }
 
-      // Avatar image, shape, & frame
-      const lpAvatarImg = document.getElementById('lpAvatarImg');
-      if (lpAvatarImg) {
-        lpAvatarImg.src = d.avatarUrl || GUEST_SILHOUETTE_SVG;
-        lpAvatarImg.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+      // Avatar image / video
+      const avatarContainer = document.querySelector('.lp-avatar-box');
+      if (avatarContainer) {
+        const avatarUrl = d.avatarUrl || GUEST_SILHOUETTE_SVG;
+        const isVideo = avatarUrl.endsWith('.mp4') || avatarUrl.endsWith('.webm') || (avatarUrl.startsWith('blob:') && this.pendingAvatarFile?.type?.startsWith('video/'));
+        let existingAv = avatarContainer.querySelector('.lp-avatar-img');
+
+        if (isVideo) {
+          if (!existingAv || existingAv.tagName !== 'VIDEO') {
+            const videoEl = document.createElement('video');
+            videoEl.id = 'lpAvatarImg';
+            videoEl.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+            videoEl.autoplay = true;
+            videoEl.loop = true;
+            videoEl.muted = true;
+            videoEl.playsInline = true;
+            videoEl.src = avatarUrl;
+            if (existingAv) {
+              avatarContainer.replaceChild(videoEl, existingAv);
+            } else {
+              avatarContainer.appendChild(videoEl);
+            }
+          } else {
+            if (existingAv.src !== avatarUrl) {
+              existingAv.src = avatarUrl;
+              existingAv.play().catch(() => {});
+            }
+            existingAv.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+          }
+        } else {
+          if (!existingAv || existingAv.tagName !== 'IMG') {
+            const imgEl = document.createElement('img');
+            imgEl.id = 'lpAvatarImg';
+            imgEl.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+            imgEl.src = avatarUrl;
+            imgEl.alt = 'Avatar';
+            if (existingAv) {
+              avatarContainer.replaceChild(imgEl, existingAv);
+            } else {
+              avatarContainer.appendChild(imgEl);
+            }
+          } else {
+            existingAv.src = avatarUrl;
+            existingAv.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+          }
+        }
       }
 
       const lpAvatarFrameBox = document.getElementById('lpAvatarFrameBox');
@@ -3840,7 +3975,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let finalAvatarUrl = this.draftProfile.avatarUrl;
         if (this.pendingAvatarFile) {
           try {
-            const uploadRes = await AuthAPI.uploadMedia(this.pendingAvatarFile);
+            const isVid = this.pendingAvatarFile.type?.startsWith('video/');
+            const isGif = this.pendingAvatarFile.type === 'image/gif' || this.pendingAvatarFile.type === 'image/webp';
+            const mediaType = (isVid || isGif) ? 'animatedAvatar' : 'avatar';
+            const uploadRes = await AuthAPI.uploadMedia(this.pendingAvatarFile, mediaType);
             if (uploadRes && uploadRes.url) {
               finalAvatarUrl = uploadRes.url;
               this.draftProfile.avatarUrl = finalAvatarUrl;
@@ -3856,7 +3994,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let finalBannerUrl = this.draftProfile.bannerUrl;
         if (this.pendingBannerFile) {
           try {
-            const uploadRes = await AuthAPI.uploadMedia(this.pendingBannerFile);
+            const isVid = this.pendingBannerFile.type?.startsWith('video/');
+            const isGif = this.pendingBannerFile.type === 'image/gif' || this.pendingBannerFile.type === 'image/webp';
+            const mediaType = (isVid || isGif) ? 'animatedBanner' : 'banner';
+            const uploadRes = await AuthAPI.uploadMedia(this.pendingBannerFile, mediaType);
             if (uploadRes && uploadRes.url) {
               finalBannerUrl = uploadRes.url;
               this.draftProfile.bannerUrl = finalBannerUrl;

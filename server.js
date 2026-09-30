@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const db = require('./db');
+const MediaProcessor = require('./mediaProcessor');
+const { MEDIA_LIMITS, UPLOADS_DIR } = require('./mediaConfig');
 
 const app = express();
 const PORT = process.env.PORT || 5173;
@@ -15,18 +17,34 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_2026_dragme_p
 // 1. MIDDLEWARES, SECURITY HEADERS & SCALABLE RATE LIMITER
 // =============================================================================
 app.use(cors());
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(express.json({ limit: '60mb' }));
+app.use(express.urlencoded({ extended: true, limit: '60mb' }));
 
-// Enterprise Security Headers & Instant Live Cache Buster
+// High-Performance Immutable CDN & Static Serving for Media Uploads
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+}, express.static(UPLOADS_DIR, {
+  maxAge: '30d',
+  immutable: true,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+  }
+}));
+
+// Enterprise Security Headers & Instant Live Cache Buster for HTML/CSS/JS
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+  if (!req.path.startsWith('/uploads')) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
   next();
 });
 
@@ -58,10 +76,12 @@ app.get('/style.css', (req, res) => {
 app.use(express.static(__dirname, {
   etag: false,
   lastModified: false,
-  setHeaders: (res) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+  setHeaders: (res, filePath) => {
+    if (!filePath.includes(path.sep + 'uploads' + path.sep)) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
   }
 }));
 
@@ -307,116 +327,99 @@ app.post('/api/auth/login', rateLimiter({ windowMs: 60000, max: 15 }), async (re
 // =============================================================================
 // MEDIA STORAGE & UPLOAD SYSTEM
 // =============================================================================
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-// Serve uploaded media securely
-app.use('/uploads', express.static(UPLOADS_DIR, {
-  maxAge: '1d',
-  setHeaders: (res) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  }
-}));
+// GET CENTRALIZED MEDIA LIMITS
+app.get('/api/media/limits', (req, res) => {
+  return res.json({ success: true, limits: MEDIA_LIMITS });
+});
 
-// SECURE MEDIA UPLOAD ENDPOINT
+// PRODUCTION-GRADE MEDIA PIPELINE UPLOAD ENDPOINT
 app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 20 }), async (req, res) => {
   try {
-    const { data, filename, type } = req.body;
-    if (!data || typeof data !== 'string') {
-      return res.status(400).json({ error: 'Image data is required.' });
+    const rawData = req.body.data || req.body.base64Data;
+    const filename = req.body.filename;
+    const type = req.body.type;
+    if (!rawData || typeof rawData !== 'string') {
+      return res.status(400).json({ error: 'Media payload data is required.' });
     }
 
     // Support Base64 Data URL or Raw Base64
     let buffer;
-    let mimeType = 'image/png';
-    let ext = 'png';
-
-    if (data.startsWith('data:')) {
-      const matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (rawData.startsWith('data:')) {
+      const matches = rawData.match(/^data:([A-Za-z0-9-+\/]+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
-        return res.status(400).json({ error: 'Invalid base64 image format.' });
+        return res.status(400).json({ error: 'Invalid base64 media encoding.' });
       }
-      mimeType = matches[1].toLowerCase();
       buffer = Buffer.from(matches[2], 'base64');
     } else {
-      buffer = Buffer.from(data, 'base64');
+      buffer = Buffer.from(rawData, 'base64');
     }
 
-    // Allowed MIME types
-    const allowedMimes = {
-      'image/jpeg': 'jpg',
-      'image/jpg': 'jpg',
-      'image/png': 'png',
-      'image/webp': 'webp',
-      'image/gif': 'gif',
-      'image/svg+xml': 'svg',
-      'video/mp4': 'mp4',
-      'video/webm': 'webm'
-    };
-
-    if (!allowedMimes[mimeType]) {
-      return res.status(400).json({ error: 'Only JPG, PNG, WEBP, GIF, SVG, MP4, and WEBM media are allowed.' });
-    }
-    ext = allowedMimes[mimeType];
-
-    // File size check: Max 15MB for video/media, 10MB for images
-    const maxLimit = (ext === 'mp4' || ext === 'webm') ? 15 * 1024 * 1024 : 10 * 1024 * 1024;
-    if (buffer.length > maxLimit) {
-      return res.status(400).json({ error: `File size exceeds maximum limit of ${maxLimit / (1024 * 1024)}MB.` });
+    if (!buffer || buffer.length === 0) {
+      return res.status(400).json({ error: 'Empty media buffer provided.' });
     }
 
-    // Magic-byte signature verification
-    if (ext === 'png') {
-      if (buffer[0] !== 0x89 || buffer[1] !== 0x50 || buffer[2] !== 0x4E || buffer[3] !== 0x47) {
-        return res.status(400).json({ error: 'Invalid PNG file signature.' });
-      }
-    } else if (ext === 'jpg') {
-      if (buffer[0] !== 0xFF || buffer[1] !== 0xD8 || buffer[2] !== 0xFF) {
-        return res.status(400).json({ error: 'Invalid JPEG file signature.' });
-      }
-    } else if (ext === 'gif') {
-      if (buffer.toString('ascii', 0, 3) !== 'GIF') {
-        return res.status(400).json({ error: 'Invalid GIF file signature.' });
-      }
-    } else if (ext === 'mp4') {
-      // MP4 ISO base media format has 'ftyp' at offset 4
-      if (buffer.length < 12 || buffer.toString('ascii', 4, 8) !== 'ftyp') {
-        return res.status(400).json({ error: 'Invalid MP4 video signature.' });
-      }
-    } else if (ext === 'webm') {
-      // EBML header signature 0x1A 0x45 0xDF 0xA3
-      if (buffer.length < 4 || buffer[0] !== 0x1A || buffer[1] !== 0x45 || buffer[2] !== 0xDF || buffer[3] !== 0xA3) {
-        return res.status(400).json({ error: 'Invalid WEBM video signature.' });
-      }
-    } else if (ext === 'svg') {
-      const svgStr = buffer.toString('utf8');
-      if (!svgStr.includes('<svg') || svgStr.includes('<script') || svgStr.includes('javascript:') || svgStr.includes('onload=')) {
-        return res.status(400).json({ error: 'Unsafe SVG content detected.' });
-      }
+    const uploadType = type || 'avatar';
+
+    // Execute Production Pipeline: Validate -> Safety -> Process -> Responsive Compress -> Posters
+    const result = await MediaProcessor.processMedia(buffer, uploadType, req.user);
+
+    // Register Media Asset in Database
+    try {
+      await db.run(
+        `INSERT INTO media_assets (id, owner_id, media_type, mime_type, original_filename, file_size, width, height, duration, storage_url, poster_url, thumbnail_url, variants, is_attached, processing_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'READY')`,
+        [
+          result.mediaId,
+          req.user.id,
+          uploadType,
+          result.mimeType,
+          filename ? String(filename).substring(0, 100) : 'upload',
+          result.fileSize,
+          result.width || 0,
+          result.height || 0,
+          result.duration || 0,
+          result.storageUrl,
+          result.posterUrl || result.storageUrl,
+          result.thumbnailUrl || result.storageUrl,
+          JSON.stringify(result.variants || {})
+        ]
+      );
+    } catch (dbErr) {
+      console.warn('Non-fatal media registration warning:', dbErr.message);
     }
-
-    const safeName = `${type || 'media'}_${req.user.id}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
-    const filePath = path.join(UPLOADS_DIR, safeName);
-
-    fs.writeFileSync(filePath, buffer);
-    const mediaUrl = `/uploads/${safeName}`;
 
     return res.json({
       success: true,
-      url: mediaUrl,
-      mediaUrl,
-      filename: safeName,
-      size: buffer.length,
-      mimeType
+      mediaId: result.mediaId,
+      url: result.storageUrl,
+      mediaUrl: result.storageUrl,
+      posterUrl: result.posterUrl,
+      thumbnailUrl: result.thumbnailUrl,
+      variants: result.variants,
+      width: result.width,
+      height: result.height,
+      fileSize: result.fileSize,
+      mimeType: result.mimeType,
+      isAnimated: result.isAnimated,
+      duration: result.duration
     });
   } catch (err) {
-    console.error('Media upload error:', err);
-    return res.status(500).json({ error: 'Server error processing media upload.' });
+    console.error('Media pipeline processing error:', err.message);
+    return res.status(400).json({ error: err.message || 'Media processing failed.' });
   }
 });
+
+// Periodic Temp Media Cleanup (Runs every hour)
+setInterval(() => {
+  try {
+    MediaProcessor.cleanupOldTempMedia();
+  } catch (err) {
+    console.error('Media cleanup error:', err);
+  }
+}, 60 * 60 * 1000);
 
 // GET CURRENT USER (/me)
 app.get('/api/auth/me', optionalAuth, async (req, res) => {
@@ -669,6 +672,14 @@ app.put('/api/users/profile', requireAuth, rateLimiter({ windowMs: 60000, max: 3
     if (cleanAvatarUrl !== currentDbUser.avatar_url) {
       await db.run('UPDATE posts SET author_avatar = ? WHERE (author_id = ? OR LOWER(author_username) = LOWER(?)) AND is_anonymous = 0', [cleanAvatarUrl, userId, cleanUsername]);
       await db.run('UPDATE comments SET author_avatar = ? WHERE (author_id = ? OR LOWER(author_username) = LOWER(?))', [cleanAvatarUrl, userId, cleanUsername]);
+      try {
+        await db.run("UPDATE media_assets SET is_attached = 1, attached_entity_type = 'user_avatar', attached_entity_id = ? WHERE storage_url = ? OR poster_url = ?", [userId, cleanAvatarUrl, cleanAvatarUrl]);
+      } catch (mErr) {}
+    }
+    if (cleanBannerUrl !== currentDbUser.banner_url && cleanBannerUrl) {
+      try {
+        await db.run("UPDATE media_assets SET is_attached = 1, attached_entity_type = 'user_banner', attached_entity_id = ? WHERE storage_url = ? OR poster_url = ?", [userId, cleanBannerUrl, cleanBannerUrl]);
+      } catch (mErr) {}
     }
 
     const updatedUser = await db.get(`
@@ -1199,6 +1210,15 @@ async function startServer() {
         VALUES (?, ?, ?, ?, ?)
       `, ['c1', 'post-reddit-1', 'usr_arch', 'CodeArchitect', 'Gemini 3.7 Reasoning handles large codebase memory better for game engines.']);
     }
+
+    // Hourly Unattached Temp Media Garbage Collector
+    setInterval(() => {
+      try {
+        MediaProcessor.cleanupOldTempMedia(24 * 60 * 60 * 1000);
+      } catch (cleanErr) {
+        console.warn('Hourly media cleanup warning:', cleanErr);
+      }
+    }, 3600000);
 
     app.listen(PORT, () => {
       console.log(`🚀 DRAGME Enterprise Full-Stack Server running at http://localhost:${PORT}`);

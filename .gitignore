@@ -22,3 +22,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Dynamic Uploads
+uploads/*
+!uploads/.gitkeep
