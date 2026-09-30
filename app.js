@@ -2147,9 +2147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in to customize your avatar, bio, and arena title.', 'Edit Profile')) {
           return;
         }
-        if (typeof EditProfileManager !== 'undefined' && EditProfileManager.open) {
-          EditProfileManager.open();
-        }
+        Router.navigate('edit-profile');
       });
 
       // Settings Action
@@ -2215,6 +2213,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalMeAvatar = document.querySelector('.identity-user-dp');
     const sbAvatar = document.getElementById('sbUserAvatar');
     const profileAvatarImg = document.getElementById('profileAvatarImg');
+    const sbName = document.getElementById('sbUserName');
+    const sbHandle = document.getElementById('sbUserHandle');
+    const sbBtn = document.getElementById('btnSidebarViewProfile');
+    const quickCreateAvatar = document.getElementById('quickCreateAvatar');
+    const flairAvatar = document.querySelector('.flair-avatar');
+    const flairUsername = document.querySelector('.flair-username');
 
     if (currentUser) {
       if (guestNavRight) guestNavRight.style.display = 'none';
@@ -2225,6 +2229,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalMeAvatar) AvatarService.apply(modalMeAvatar, currentUser);
       if (sbAvatar) AvatarService.apply(sbAvatar, currentUser);
       if (profileAvatarImg) AvatarService.apply(profileAvatarImg, currentUser);
+      if (quickCreateAvatar) AvatarService.apply(quickCreateAvatar, currentUser);
+      if (flairAvatar) AvatarService.apply(flairAvatar, currentUser);
+
+      if (sbName) sbName.textContent = currentUser.display_name || currentUser.username;
+      if (sbHandle) sbHandle.textContent = `@${currentUser.username}`;
+      if (sbBtn) sbBtn.textContent = 'View Profile';
+      if (flairUsername) flairUsername.textContent = currentUser.display_name || currentUser.username;
 
       const cookedValEl = document.getElementById('userCookedVal');
       if (cookedValEl) cookedValEl.textContent = currentUser.cooked || '12';
@@ -2241,6 +2252,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalMeAvatar) AvatarService.apply(modalMeAvatar, null);
       if (sbAvatar) AvatarService.apply(sbAvatar, null);
       if (profileAvatarImg) AvatarService.apply(profileAvatarImg, null);
+      if (quickCreateAvatar) AvatarService.apply(quickCreateAvatar, null);
+      if (flairAvatar) AvatarService.apply(flairAvatar, null);
+
+      if (sbName) sbName.textContent = 'Guest Visitor';
+      if (sbHandle) sbHandle.textContent = 'Explore Arena';
+      if (sbBtn) sbBtn.textContent = 'Sign In';
+      if (flairUsername) flairUsername.textContent = 'Guest Visitor';
     }
 
     // Always synchronize drawer UI safely
@@ -2807,11 +2825,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // PROFILE MANAGER & EDIT PROFILE CONTROLLER
   // =============================================================================
   const ProfileManager = {
-    activeUsername: 'tester',
-    activeTab: 'confessions',
+    activeUsername: null,
+    activeTab: 'overview',
 
     async loadProfile(username = null) {
-      const targetUser = username || (currentUser ? currentUser.username : 'tester');
+      const targetUser = username || (currentUser ? currentUser.username : null);
+      if (!targetUser) {
+        if (!currentUser) {
+          AuthManager.requireAuth({ type: 'profile' }, 'Sign in to access your personal DRAGME profile arena.', 'Profile Arena');
+          Router.navigate('home');
+          return;
+        }
+        return;
+      }
       this.activeUsername = targetUser;
 
       try {
@@ -2822,10 +2848,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (err) {
         console.error('Error loading profile:', err);
+        showToast('Unable to load profile.');
       }
     },
 
     renderProfileHeader(profile) {
+      const isOwner = Boolean(currentUser && currentUser.username && currentUser.username.toLowerCase() === profile.username.toLowerCase());
+
       // Banner
       const bannerImg = document.getElementById('profileBannerImg');
       if (bannerImg) {
@@ -2838,6 +2867,22 @@ document.addEventListener('DOMContentLoaded', () => {
         AvatarService.apply(avatarImg, profile);
       }
 
+      // Owner-Only Controls & Buttons Visibility
+      const btnEditBanner = document.getElementById('btnEditBanner');
+      if (btnEditBanner) btnEditBanner.style.display = isOwner ? 'flex' : 'none';
+
+      const btnChangeAvatar = document.getElementById('btnChangeAvatar');
+      if (btnChangeAvatar) btnChangeAvatar.style.display = isOwner ? 'flex' : 'none';
+
+      const btnEditProfile = document.getElementById('btnOpenEditProfileModal');
+      if (btnEditProfile) btnEditProfile.style.display = isOwner ? 'inline-flex' : 'none';
+
+      const onlyYouTab = document.querySelector('#profileNavTabs .tab-only-you');
+      if (onlyYouTab) onlyYouTab.style.display = isOwner ? 'inline-flex' : 'none';
+
+      const onlyYouWidget = document.querySelector('.profile-right-widgets .widget-only-you');
+      if (onlyYouWidget) onlyYouWidget.style.display = isOwner ? 'block' : 'none';
+
       // Names & Bio
       const displayNameEl = document.getElementById('profileDisplayName');
       if (displayNameEl) displayNameEl.textContent = profile.displayName || profile.username;
@@ -2849,7 +2894,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (handleEl) handleEl.textContent = `@${profile.username}`;
 
       const bioEl = document.getElementById('profileBioText');
-      if (bioEl) bioEl.textContent = profile.bio || 'Master of Roasts & Pixel-Perfect';
+      if (bioEl) bioEl.textContent = profile.bio || 'Arena Contender';
 
       const locEl = document.getElementById('profileLocationText');
       if (locEl) locEl.textContent = profile.location || 'Hamirpur, HP';
@@ -2860,48 +2905,43 @@ document.addEventListener('DOMContentLoaded', () => {
       // Stats
       if (profile.stats) {
         const statPosts = document.getElementById('profileStatPosts');
-        if (statPosts) statPosts.textContent = profile.stats.posts ?? 40;
+        if (statPosts) statPosts.textContent = profile.stats.posts ?? 0;
 
         const statFollowers = document.getElementById('profileStatFollowers');
-        if (statFollowers) statFollowers.textContent = profile.stats.followers ?? 1;
+        if (statFollowers) statFollowers.textContent = profile.stats.followers ?? 0;
 
         const statFollowing = document.getElementById('profileStatFollowing');
-        if (statFollowing) statFollowing.textContent = profile.stats.following ?? 2;
+        if (statFollowing) statFollowing.textContent = profile.stats.following ?? 0;
 
         const statConfessions = document.getElementById('profileStatConfessions');
-        if (statConfessions) statConfessions.textContent = profile.stats.confessions ?? 2;
+        if (statConfessions) statConfessions.textContent = profile.stats.confessions ?? 0;
 
         const statReactions = document.getElementById('profileStatReactions');
-        if (statReactions) statReactions.textContent = profile.stats.reactions ?? 23;
+        if (statReactions) statReactions.textContent = profile.stats.reactions ?? 0;
       }
 
       // Right Widgets
       const hlRep = document.getElementById('hlReputation');
-      if (hlRep) hlRep.textContent = profile.reputationScore ? (profile.reputationScore >= 1000 ? `${(profile.reputationScore / 1000).toFixed(1)}K` : profile.reputationScore) : '1.8K';
+      if (hlRep) hlRep.textContent = profile.reputationScore ? (profile.reputationScore >= 1000 ? `${(profile.reputationScore / 1000).toFixed(1)}K` : profile.reputationScore) : '0';
 
       const hlCooked = document.getElementById('hlCookedRatio');
-      if (hlCooked) hlCooked.textContent = `${profile.cookedRatio || 100}%`;
+      if (hlCooked) hlCooked.textContent = `${profile.cookedRatio || 0}%`;
 
       const hlAcc = document.getElementById('hlAccuracy');
-      if (hlAcc) hlAcc.textContent = `${profile.judgmentAccuracy || 98}%`;
+      if (hlAcc) hlAcc.textContent = `${profile.judgmentAccuracy || 0}%`;
 
       const hlRank = document.getElementById('hlRank');
-      if (hlRank) hlRank.textContent = `#${profile.rankNumber || 143} ${profile.rankTitle || 'Senior Roaster'}`;
+      if (hlRank) hlRank.textContent = `#${profile.rankNumber || 1} ${profile.rankTitle || 'Roaster'}`;
 
       const roastTitle = document.getElementById('roastLevelTitle');
-      if (roastTitle) roastTitle.textContent = (profile.rankTitle || 'SENIOR ROASTER').toUpperCase();
+      if (roastTitle) roastTitle.textContent = (profile.rankTitle || 'ROASTER').toUpperCase();
 
       const roastSub = document.getElementById('roastLevelSub');
-      const ptsRemaining = (profile.nextLevelPoints || 3000) - (profile.roastPoints || 2314);
-      if (roastSub) roastSub.textContent = `Next level in ${ptsRemaining > 0 ? ptsRemaining : 686} points`;
+      const ptsRemaining = (profile.nextLevelPoints || 3000) - (profile.roastPoints || 0);
+      if (roastSub) roastSub.textContent = `Next level in ${ptsRemaining > 0 ? ptsRemaining : 500} points`;
 
-      // Sidebar bottom user card update
-      const sbAvatar = document.getElementById('sbUserAvatar');
-      if (sbAvatar) AvatarService.apply(sbAvatar, profile);
-      const sbName = document.getElementById('sbUserName');
-      if (sbName) sbName.textContent = profile.displayName || profile.username;
-      const sbHandle = document.getElementById('sbUserHandle');
-      if (sbHandle) sbHandle.textContent = `@${profile.username}`;
+      // Update Page Title
+      document.title = `${profile.displayName || profile.username} (@${profile.username}) — DRAGME Profile`;
     },
 
     async loadTabPosts(username, tab = 'overview') {
@@ -3009,7 +3049,9 @@ document.addEventListener('DOMContentLoaded', () => {
           tabBtns.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           const tab = btn.dataset.tab || 'overview';
-          this.loadTabPosts(this.activeUsername, tab);
+          if (this.activeUsername) {
+            this.loadTabPosts(this.activeUsername, tab);
+          }
         });
       });
 
@@ -3017,7 +3059,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const btnEditBanner = document.getElementById('btnEditBanner');
       if (btnEditBanner) {
         btnEditBanner.addEventListener('click', () => {
-          EditProfileManager.open();
+          Router.navigate('edit-profile');
+          EditProfileManager.switchTab('banner');
         });
       }
 
@@ -3025,7 +3068,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const btnChangeAvatar = document.getElementById('btnChangeAvatar');
       if (btnChangeAvatar) {
         btnChangeAvatar.addEventListener('click', () => {
-          EditProfileManager.open();
+          Router.navigate('edit-profile');
+          EditProfileManager.switchTab('avatar');
         });
       }
 
@@ -3033,7 +3077,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const btnEditProfile = document.getElementById('btnOpenEditProfileModal');
       if (btnEditProfile) {
         btnEditProfile.addEventListener('click', () => {
-          EditProfileManager.open();
+          Router.navigate('edit-profile');
+          EditProfileManager.switchTab('profile');
         });
       }
 
@@ -3057,84 +3102,874 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const EditProfileManager = {
-    modal: document.getElementById('editProfileModal'),
-    form: document.getElementById('editProfileForm'),
-    nameInput: document.getElementById('editDisplayNameInput'),
-    bioInput: document.getElementById('editBioInput'),
-    locInput: document.getElementById('editLocationInput'),
-    avatarInput: document.getElementById('editAvatarUrlInput'),
-    bannerInput: document.getElementById('editBannerUrlInput'),
+    savedProfile: null,
+    draftProfile: null,
+    isDirty: false,
+    pendingAvatarFile: null,
+    pendingBannerFile: null,
+    activeTab: 'profile',
 
-    open() {
-      if (!AuthAPI.getToken()) {
-        showToast('Please sign in to edit your profile.');
-        Router.navigate('login');
+    getDefaultDraft() {
+      return {
+        displayName: currentUser?.display_name || currentUser?.username || 'Contender',
+        username: currentUser?.username || 'user',
+        bio: currentUser?.bio || '',
+        location: currentUser?.location || '',
+        dateOfBirth: currentUser?.date_of_birth || '',
+        gender: currentUser?.gender || 'Male',
+        socialLinks: currentUser?.social_links ? (typeof currentUser.social_links === 'string' ? JSON.parse(currentUser.social_links) : currentUser.social_links) : { instagram: '', youtube: '', twitter: '', discord: '' },
+        visibility: currentUser?.visibility || 'public',
+        avatarUrl: currentUser?.avatar_url || '',
+        bannerUrl: currentUser?.banner_url || '',
+        avatarShape: currentUser?.avatar_shape || 'rectangular',
+        avatarFrame: currentUser?.avatar_frame || 'none',
+        profileTheme: currentUser?.profile_theme || 'default',
+        profileAccent: currentUser?.profile_accent || 'lime',
+        profileBadge: currentUser?.profile_badge || 'senior_roaster',
+        profileEffects: currentUser?.profile_effects || 'none',
+        stats: currentUser?.stats || { posts: 40, reputation: 1800, cooked: 12, badges: 5 }
+      };
+    },
+
+    async open() {
+      if (!AuthAPI.getToken() || !currentUser) {
+        AuthManager.requireAuth({ type: 'profile' }, 'Please sign in to edit your profile arena.', 'Edit Profile');
         return;
       }
-      if (currentUser) {
-        if (this.nameInput) this.nameInput.value = currentUser.display_name || currentUser.username;
-        if (this.bioInput) this.bioInput.value = currentUser.bio || '';
-        if (this.locInput) this.locInput.value = currentUser.location || '';
-        if (this.avatarInput) this.avatarInput.value = currentUser.avatar_url || '';
-        if (this.bannerInput) this.bannerInput.value = currentUser.banner_url || '';
-      }
-      if (this.modal) this.modal.style.display = 'flex';
-    },
 
-    close() {
-      if (this.modal) this.modal.style.display = 'none';
-    },
-
-    async save(e) {
-      e.preventDefault();
+      // Fetch fresh profile DTO from server (Single Source of Truth)
       try {
-        const payload = {
-          displayName: this.nameInput ? this.nameInput.value : '',
-          bio: this.bioInput ? this.bioInput.value : '',
-          location: this.locInput ? this.locInput.value : '',
-          avatarUrl: this.avatarInput ? this.avatarInput.value : '',
-          bannerUrl: this.bannerInput ? this.bannerInput.value : ''
+        const res = await AuthAPI.request(`/api/users/${encodeURIComponent(currentUser.username)}/profile`);
+        if (res && res.profile) {
+          const p = res.profile;
+          let sLinks = p.socialLinks || {};
+          if (typeof sLinks === 'string') {
+            try { sLinks = JSON.parse(sLinks); } catch (e) { sLinks = {}; }
+          }
+          this.savedProfile = {
+            displayName: p.displayName || p.username,
+            username: p.username,
+            bio: p.bio || '',
+            location: p.location || '',
+            dateOfBirth: p.dateOfBirth || '',
+            gender: p.gender || 'Male',
+            socialLinks: sLinks,
+            visibility: p.visibility || 'public',
+            avatarUrl: p.avatarUrl || '',
+            bannerUrl: p.bannerUrl || '',
+            avatarShape: p.avatarShape || 'rectangular',
+            avatarFrame: p.avatarFrame || 'none',
+            profileTheme: p.profileTheme || 'default',
+            profileAccent: p.profileAccent || 'lime',
+            profileBadge: p.profileBadge || 'senior_roaster',
+            profileEffects: p.profileEffects || 'none',
+            rankTitle: p.rankTitle || 'Senior Roaster',
+            stats: p.stats || { posts: 40, reputation: 1800, cooked: 12, badges: 5 }
+          };
+        } else {
+          this.savedProfile = this.getDefaultDraft();
+        }
+      } catch (err) {
+        console.warn('Could not fetch server profile DTO, using session state:', err);
+        this.savedProfile = this.getDefaultDraft();
+      }
+
+      this.draftProfile = JSON.parse(JSON.stringify(this.savedProfile));
+      this.pendingAvatarFile = null;
+      this.pendingBannerFile = null;
+      this.isDirty = false;
+
+      this.populateForm();
+      this.updateLivePreview();
+      this.markDirty(false);
+    },
+
+    populateForm() {
+      const d = this.draftProfile;
+      if (!d) return;
+
+      // Inputs
+      const nameInp = document.getElementById('editorDisplayNameInput');
+      if (nameInp) nameInp.value = d.displayName || '';
+
+      const userInp = document.getElementById('editorUsernameInput');
+      if (userInp) userInp.value = d.username || '';
+
+      const domainSpan = document.querySelector('#editorDomainPreview span');
+      if (domainSpan) domainSpan.textContent = d.username || '';
+
+      const bioInp = document.getElementById('editorBioInput');
+      if (bioInp) {
+        bioInp.value = d.bio || '';
+        const counter = document.getElementById('editorBioCounter');
+        if (counter) counter.textContent = `${bioInp.value.length}/150`;
+      }
+
+      const locInp = document.getElementById('editorLocationInput');
+      if (locInp) locInp.value = d.location || '';
+
+      const dobInp = document.getElementById('editorDobInput');
+      if (dobInp) dobInp.value = d.dateOfBirth || '';
+
+      const genSel = document.getElementById('editorGenderSelect');
+      if (genSel) genSel.value = d.gender || 'Male';
+
+      const visSel = document.getElementById('editorVisibilitySelect');
+      if (visSel) visSel.value = d.visibility || 'public';
+
+      // Social Links
+      const sLinks = d.socialLinks || {};
+      const igInp = document.getElementById('socialInstagramInput');
+      if (igInp) igInp.value = sLinks.instagram || '';
+
+      const ytInp = document.getElementById('socialYoutubeInput');
+      if (ytInp) ytInp.value = sLinks.youtube || '';
+
+      const twInp = document.getElementById('socialTwitterInput');
+      if (twInp) twInp.value = sLinks.twitter || '';
+
+      const dcInp = document.getElementById('socialDiscordInput');
+      if (dcInp) dcInp.value = sLinks.discord || '';
+
+      // Thumbs
+      const avThumb = document.getElementById('editorAvatarPreview');
+      if (avThumb) {
+        avThumb.src = d.avatarUrl || GUEST_SILHOUETTE_SVG;
+      }
+      const banThumb = document.getElementById('editorBannerPreview');
+      if (banThumb) {
+        banThumb.src = d.bannerUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
+      }
+
+      // Visual Selectors Selection States
+      this.syncActivePills();
+    },
+
+    syncActivePills() {
+      const d = this.draftProfile;
+      if (!d) return;
+
+      // Shape
+      document.querySelectorAll('.shape-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.shape === d.avatarShape);
+      });
+
+      // Frame
+      document.querySelectorAll('.frame-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.frame === d.avatarFrame);
+      });
+
+      // Accent
+      document.querySelectorAll('.accent-color-btn').forEach(c => {
+        c.classList.toggle('active', c.dataset.accent === d.profileAccent);
+      });
+
+      // Theme
+      document.querySelectorAll('.theme-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.theme === d.profileTheme);
+      });
+
+      // Badge
+      document.querySelectorAll('.badge-select-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.badge === d.profileBadge);
+      });
+
+      // Effects
+      document.querySelectorAll('.effect-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.effect === d.profileEffects);
+      });
+    },
+
+    updateLivePreview() {
+      const d = this.draftProfile;
+      if (!d) return;
+
+      // Banner image & effect
+      const lpBannerImg = document.getElementById('lpBannerImg');
+      if (lpBannerImg) {
+        lpBannerImg.src = d.bannerUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
+      }
+
+      // Avatar image, shape, & frame
+      const lpAvatarImg = document.getElementById('lpAvatarImg');
+      if (lpAvatarImg) {
+        lpAvatarImg.src = d.avatarUrl || GUEST_SILHOUETTE_SVG;
+        lpAvatarImg.className = `lp-avatar-img shape-${d.avatarShape || 'rectangular'}`;
+      }
+
+      const lpAvatarFrameBox = document.getElementById('lpAvatarFrameBox');
+      if (lpAvatarFrameBox) {
+        lpAvatarFrameBox.className = `lp-avatar-frame-box frame-${d.avatarFrame || 'none'}`;
+      }
+
+      // Names & Bio
+      const lpDisplayName = document.getElementById('lpDisplayName');
+      if (lpDisplayName) lpDisplayName.textContent = d.displayName || d.username || 'Contender';
+
+      const lpHandle = document.getElementById('lpHandle');
+      if (lpHandle) lpHandle.textContent = `@${d.username || 'user'}`;
+
+      const lpBio = document.getElementById('lpBio');
+      if (lpBio) lpBio.textContent = d.bio || 'Arena contender.';
+
+      // Simulated feed names
+      const cardAuthor1 = document.getElementById('lpCardAuthor1');
+      if (cardAuthor1) cardAuthor1.textContent = d.displayName || d.username;
+      const cardHandle1 = document.getElementById('lpCardHandle1');
+      if (cardHandle1) cardHandle1.textContent = `@${d.username}`;
+      const cardAvatar1 = document.getElementById('lpCardAvatar1');
+      if (cardAvatar1) cardAvatar1.src = d.avatarUrl || GUEST_SILHOUETTE_SVG;
+
+      const cardAuthor2 = document.getElementById('lpCardAuthor2');
+      if (cardAuthor2) cardAuthor2.textContent = d.displayName || d.username;
+      const cardHandle2 = document.getElementById('lpCardHandle2');
+      if (cardHandle2) cardHandle2.textContent = `@${d.username}`;
+      const cardAvatar2 = document.getElementById('lpCardAvatar2');
+      if (cardAvatar2) cardAvatar2.src = d.avatarUrl || GUEST_SILHOUETTE_SVG;
+
+      // Meta items
+      const lpLocationText = document.getElementById('lpLocationText');
+      const lpMetaLocation = document.getElementById('lpMetaLocation');
+      if (lpLocationText && lpMetaLocation) {
+        if (d.location && d.location.trim()) {
+          lpLocationText.textContent = d.location;
+          lpMetaLocation.style.display = 'inline-flex';
+        } else {
+          lpMetaLocation.style.display = 'none';
+        }
+      }
+
+      const lpDobText = document.getElementById('lpDobText');
+      const lpMetaDob = document.getElementById('lpMetaDob');
+      if (lpDobText && lpMetaDob) {
+        if (d.dateOfBirth && d.dateOfBirth.trim()) {
+          lpDobText.textContent = d.dateOfBirth;
+          lpMetaDob.style.display = 'inline-flex';
+        } else {
+          lpMetaDob.style.display = 'none';
+        }
+      }
+
+      const lpGenderText = document.getElementById('lpGenderText');
+      const lpMetaGender = document.getElementById('lpMetaGender');
+      if (lpGenderText && lpMetaGender) {
+        if (d.gender && d.gender.trim()) {
+          lpGenderText.textContent = d.gender;
+          lpMetaGender.style.display = 'inline-flex';
+        } else {
+          lpMetaGender.style.display = 'none';
+        }
+      }
+
+      // Rank / Badge
+      const lpRankBadge = document.getElementById('lpRankBadge');
+      if (lpRankBadge) {
+        const badgeNames = {
+          'senior_roaster': 'Senior Roaster',
+          'verified': 'Verified Citizen',
+          'battle_champ': 'Battle Champion',
+          'problem_solver': 'Problem Solver',
+          'helpful': 'Helpful Roaster'
         };
+        lpRankBadge.textContent = badgeNames[d.profileBadge] || 'Arena Member';
+      }
+
+      // Social links pills
+      const socialContainer = document.getElementById('lpSocialLinksRow');
+      if (socialContainer) {
+        socialContainer.innerHTML = '';
+        const sLinks = d.socialLinks || {};
+        const entries = [
+          { key: 'instagram', icon: 'fa-brands fa-instagram', label: 'Instagram', url: sLinks.instagram },
+          { key: 'youtube', icon: 'fa-brands fa-youtube', label: 'YouTube', url: sLinks.youtube },
+          { key: 'twitter', icon: 'fa-brands fa-x-twitter', label: 'X (Twitter)', url: sLinks.twitter },
+          { key: 'discord', icon: 'fa-brands fa-discord', label: 'Discord', url: sLinks.discord }
+        ];
+
+        entries.forEach(item => {
+          if (item.url && item.url.trim()) {
+            const pill = document.createElement('a');
+            pill.href = item.url;
+            pill.target = '_blank';
+            pill.rel = 'noopener noreferrer';
+            pill.className = `lp-social-pill pill-${item.key}`;
+            pill.innerHTML = `<i class="${item.icon}"></i><span>${item.label}</span>`;
+            socialContainer.appendChild(pill);
+          }
+        });
+      }
+
+      // Themes and Effects applied strictly to Live Preview Card
+      const card = document.getElementById('livePreviewCard');
+      if (card) {
+        // Clear old theme/effect classes
+        card.className = 'live-preview-card';
+        if (d.profileTheme && d.profileTheme !== 'default') {
+          card.classList.add(`theme-${d.profileTheme}`);
+        }
+        if (d.profileEffects && d.profileEffects !== 'none') {
+          card.classList.add(`effect-${d.profileEffects}`);
+        }
+        if (d.profileAccent) {
+          card.dataset.accent = d.profileAccent;
+        }
+      }
+    },
+
+    markDirty(status = true) {
+      this.isDirty = status;
+      const saveBtn = document.getElementById('btnEditorSave');
+      const discardBtn = document.getElementById('btnEditorDiscard');
+      if (saveBtn) {
+        saveBtn.classList.toggle('is-dirty', status);
+      }
+      if (discardBtn) {
+        discardBtn.classList.toggle('is-dirty', status);
+      }
+    },
+
+    async save() {
+      if (!AuthAPI.getToken() || !currentUser) {
+        AuthManager.requireAuth({ type: 'profile' }, 'Please sign in to save profile changes.', 'Save Profile');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btnEditorSave');
+      const textSpan = saveBtn?.querySelector('.btn-save-text');
+      const spinSpan = saveBtn?.querySelector('.btn-save-spinner');
+
+      try {
+        if (textSpan) textSpan.style.display = 'none';
+        if (spinSpan) spinSpan.style.display = 'inline-block';
+        if (saveBtn) saveBtn.disabled = true;
+
+        // 1. Upload Pending Avatar if chosen via local file
+        let finalAvatarUrl = this.draftProfile.avatarUrl;
+        if (this.pendingAvatarFile) {
+          try {
+            const uploadRes = await AuthAPI.uploadMedia(this.pendingAvatarFile);
+            if (uploadRes && uploadRes.url) {
+              finalAvatarUrl = uploadRes.url;
+              this.draftProfile.avatarUrl = finalAvatarUrl;
+            }
+          } catch (uploadErr) {
+            console.error('Avatar upload failed:', uploadErr);
+            showToast('⚠️ Avatar upload failed: ' + uploadErr.message);
+            return;
+          }
+        }
+
+        // 2. Upload Pending Banner if chosen via local file
+        let finalBannerUrl = this.draftProfile.bannerUrl;
+        if (this.pendingBannerFile) {
+          try {
+            const uploadRes = await AuthAPI.uploadMedia(this.pendingBannerFile);
+            if (uploadRes && uploadRes.url) {
+              finalBannerUrl = uploadRes.url;
+              this.draftProfile.bannerUrl = finalBannerUrl;
+            }
+          } catch (uploadErr) {
+            console.error('Banner upload failed:', uploadErr);
+            showToast('⚠️ Banner upload failed: ' + uploadErr.message);
+            return;
+          }
+        }
+
+        // 3. Payload with Server Mass-Assignment Allowlist
+        const payload = {
+          displayName: this.draftProfile.displayName,
+          username: this.draftProfile.username,
+          bio: this.draftProfile.bio,
+          location: this.draftProfile.location,
+          dateOfBirth: this.draftProfile.dateOfBirth,
+          gender: this.draftProfile.gender,
+          socialLinks: this.draftProfile.socialLinks,
+          visibility: this.draftProfile.visibility,
+          avatarUrl: finalAvatarUrl,
+          bannerUrl: finalBannerUrl,
+          avatarShape: this.draftProfile.avatarShape,
+          avatarFrame: this.draftProfile.avatarFrame,
+          profileTheme: this.draftProfile.profileTheme,
+          profileAccent: this.draftProfile.profileAccent,
+          profileBadge: this.draftProfile.profileBadge,
+          profileEffects: this.draftProfile.profileEffects
+        };
+
         const res = await AuthAPI.request('/api/users/profile', {
           method: 'PUT',
           body: JSON.stringify(payload)
         });
+
         if (res && res.user) {
           currentUser = res.user;
+          AuthManager.currentUser = res.user;
+          this.savedProfile = JSON.parse(JSON.stringify(this.draftProfile));
+          this.pendingAvatarFile = null;
+          this.pendingBannerFile = null;
+          this.markDirty(false);
+
           updateUserSessionUI();
-          ProfileManager.loadProfile(currentUser.username);
-          renderFeed(false);
-          this.close();
-          showToast('Profile updated successfully!');
+          showToast('✅ Profile updated successfully!');
+          Router.navigate('profile', true, currentUser.username);
+        } else {
+          showToast(res.error || 'Failed to update profile.');
         }
       } catch (err) {
-        showToast(err.message || 'Failed to update profile.');
+        console.error('Profile update error:', err);
+        showToast('❌ ' + (err.message || 'Failed to save changes.'));
+      } finally {
+        if (textSpan) textSpan.style.display = 'inline-block';
+        if (spinSpan) spinSpan.style.display = 'none';
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    },
+
+    discard() {
+      if (!this.savedProfile) return;
+      this.draftProfile = JSON.parse(JSON.stringify(this.savedProfile));
+      this.pendingAvatarFile = null;
+      this.pendingBannerFile = null;
+      this.populateForm();
+      this.updateLivePreview();
+      this.markDirty(false);
+      showToast('Profile draft discarded.');
+    },
+
+    switchTab(tabName) {
+      this.activeTab = tabName;
+      document.querySelectorAll('#editorTabsNav .editor-nav-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tabName);
+      });
+      document.querySelectorAll('.editor-panel').forEach(p => {
+        p.classList.remove('active');
+      });
+      const targetPanel = document.getElementById(`panel${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
       }
     },
 
     init() {
-      const closeBtn = document.getElementById('closeEditProfileModalBtn');
-      if (closeBtn) closeBtn.addEventListener('click', () => this.close());
-
-      const cancelBtn = document.getElementById('btnCancelEditProfile');
-      if (cancelBtn) cancelBtn.addEventListener('click', () => this.close());
-
-      if (this.form) {
-        this.form.addEventListener('submit', (e) => this.save(e));
+      // 1. Discard & Save buttons
+      const btnDiscard = document.getElementById('btnEditorDiscard');
+      if (btnDiscard) {
+        btnDiscard.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.discard();
+        });
       }
+
+      const btnSave = document.getElementById('btnEditorSave');
+      if (btnSave) {
+        btnSave.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.save();
+        });
+      }
+
+      // 2. Editor Tabs Navigation
+      const tabNav = document.getElementById('editorTabsNav');
+      if (tabNav) {
+        tabNav.querySelectorAll('.editor-nav-tab').forEach(tabBtn => {
+          tabBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tab = tabBtn.dataset.tab;
+            if (tab) this.switchTab(tab);
+          });
+        });
+      }
+
+      // 3. Real-Time Input Event Listeners
+      const nameInput = document.getElementById('editorDisplayNameInput');
+      nameInput?.addEventListener('input', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.displayName = e.target.value;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const userInput = document.getElementById('editorUsernameInput');
+      let usernameTimer = null;
+      userInput?.addEventListener('input', (e) => {
+        if (!this.draftProfile) return;
+        const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        e.target.value = val;
+        this.draftProfile.username = val;
+        const domainSpan = document.querySelector('#editorDomainPreview span');
+        if (domainSpan) domainSpan.textContent = val;
+        this.updateLivePreview();
+        this.markDirty(true);
+
+        clearTimeout(usernameTimer);
+        const checkIcon = document.getElementById('usernameCheck');
+        if (checkIcon) checkIcon.style.opacity = '0.4';
+
+        usernameTimer = setTimeout(async () => {
+          if (!val || (this.savedProfile && val === this.savedProfile.username)) {
+            if (checkIcon) {
+              checkIcon.className = 'fa-solid fa-circle-check input-validation-icon text-green';
+              checkIcon.style.opacity = '1';
+            }
+            return;
+          }
+          try {
+            const res = await AuthAPI.request(`/api/users/${encodeURIComponent(val)}/profile`);
+            if (res && res.profile && res.profile.username !== currentUser?.username) {
+              if (checkIcon) {
+                checkIcon.className = 'fa-solid fa-circle-xmark input-validation-icon text-danger';
+                checkIcon.style.opacity = '1';
+              }
+            } else {
+              if (checkIcon) {
+                checkIcon.className = 'fa-solid fa-circle-check input-validation-icon text-green';
+                checkIcon.style.opacity = '1';
+              }
+            }
+          } catch (e) {
+            if (checkIcon) {
+              checkIcon.className = 'fa-solid fa-circle-check input-validation-icon text-green';
+              checkIcon.style.opacity = '1';
+            }
+          }
+        }, 400);
+      });
+
+      const bioInput = document.getElementById('editorBioInput');
+      bioInput?.addEventListener('input', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.bio = e.target.value;
+        const counter = document.getElementById('editorBioCounter');
+        if (counter) counter.textContent = `${e.target.value.length}/150`;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const locInput = document.getElementById('editorLocationInput');
+      locInput?.addEventListener('input', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.location = e.target.value;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const btnClearLoc = document.getElementById('btnClearLocation');
+      btnClearLoc?.addEventListener('click', () => {
+        if (!this.draftProfile) return;
+        if (locInput) locInput.value = '';
+        this.draftProfile.location = '';
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const dobInput = document.getElementById('editorDobInput');
+      dobInput?.addEventListener('input', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.dateOfBirth = e.target.value;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const genSelect = document.getElementById('editorGenderSelect');
+      genSelect?.addEventListener('change', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.gender = e.target.value;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const visSelect = document.getElementById('editorVisibilitySelect');
+      visSelect?.addEventListener('change', (e) => {
+        if (!this.draftProfile) return;
+        this.draftProfile.visibility = e.target.value;
+        this.markDirty(true);
+      });
+
+      // Social inputs
+      const igInput = document.getElementById('socialInstagramInput');
+      const ytInput = document.getElementById('socialYoutubeInput');
+      const twInput = document.getElementById('socialTwitterInput');
+      const dcInput = document.getElementById('socialDiscordInput');
+
+      const updateSocialDraft = () => {
+        if (!this.draftProfile) return;
+        this.draftProfile.socialLinks = {
+          instagram: igInput?.value || '',
+          youtube: ytInput?.value || '',
+          twitter: twInput?.value || '',
+          discord: dcInput?.value || ''
+        };
+        this.updateLivePreview();
+        this.markDirty(true);
+      };
+
+      [igInput, ytInput, twInput, dcInput].forEach(inp => {
+        inp?.addEventListener('input', updateSocialDraft);
+      });
+
+      document.querySelectorAll('.btn-clear-social').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.target;
+          const inp = document.getElementById(targetId);
+          if (inp) {
+            inp.value = '';
+            updateSocialDraft();
+          }
+        });
+      });
+
+      // 4. File Upload Triggers (Instant Local Blob Preview)
+      const avatarFileInput = document.getElementById('avatarFileInput');
+      const btnTriggerAvatarUpload = document.getElementById('btnTriggerAvatarUpload');
+      btnTriggerAvatarUpload?.addEventListener('click', () => avatarFileInput?.click());
+
+      avatarFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('⚠️ Avatar image must be under 5MB.');
+          return;
+        }
+        this.pendingAvatarFile = file;
+        const localBlobUrl = URL.createObjectURL(file);
+        this.draftProfile.avatarUrl = localBlobUrl;
+
+        const avThumb = document.getElementById('editorAvatarPreview');
+        if (avThumb) avThumb.src = localBlobUrl;
+
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const btnRemoveAvatar = document.getElementById('btnRemoveAvatarPhoto');
+      btnRemoveAvatar?.addEventListener('click', () => {
+        if (!this.draftProfile) return;
+        this.pendingAvatarFile = null;
+        this.draftProfile.avatarUrl = '';
+        const avThumb = document.getElementById('editorAvatarPreview');
+        if (avThumb) avThumb.src = GUEST_SILHOUETTE_SVG;
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      // Presets Grid
+      document.querySelectorAll('#avatarPresetsGrid .preset-avatar-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('#avatarPresetsGrid .preset-avatar-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const src = item.dataset.src;
+          if (src && this.draftProfile) {
+            this.pendingAvatarFile = null;
+            this.draftProfile.avatarUrl = src;
+            const avThumb = document.getElementById('editorAvatarPreview');
+            if (avThumb) avThumb.src = src;
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      const btnAddCustomPreset = document.getElementById('btnAddCustomPreset');
+      btnAddCustomPreset?.addEventListener('click', () => avatarFileInput?.click());
+
+      // Banner file upload
+      const bannerFileInput = document.getElementById('bannerFileInput');
+      const btnTriggerBannerUpload = document.getElementById('btnTriggerBannerUpload');
+      btnTriggerBannerUpload?.addEventListener('click', () => bannerFileInput?.click());
+
+      bannerFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('⚠️ Banner image must be under 5MB.');
+          return;
+        }
+        this.pendingBannerFile = file;
+        const localBlobUrl = URL.createObjectURL(file);
+        this.draftProfile.bannerUrl = localBlobUrl;
+
+        const banThumb = document.getElementById('editorBannerPreview');
+        if (banThumb) banThumb.src = localBlobUrl;
+
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      const btnRemoveBanner = document.getElementById('btnRemoveBannerPhoto');
+      btnRemoveBanner?.addEventListener('click', () => {
+        if (!this.draftProfile) return;
+        this.pendingBannerFile = null;
+        this.draftProfile.bannerUrl = '';
+        const banThumb = document.getElementById('editorBannerPreview');
+        if (banThumb) banThumb.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
+        this.updateLivePreview();
+        this.markDirty(true);
+      });
+
+      document.querySelectorAll('#bannerPresetsGrid .banner-preset-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#bannerPresetsGrid .banner-preset-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          const src = card.dataset.src;
+          if (src && this.draftProfile) {
+            this.pendingBannerFile = null;
+            this.draftProfile.bannerUrl = src;
+            const banThumb = document.getElementById('editorBannerPreview');
+            if (banThumb) banThumb.src = src;
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 5. Avatar Shapes
+      document.querySelectorAll('.shape-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.shape-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.avatarShape = card.dataset.shape || 'rectangular';
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 6. Avatar Frames
+      document.querySelectorAll('.frame-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const frame = card.dataset.frame || 'none';
+          if (card.classList.contains('premium-locked') && !currentUser?.is_premium) {
+            showToast('👑 Unlock Royal Frames with DRAGME Premium!');
+            return;
+          }
+          document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.avatarFrame = frame;
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 7. Accent Colors
+      document.querySelectorAll('.accent-color-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.accent-color-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.profileAccent = btn.dataset.accent || 'lime';
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 8. Themes
+      document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const theme = card.dataset.theme || 'default';
+          if (card.classList.contains('premium-theme') && !currentUser?.is_premium) {
+            showToast('👑 Unlock Premium Arena Themes with DRAGME Premium!');
+            return;
+          }
+          document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.profileTheme = theme;
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 9. Badges
+      document.querySelectorAll('.badge-select-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.badge-select-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.profileBadge = card.dataset.badge || 'senior_roaster';
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 10. Effects
+      document.querySelectorAll('.effect-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          if (this.draftProfile) {
+            this.draftProfile.profileEffects = card.dataset.effect || 'none';
+            this.updateLivePreview();
+            this.markDirty(true);
+          }
+        });
+      });
+
+      // 11. Device Switcher Pills
+      document.querySelectorAll('.preview-device-pills .device-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dev = btn.dataset.device;
+          if (!dev) return;
+          document.querySelectorAll('.preview-device-pills .device-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const card = document.getElementById('livePreviewCard');
+          if (card) {
+            card.classList.remove('device-desktop', 'device-tablet', 'device-mobile');
+            card.classList.add(`device-${dev}`);
+          }
+        });
+      });
+
+      // 12. Mobile Segmented Controller (Edit vs Preview)
+      const btnSegEdit = document.getElementById('btnSegEdit');
+      const btnSegPreview = document.getElementById('btnSegPreview');
+      const previewCol = document.getElementById('editPreviewCol');
+      const controlsCol = document.getElementById('editControlsCol');
+
+      btnSegEdit?.addEventListener('click', () => {
+        btnSegEdit.classList.add('active');
+        btnSegPreview?.classList.remove('active');
+        if (controlsCol) controlsCol.style.display = 'block';
+        if (previewCol) previewCol.style.display = 'none';
+      });
+
+      btnSegPreview?.addEventListener('click', () => {
+        btnSegPreview.classList.add('active');
+        btnSegEdit?.classList.remove('active');
+        if (previewCol) previewCol.style.display = 'block';
+        if (controlsCol) controlsCol.style.display = 'none';
+      });
     }
   };
 
   const Router = {
     currentRoute: 'home',
 
-    navigate(route, updateHistory = true) {
+    navigate(route, updateHistory = true, targetUser = null) {
       this.currentRoute = route;
       const topNav = document.getElementById('topNav');
       const appLayoutGrid = document.getElementById('appLayoutGrid');
       const mobileBottomNav = document.getElementById('mobileBottomNav');
       const signupPageView = document.getElementById('signupPageView');
       const loginPageView = document.getElementById('loginPageView');
+
+      const homeFeedContainer = document.getElementById('homeFeedContainer');
+      const profileViewContainer = document.getElementById('profileViewContainer');
+      const editProfileViewContainer = document.getElementById('editProfileViewContainer');
+      const homeRightWidgets = document.getElementById('homeRightWidgets');
+      const profileRightWidgets = document.getElementById('profileRightWidgets');
+      const rightInfoSidebar = document.getElementById('rightInfoSidebar');
+
+      const navHome = document.getElementById('navHome');
+      const navProfile = document.getElementById('navProfile');
+      const navEditProfile = document.getElementById('navEditProfile');
+
+      // Reset all nav items active states
+      [navHome, navProfile, navEditProfile].forEach(el => el?.classList.remove('active'));
 
       if (route === 'signup') {
         if (topNav) topNav.style.display = 'none';
@@ -3162,33 +3997,63 @@ document.addEventListener('DOMContentLoaded', () => {
         if (updateHistory) {
           history.pushState({ route: 'login' }, '', '/login');
         }
-      } else if (route === 'profile') {
+      } else if (route === 'edit-profile') {
+        // Authenticated check
+        if (!currentUser) {
+          AuthManager.requireAuth({ type: 'profile' }, 'Sign in to customize your DRAGME profile arena.', 'Edit Profile');
+          this.navigate('home', false);
+          return;
+        }
+
         if (signupPageView) signupPageView.style.display = 'none';
         if (loginPageView) loginPageView.style.display = 'none';
         if (topNav) topNav.style.display = '';
         if (appLayoutGrid) appLayoutGrid.style.display = '';
         if (mobileBottomNav) mobileBottomNav.style.display = '';
 
-        const homeFeedContainer = document.getElementById('homeFeedContainer');
-        const profileViewContainer = document.getElementById('profileViewContainer');
-        const homeRightWidgets = document.getElementById('homeRightWidgets');
-        const profileRightWidgets = document.getElementById('profileRightWidgets');
+        if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'none', 'important');
+        if (profileViewContainer) profileViewContainer.style.setProperty('display', 'none', 'important');
+        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'block', 'important');
+        if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', 'none', 'important');
+
+        if (navEditProfile) navEditProfile.classList.add('active');
+
+        document.title = 'Edit Profile — DRAGME Arena';
+        if (updateHistory) {
+          history.pushState({ route: 'edit-profile' }, '', '/edit-profile');
+        }
+
+        EditProfileManager.open();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (route === 'profile') {
+        // Authenticated or specified public profile check
+        const usernameToLoad = targetUser || (currentUser ? currentUser.username : null);
+        if (!usernameToLoad) {
+          AuthManager.requireAuth({ type: 'profile' }, 'Sign in to access your personal DRAGME profile arena.', 'Profile Arena');
+          this.navigate('home', false);
+          return;
+        }
+
+        if (signupPageView) signupPageView.style.display = 'none';
+        if (loginPageView) loginPageView.style.display = 'none';
+        if (topNav) topNav.style.display = '';
+        if (appLayoutGrid) appLayoutGrid.style.display = '';
+        if (mobileBottomNav) mobileBottomNav.style.display = '';
 
         if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'none', 'important');
+        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'none', 'important');
         if (profileViewContainer) profileViewContainer.style.setProperty('display', 'flex', 'important');
+        if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', '', 'important');
         if (homeRightWidgets) homeRightWidgets.style.setProperty('display', 'none', 'important');
         if (profileRightWidgets) profileRightWidgets.style.setProperty('display', 'flex', 'important');
 
-        const navHome = document.getElementById('navHome');
-        const navProfile = document.getElementById('navProfile');
-        if (navHome) navHome.classList.remove('active');
         if (navProfile) navProfile.classList.add('active');
 
-        document.title = 'Tester Supreme (@tester) — DRAGME Profile';
         if (updateHistory) {
-          history.pushState({ route: 'profile' }, '', '/profile');
+          const profilePath = targetUser ? `/profile?user=${encodeURIComponent(targetUser)}` : '/profile';
+          history.pushState({ route: 'profile', user: targetUser }, '', profilePath);
         }
-        ProfileManager.loadProfile();
+        ProfileManager.loadProfile(usernameToLoad);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         // Home Feed
@@ -3198,20 +4063,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appLayoutGrid) appLayoutGrid.style.display = '';
         if (mobileBottomNav) mobileBottomNav.style.display = '';
 
-        const homeFeedContainer = document.getElementById('homeFeedContainer');
-        const profileViewContainer = document.getElementById('profileViewContainer');
-        const homeRightWidgets = document.getElementById('homeRightWidgets');
-        const profileRightWidgets = document.getElementById('profileRightWidgets');
-
         if (homeFeedContainer) homeFeedContainer.style.setProperty('display', 'flex', 'important');
         if (profileViewContainer) profileViewContainer.style.setProperty('display', 'none', 'important');
+        if (editProfileViewContainer) editProfileViewContainer.style.setProperty('display', 'none', 'important');
+        if (rightInfoSidebar) rightInfoSidebar.style.setProperty('display', '', 'important');
         if (homeRightWidgets) homeRightWidgets.style.setProperty('display', 'flex', 'important');
         if (profileRightWidgets) profileRightWidgets.style.setProperty('display', 'none', 'important');
 
-        const navHome = document.getElementById('navHome');
-        const navProfile = document.getElementById('navProfile');
         if (navHome) navHome.classList.add('active');
-        if (navProfile) navProfile.classList.remove('active');
 
         document.title = 'DRAGME — Next-Gen Social Arena & Community';
         if (updateHistory && window.location.pathname !== '/') {
@@ -3225,12 +4084,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const handleRoute = () => {
         const path = window.location.pathname;
         const hash = window.location.hash;
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryUser = urlParams.get('user') || urlParams.get('u');
+
         if (path === '/signup' || path === '/register' || hash === '#signup' || hash === '#register') {
           this.navigate('signup', false);
         } else if (path === '/login' || path === '/signin' || hash === '#login' || hash === '#signin') {
           this.navigate('login', false);
+        } else if (path === '/edit-profile' || hash === '#edit-profile' || hash === '#/edit-profile') {
+          this.navigate('edit-profile', false);
         } else if (path === '/profile' || hash === '#profile' || hash === '#/profile') {
-          this.navigate('profile', false);
+          this.navigate('profile', false, queryUser);
         } else {
           this.navigate('home', false);
         }
@@ -3310,7 +4174,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navProfileBtn) {
     navProfileBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in to access your personal DRAGME profile arena.', 'Profile Arena')) {
+        return;
+      }
       Router.navigate('profile');
+    });
+  }
+
+  const navEditProfileBtn = document.getElementById('navEditProfile');
+  if (navEditProfileBtn) {
+    navEditProfileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in to customize your personal DRAGME profile arena.', 'Edit Profile')) {
+        return;
+      }
+      Router.navigate('edit-profile');
     });
   }
 
@@ -3318,6 +4196,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sbViewProfileBtn) {
     sbViewProfileBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in to access your personal DRAGME profile arena.', 'Profile Arena')) {
+        return;
+      }
       Router.navigate('profile');
     });
   }

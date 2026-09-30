@@ -185,7 +185,13 @@ const db = {
       `);
 
       // Safe migration check for existing columns
-      const cols = ['display_name', 'bio', 'location', 'banner_url', 'rank_title', 'reputation_score', 'cooked_ratio', 'judgment_accuracy', 'rank_number', 'roast_points', 'next_level_points', 'followers_count', 'following_count', 'reactions_count'];
+      const cols = [
+        'display_name', 'bio', 'location', 'date_of_birth', 'gender', 'social_links', 'visibility',
+        'avatar_url', 'banner_url', 'avatar_frame', 'avatar_shape', 'profile_theme', 'profile_accent',
+        'profile_badge', 'profile_effects', 'is_premium', 'badges_owned',
+        'rank_title', 'reputation_score', 'cooked_ratio', 'judgment_accuracy', 'rank_number',
+        'roast_points', 'next_level_points', 'followers_count', 'following_count', 'reactions_count'
+      ];
       for (const col of cols) {
         try {
           await pgPool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ${col} VARCHAR(255) DEFAULT ''`);
@@ -202,8 +208,20 @@ const db = {
           display_name TEXT DEFAULT '',
           bio TEXT DEFAULT '',
           location TEXT DEFAULT '',
+          date_of_birth TEXT DEFAULT '',
+          gender TEXT DEFAULT '',
+          social_links TEXT DEFAULT '{}',
+          visibility TEXT DEFAULT 'public',
           avatar_url TEXT DEFAULT '',
           banner_url TEXT DEFAULT '',
+          avatar_frame TEXT DEFAULT 'none',
+          avatar_shape TEXT DEFAULT 'rectangular',
+          profile_theme TEXT DEFAULT 'default',
+          profile_accent TEXT DEFAULT 'lime',
+          profile_badge TEXT DEFAULT 'senior_roaster',
+          profile_effects TEXT DEFAULT 'none',
+          is_premium INTEGER DEFAULT 0,
+          badges_owned TEXT DEFAULT '["verified","senior_roaster","battle_champ","problem_solver","helpful"]',
           rank_title TEXT DEFAULT 'Senior Roaster',
           reputation_score INTEGER DEFAULT 1800,
           cooked_ratio INTEGER DEFAULT 100,
@@ -275,11 +293,24 @@ const db = {
 
       // SQLite dynamic column migrations
       const columnsToAdd = [
-        { name: 'display_name', type: 'TEXT DEFAULT ""' },
-        { name: 'bio', type: 'TEXT DEFAULT ""' },
-        { name: 'location', type: 'TEXT DEFAULT ""' },
-        { name: 'banner_url', type: 'TEXT DEFAULT ""' },
-        { name: 'rank_title', type: 'TEXT DEFAULT "Senior Roaster"' },
+        { name: 'display_name', type: "TEXT DEFAULT ''" },
+        { name: 'bio', type: "TEXT DEFAULT ''" },
+        { name: 'location', type: "TEXT DEFAULT ''" },
+        { name: 'date_of_birth', type: "TEXT DEFAULT ''" },
+        { name: 'gender', type: "TEXT DEFAULT ''" },
+        { name: 'social_links', type: "TEXT DEFAULT '{}'" },
+        { name: 'visibility', type: "TEXT DEFAULT 'public'" },
+        { name: 'avatar_url', type: "TEXT DEFAULT ''" },
+        { name: 'banner_url', type: "TEXT DEFAULT ''" },
+        { name: 'avatar_frame', type: "TEXT DEFAULT 'none'" },
+        { name: 'avatar_shape', type: "TEXT DEFAULT 'rectangular'" },
+        { name: 'profile_theme', type: "TEXT DEFAULT 'default'" },
+        { name: 'profile_accent', type: "TEXT DEFAULT 'lime'" },
+        { name: 'profile_badge', type: "TEXT DEFAULT 'senior_roaster'" },
+        { name: 'profile_effects', type: "TEXT DEFAULT 'none'" },
+        { name: 'is_premium', type: 'INTEGER DEFAULT 0' },
+        { name: 'badges_owned', type: "TEXT DEFAULT '[\"verified\",\"senior_roaster\",\"battle_champ\",\"problem_solver\",\"helpful\"]'" },
+        { name: 'rank_title', type: "TEXT DEFAULT 'Senior Roaster'" },
         { name: 'reputation_score', type: 'INTEGER DEFAULT 1800' },
         { name: 'cooked_ratio', type: 'INTEGER DEFAULT 100' },
         { name: 'judgment_accuracy', type: 'INTEGER DEFAULT 98' },
@@ -295,7 +326,7 @@ const db = {
         try {
           sqliteDb.exec(`ALTER TABLE users ADD COLUMN ${col.name} ${col.type};`);
         } catch (e) {
-          // Column already exists
+          // Column already exists or handled
         }
       }
     }

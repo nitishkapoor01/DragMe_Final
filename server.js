@@ -267,13 +267,14 @@ app.post('/api/auth/register', rateLimiter({ windowMs: 60000, max: 8 }), async (
 
 // LOGIN
 app.post('/api/auth/login', rateLimiter({ windowMs: 60000, max: 15 }), async (req, res) => {
-  const { login, password } = req.body;
+  const rawLogin = req.body.login || req.body.identifier;
+  const password = req.body.password;
 
-  if (!login || !password) {
+  if (!rawLogin || !password) {
     return res.status(400).json({ error: 'Please enter your username/email and password.' });
   }
 
-  const cleanLogin = String(login).trim();
+  const cleanLogin = String(rawLogin).trim();
 
   try {
     const user = await db.get('SELECT * FROM users WHERE LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?)', [cleanLogin, cleanLogin.toLowerCase()]);
@@ -303,13 +304,116 @@ app.post('/api/auth/login', rateLimiter({ windowMs: 60000, max: 15 }), async (re
   }
 });
 
+// =============================================================================
+// MEDIA STORAGE & UPLOAD SYSTEM
+// =============================================================================
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Serve uploaded media securely
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  maxAge: '1d',
+  setHeaders: (res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
+
+// SECURE MEDIA UPLOAD ENDPOINT
+app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 20 }), async (req, res) => {
+  try {
+    const { data, filename, type } = req.body;
+    if (!data || typeof data !== 'string') {
+      return res.status(400).json({ error: 'Image data is required.' });
+    }
+
+    // Support Base64 Data URL or Raw Base64
+    let buffer;
+    let mimeType = 'image/png';
+    let ext = 'png';
+
+    if (data.startsWith('data:')) {
+      const matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        return res.status(400).json({ error: 'Invalid base64 image format.' });
+      }
+      mimeType = matches[1].toLowerCase();
+      buffer = Buffer.from(matches[2], 'base64');
+    } else {
+      buffer = Buffer.from(data, 'base64');
+    }
+
+    // Allowed MIME types
+    const allowedMimes = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+      'image/svg+xml': 'svg'
+    };
+
+    if (!allowedMimes[mimeType]) {
+      return res.status(400).json({ error: 'Only JPG, PNG, WEBP, GIF, and SVG images are allowed.' });
+    }
+    ext = allowedMimes[mimeType];
+
+    // File size check: Max 5MB
+    if (buffer.length > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'File size exceeds maximum limit of 5MB.' });
+    }
+
+    // Magic-byte signature verification
+    if (ext === 'png') {
+      if (buffer[0] !== 0x89 || buffer[1] !== 0x50 || buffer[2] !== 0x4E || buffer[3] !== 0x47) {
+        return res.status(400).json({ error: 'Invalid PNG file signature.' });
+      }
+    } else if (ext === 'jpg') {
+      if (buffer[0] !== 0xFF || buffer[1] !== 0xD8 || buffer[2] !== 0xFF) {
+        return res.status(400).json({ error: 'Invalid JPEG file signature.' });
+      }
+    } else if (ext === 'gif') {
+      if (buffer.toString('ascii', 0, 3) !== 'GIF') {
+        return res.status(400).json({ error: 'Invalid GIF file signature.' });
+      }
+    } else if (ext === 'svg') {
+      const svgStr = buffer.toString('utf8');
+      if (!svgStr.includes('<svg') || svgStr.includes('<script') || svgStr.includes('javascript:') || svgStr.includes('onload=')) {
+        return res.status(400).json({ error: 'Unsafe SVG content detected.' });
+      }
+    }
+
+    const safeName = `${type || 'media'}_${req.user.id}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+    const filePath = path.join(UPLOADS_DIR, safeName);
+
+    fs.writeFileSync(filePath, buffer);
+    const mediaUrl = `/uploads/${safeName}`;
+
+    return res.json({
+      success: true,
+      url: mediaUrl,
+      mediaUrl,
+      filename: safeName,
+      size: buffer.length,
+      mimeType
+    });
+  } catch (err) {
+    console.error('Media upload error:', err);
+    return res.status(500).json({ error: 'Server error processing media upload.' });
+  }
+});
+
 // GET CURRENT USER (/me)
 app.get('/api/auth/me', optionalAuth, async (req, res) => {
   if (!req.user) {
     return res.json({ user: null });
   }
   const user = await db.get(`
-    SELECT id, username, email, display_name, bio, location, avatar_url, banner_url, rank_title, 
+    SELECT id, username, email, display_name, bio, location, date_of_birth, gender, social_links, visibility,
+           avatar_url, banner_url, avatar_frame, avatar_shape, profile_theme, profile_accent,
+           profile_badge, profile_effects, is_premium, badges_owned, rank_title, 
            reputation_score, cooked_ratio, judgment_accuracy, rank_number, roast_points, 
            next_level_points, followers_count, following_count, reactions_count, role, created_at 
     FROM users WHERE id = ?
@@ -322,7 +426,9 @@ app.get('/api/users/:username/profile', optionalAuth, async (req, res) => {
   const target = req.params.username.trim();
   try {
     const user = await db.get(`
-      SELECT id, username, email, display_name, bio, location, avatar_url, banner_url, rank_title, 
+      SELECT id, username, email, display_name, bio, location, date_of_birth, gender, social_links, visibility,
+             avatar_url, banner_url, avatar_frame, avatar_shape, profile_theme, profile_accent,
+             profile_badge, profile_effects, is_premium, badges_owned, rank_title, 
              reputation_score, cooked_ratio, judgment_accuracy, rank_number, roast_points, 
              next_level_points, followers_count, following_count, reactions_count, role, created_at 
       FROM users WHERE LOWER(username) = LOWER(?) OR id = ?
@@ -341,17 +447,42 @@ app.get('/api/users/:username/profile', optionalAuth, async (req, res) => {
 
     // Join date formatting
     const joinDateObj = new Date(user.created_at);
-    const joinFormatted = joinDateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const joinFormatted = joinDateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    // Parse JSON fields safely
+    let parsedSocialLinks = {};
+    try {
+      parsedSocialLinks = user.social_links ? JSON.parse(user.social_links) : {};
+    } catch (e) {
+      parsedSocialLinks = {};
+    }
+
+    let parsedBadges = ['verified', 'senior_roaster', 'battle_champ', 'problem_solver', 'helpful'];
+    try {
+      if (user.badges_owned) parsedBadges = JSON.parse(user.badges_owned);
+    } catch (e) {}
 
     return res.json({
       profile: {
         id: user.id,
         username: user.username,
         displayName: user.display_name || user.username,
-        bio: user.bio || 'Master of Roasts & Pixel-Perfect',
+        bio: user.bio || 'Same people. Different minds.',
         location: user.location || 'Hamirpur, HP',
+        dateOfBirth: user.date_of_birth || '2005-03-15',
+        gender: user.gender || 'Male',
+        socialLinks: parsedSocialLinks,
+        visibility: user.visibility || 'public',
         avatarUrl: user.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`,
         bannerUrl: user.banner_url || '',
+        avatarFrame: user.avatar_frame || 'none',
+        avatarShape: user.avatar_shape || 'rectangular',
+        profileTheme: user.profile_theme || 'default',
+        profileAccent: user.profile_accent || 'lime',
+        profileBadge: user.profile_badge || 'senior_roaster',
+        profileEffects: user.profile_effects || 'none',
+        isPremium: Boolean(user.is_premium),
+        badgesOwned: parsedBadges,
         rankTitle: user.rank_title || 'Senior Roaster',
         reputationScore: user.reputation_score || 1800,
         cookedRatio: user.cooked_ratio || 100,
@@ -365,7 +496,8 @@ app.get('/api/users/:username/profile', optionalAuth, async (req, res) => {
           followers: user.followers_count || 1,
           following: user.following_count || 2,
           confessions: parseInt(confessionCountRow?.count || 2),
-          reactions: parseInt(reactionsRow?.total || 23)
+          reactions: parseInt(reactionsRow?.total || 23),
+          badges: Array.isArray(parsedBadges) ? parsedBadges.length : 5
         },
         isOwner
       }
@@ -376,34 +508,174 @@ app.get('/api/users/:username/profile', optionalAuth, async (req, res) => {
   }
 });
 
-// UPDATE PROFILE (Server-Authoritative with Validation)
-app.put('/api/users/profile', requireAuth, rateLimiter({ windowMs: 60000, max: 15 }), async (req, res) => {
-  const { displayName, bio, location, avatarUrl, bannerUrl } = req.body;
+// UPDATE PROFILE (Server-Authoritative with Validation, Whitelist, & Entitlements)
+app.put('/api/users/profile', requireAuth, rateLimiter({ windowMs: 60000, max: 30 }), async (req, res) => {
   const userId = req.user.id;
+  const currentDbUser = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
+  if (!currentDbUser) {
+    return res.status(404).json({ error: 'User account not found.' });
+  }
 
-  const cleanDisplayName = displayName ? String(displayName).trim().slice(0, 50) : req.user.username;
-  const cleanBio = bio ? String(bio).trim().slice(0, 250) : '';
-  const cleanLocation = location ? String(location).trim().slice(0, 80) : '';
-  const cleanAvatarUrl = avatarUrl ? String(avatarUrl).trim() : req.user.avatar_url;
-  const cleanBannerUrl = bannerUrl ? String(bannerUrl).trim() : '';
+  const {
+    displayName,
+    username,
+    bio,
+    location,
+    dateOfBirth,
+    gender,
+    socialLinks,
+    visibility,
+    avatarUrl,
+    bannerUrl,
+    avatarFrame,
+    avatarShape,
+    profileTheme,
+    profileAccent,
+    profileBadge,
+    profileEffects
+  } = req.body;
+
+  // 1. Validate & Sanitize Display Name
+  const cleanDisplayName = displayName !== undefined ? String(displayName).trim().slice(0, 50) : (currentDbUser.display_name || currentDbUser.username);
+
+  // 2. Validate Username change if provided
+  let cleanUsername = currentDbUser.username;
+  if (username && typeof username === 'string') {
+    const candidateUsername = username.trim();
+    if (candidateUsername.toLowerCase() !== currentDbUser.username.toLowerCase()) {
+      if (candidateUsername.length < 4 || candidateUsername.length > 20) {
+        return res.status(400).json({ error: 'Username must be between 4 and 20 characters long.' });
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(candidateUsername)) {
+        return res.status(400).json({ error: 'Username can only contain letters, numbers, and underscores.' });
+      }
+      if (candidateUsername.startsWith('_') || candidateUsername.endsWith('_')) {
+        return res.status(400).json({ error: 'Username cannot start or end with an underscore.' });
+      }
+      const reserved = ['admin', 'moderator', 'dragme', 'root', 'api', 'system', 'support', 'anonymous'];
+      if (reserved.includes(candidateUsername.toLowerCase())) {
+        return res.status(400).json({ error: 'This username is reserved.' });
+      }
+      const existing = await db.get('SELECT id FROM users WHERE LOWER(username) = LOWER(?) AND id != ?', [candidateUsername, userId]);
+      if (existing) {
+        return res.status(409).json({ error: `@${candidateUsername} is already taken.` });
+      }
+      cleanUsername = candidateUsername;
+    }
+  }
+
+  // 3. Validate Bio & Location
+  const cleanBio = bio !== undefined ? String(bio).trim().slice(0, 150) : (currentDbUser.bio || '');
+  const cleanLocation = location !== undefined ? String(location).trim().slice(0, 80) : (currentDbUser.location || '');
+  const cleanDob = dateOfBirth !== undefined ? String(dateOfBirth).trim().slice(0, 30) : (currentDbUser.date_of_birth || '');
+  
+  const allowedGenders = ['Male', 'Female', 'Non-binary', 'Prefer not to say', 'Other'];
+  const cleanGender = (gender && allowedGenders.includes(gender)) ? gender : (currentDbUser.gender || 'Male');
+
+  // 4. Validate Social Links
+  let cleanSocialLinksStr = currentDbUser.social_links || '{}';
+  if (socialLinks !== undefined) {
+    if (typeof socialLinks === 'object' && socialLinks !== null) {
+      const sanitizedLinks = {};
+      const allowedKeys = ['instagram', 'youtube', 'twitter', 'discord', 'github', 'website'];
+      for (const key of allowedKeys) {
+        if (socialLinks[key] && typeof socialLinks[key] === 'string') {
+          sanitizedLinks[key] = socialLinks[key].trim().slice(0, 200);
+        }
+      }
+      cleanSocialLinksStr = JSON.stringify(sanitizedLinks);
+    }
+  }
+
+  const allowedVisibility = ['public', 'private', 'followers'];
+  const cleanVisibility = (visibility && allowedVisibility.includes(visibility)) ? visibility : (currentDbUser.visibility || 'public');
+
+  // 5. Media URLs
+  const cleanAvatarUrl = avatarUrl !== undefined ? String(avatarUrl).trim() : (currentDbUser.avatar_url || '');
+  const cleanBannerUrl = bannerUrl !== undefined ? String(bannerUrl).trim() : (currentDbUser.banner_url || '');
+
+  // 6. Entitlement Checks for Customizations
+  const isPremiumUser = Boolean(currentDbUser.is_premium || currentDbUser.role === 'admin');
+
+  // Avatar Frame validation
+  const allowedFrames = ['none', 'minimal', 'lime_neon', 'cyan_matrix', 'gold_crown', 'galactic_violet', 'hologram', 'fire_dragon'];
+  const premiumFrames = ['gold_crown', 'galactic_violet', 'hologram', 'fire_dragon'];
+  let cleanAvatarFrame = avatarFrame && allowedFrames.includes(avatarFrame) ? avatarFrame : (currentDbUser.avatar_frame || 'none');
+  if (premiumFrames.includes(cleanAvatarFrame) && !isPremiumUser) {
+    cleanAvatarFrame = 'none';
+  }
+
+  // Avatar Shape validation
+  const allowedShapes = ['rectangular', 'square', 'circle'];
+  const cleanAvatarShape = avatarShape && allowedShapes.includes(avatarShape) ? avatarShape : (currentDbUser.avatar_shape || 'rectangular');
+
+  // Theme validation
+  const allowedThemes = ['default', 'midnight', 'graphite', 'cyberpunk', 'emerald'];
+  const premiumThemes = ['cyberpunk', 'emerald'];
+  let cleanProfileTheme = profileTheme && allowedThemes.includes(profileTheme) ? profileTheme : (currentDbUser.profile_theme || 'default');
+  if (premiumThemes.includes(cleanProfileTheme) && !isPremiumUser) {
+    cleanProfileTheme = 'default';
+  }
+
+  // Accent Color validation
+  const allowedAccents = ['lime', 'purple', 'cyan', 'crimson', 'gold'];
+  const cleanProfileAccent = profileAccent && allowedAccents.includes(profileAccent) ? profileAccent : (currentDbUser.profile_accent || 'lime');
+
+  // Badge validation
+  const allowedBadges = ['senior_roaster', 'verified', 'battle_champ', 'problem_solver', 'helpful'];
+  const cleanProfileBadge = profileBadge && allowedBadges.includes(profileBadge) ? profileBadge : (currentDbUser.profile_badge || 'senior_roaster');
+
+  // Effects validation
+  const allowedEffects = ['none', 'neon_aura', 'particle_shimmer', 'cyber_glow', 'scanlines'];
+  const premiumEffects = ['neon_aura', 'particle_shimmer', 'cyber_glow', 'scanlines'];
+  let cleanProfileEffects = profileEffects && allowedEffects.includes(profileEffects) ? profileEffects : (currentDbUser.profile_effects || 'none');
+  if (premiumEffects.includes(cleanProfileEffects) && !isPremiumUser) {
+    cleanProfileEffects = 'none';
+  }
 
   try {
     await db.run(`
       UPDATE users 
-      SET display_name = ?, bio = ?, location = ?, avatar_url = ?, banner_url = ?, updated_at = CURRENT_TIMESTAMP
+      SET display_name = ?, username = ?, bio = ?, location = ?, date_of_birth = ?, gender = ?,
+          social_links = ?, visibility = ?, avatar_url = ?, banner_url = ?, avatar_frame = ?,
+          avatar_shape = ?, profile_theme = ?, profile_accent = ?, profile_badge = ?, profile_effects = ?,
+          updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `, [cleanDisplayName, cleanBio, cleanLocation, cleanAvatarUrl, cleanBannerUrl, userId]);
+    `, [
+      cleanDisplayName, cleanUsername, cleanBio, cleanLocation, cleanDob, cleanGender,
+      cleanSocialLinksStr, cleanVisibility, cleanAvatarUrl, cleanBannerUrl, cleanAvatarFrame,
+      cleanAvatarShape, cleanProfileTheme, cleanProfileAccent, cleanProfileBadge, cleanProfileEffects,
+      userId
+    ]);
+
+    // If username changed, update posts and comments author_username
+    if (cleanUsername !== currentDbUser.username) {
+      await db.run('UPDATE posts SET author_username = ? WHERE author_id = ? OR LOWER(author_username) = LOWER(?)', [cleanUsername, userId, currentDbUser.username]);
+      await db.run('UPDATE comments SET author_username = ? WHERE author_id = ? OR LOWER(author_username) = LOWER(?)', [cleanUsername, userId, currentDbUser.username]);
+    }
+    if (cleanAvatarUrl !== currentDbUser.avatar_url) {
+      await db.run('UPDATE posts SET author_avatar = ? WHERE (author_id = ? OR LOWER(author_username) = LOWER(?)) AND is_anonymous = 0', [cleanAvatarUrl, userId, cleanUsername]);
+      await db.run('UPDATE comments SET author_avatar = ? WHERE (author_id = ? OR LOWER(author_username) = LOWER(?))', [cleanAvatarUrl, userId, cleanUsername]);
+    }
 
     const updatedUser = await db.get(`
-      SELECT id, username, email, display_name, bio, location, avatar_url, banner_url, rank_title, 
+      SELECT id, username, email, display_name, bio, location, date_of_birth, gender, social_links, visibility,
+             avatar_url, banner_url, avatar_frame, avatar_shape, profile_theme, profile_accent,
+             profile_badge, profile_effects, is_premium, badges_owned, rank_title, 
              reputation_score, cooked_ratio, judgment_accuracy, rank_number, roast_points, 
              next_level_points, followers_count, following_count, reactions_count, role 
       FROM users WHERE id = ?
     `, [userId]);
 
+    let token = null;
+    if (cleanUsername !== currentDbUser.username) {
+      token = generateToken(updatedUser);
+    }
+
     return res.json({
       message: 'Profile updated successfully!',
-      user: updatedUser
+      user: updatedUser,
+      token
     });
   } catch (err) {
     console.error('Update profile error:', err);
