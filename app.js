@@ -3762,10 +3762,39 @@ document.addEventListener('DOMContentLoaded', () => {
         this.markDirty(true);
       });
 
-      // Presets Grid
-      document.querySelectorAll('#avatarPresetsGrid .preset-avatar-item').forEach(item => {
+      // Tab Switcher: General Settings vs DRAGME Nitro
+      const tabSwitchGeneral = document.getElementById('tabSwitchGeneral');
+      const tabSwitchNitro = document.getElementById('tabSwitchNitro');
+      const viewGeneral = document.getElementById('viewGeneralSettings');
+      const viewNitro = document.getElementById('viewNitroSettings');
+
+      const switchSettingsView = (targetTab) => {
+        if (targetTab === 'nitro') {
+          tabSwitchNitro?.classList.add('active');
+          tabSwitchGeneral?.classList.remove('active');
+          if (viewGeneral) viewGeneral.style.display = 'none';
+          if (viewNitro) {
+            viewNitro.style.display = 'flex';
+            viewNitro.classList.add('active');
+          }
+        } else {
+          tabSwitchGeneral?.classList.add('active');
+          tabSwitchNitro?.classList.remove('active');
+          if (viewNitro) {
+            viewNitro.style.display = 'none';
+            viewNitro.classList.remove('active');
+          }
+          if (viewGeneral) viewGeneral.style.display = 'flex';
+        }
+      };
+
+      tabSwitchGeneral?.addEventListener('click', () => switchSettingsView('general'));
+      tabSwitchNitro?.addEventListener('click', () => switchSettingsView('nitro'));
+
+      // Presets Grid (General Avatar)
+      document.querySelectorAll('#avatarPresetsGrid .preset-av-bubble, #avatarPresetsGrid .preset-avatar-item').forEach(item => {
         item.addEventListener('click', () => {
-          document.querySelectorAll('#avatarPresetsGrid .preset-avatar-item').forEach(i => i.classList.remove('active'));
+          document.querySelectorAll('#avatarPresetsGrid .preset-av-bubble, #avatarPresetsGrid .preset-avatar-item').forEach(i => i.classList.remove('active'));
           item.classList.add('active');
           const src = item.dataset.src;
           if (src && this.draftProfile) {
@@ -3782,7 +3811,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const btnAddCustomPreset = document.getElementById('btnAddCustomPreset');
       btnAddCustomPreset?.addEventListener('click', () => avatarFileInput?.click());
 
-      // Banner file upload
+      // Banner file upload (General)
       const bannerFileInput = document.getElementById('bannerFileInput');
       const btnTriggerBannerUpload = document.getElementById('btnTriggerBannerUpload');
       btnTriggerBannerUpload?.addEventListener('click', () => bannerFileInput?.click());
@@ -3816,9 +3845,10 @@ document.addEventListener('DOMContentLoaded', () => {
         this.markDirty(true);
       });
 
-      document.querySelectorAll('#bannerPresetsGrid .banner-preset-card').forEach(card => {
+      // Presets Strip (General Wallpapers)
+      document.querySelectorAll('#bannerPresetsGrid .preset-strip-pill, #bannerPresetsGrid .banner-preset-card').forEach(card => {
         card.addEventListener('click', () => {
-          document.querySelectorAll('#bannerPresetsGrid .banner-preset-card').forEach(c => c.classList.remove('active'));
+          document.querySelectorAll('#bannerPresetsGrid .preset-strip-pill, #bannerPresetsGrid .banner-preset-card').forEach(c => c.classList.remove('active'));
           card.classList.add('active');
           const src = card.dataset.src;
           if (src && this.draftProfile) {
@@ -3830,6 +3860,115 @@ document.addEventListener('DOMContentLoaded', () => {
             this.markDirty(true);
           }
         });
+      });
+
+      // ===================================================================
+      // DRAGME NITRO / LIVE PREVIEW EVENTS
+      // ===================================================================
+
+      // 1. Nitro Animated Avatars
+      document.querySelectorAll('#nitroAvatarPresetsGrid .nitro-media-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#nitroAvatarPresetsGrid .nitro-media-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          const src = card.dataset.src;
+          if (src && this.draftProfile) {
+            this.pendingAvatarFile = null;
+            this.draftProfile.avatarUrl = src;
+            const avThumb = document.getElementById('editorAvatarPreview');
+            if (avThumb) avThumb.src = src;
+            this.updateLivePreview();
+            this.markDirty(true);
+            showToast('Previewing Nitro Animated Avatar!');
+          }
+        });
+      });
+
+      // 2. Nitro Custom GIF Avatar upload
+      const nitroAvatarFileInput = document.getElementById('nitroAvatarFileInput');
+      const btnTriggerNitroAvatar = document.getElementById('btnTriggerNitroAvatar');
+      btnTriggerNitroAvatar?.addEventListener('click', () => nitroAvatarFileInput?.click());
+
+      nitroAvatarFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 10 * 1024 * 1024) {
+          showToast('GIF Avatar must be under 10MB.');
+          return;
+        }
+        this.pendingAvatarFile = file;
+        const localBlobUrl = URL.createObjectURL(file);
+        this.draftProfile.avatarUrl = localBlobUrl;
+
+        const avThumb = document.getElementById('editorAvatarPreview');
+        if (avThumb) avThumb.src = localBlobUrl;
+
+        this.updateLivePreview();
+        this.markDirty(true);
+        showToast('Custom GIF Avatar loaded for preview!');
+      });
+
+      // 3. Nitro Dynamic Motion Banners
+      document.querySelectorAll('#nitroBannerPresetsGrid .nitro-banner-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#nitroBannerPresetsGrid .nitro-banner-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          const src = card.dataset.src;
+          if (src && this.draftProfile) {
+            this.pendingBannerFile = null;
+            this.draftProfile.bannerUrl = src;
+            const banThumb = document.getElementById('editorBannerPreview');
+            if (banThumb) banThumb.src = src;
+            this.updateLivePreview();
+            this.markDirty(true);
+            showToast('Previewing Nitro Motion Banner!');
+          }
+        });
+      });
+
+      // 4. Nitro Custom Motion Banner upload
+      const nitroBannerFileInput = document.getElementById('nitroBannerFileInput');
+      const btnTriggerNitroBanner = document.getElementById('btnTriggerNitroBanner');
+      btnTriggerNitroBanner?.addEventListener('click', () => nitroBannerFileInput?.click());
+
+      nitroBannerFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 15 * 1024 * 1024) {
+          showToast('Motion banner must be under 15MB.');
+          return;
+        }
+        this.pendingBannerFile = file;
+        const localBlobUrl = URL.createObjectURL(file);
+        this.draftProfile.bannerUrl = localBlobUrl;
+
+        const banThumb = document.getElementById('editorBannerPreview');
+        if (banThumb) banThumb.src = localBlobUrl;
+
+        this.updateLivePreview();
+        this.markDirty(true);
+        showToast('Custom Motion Banner loaded for preview!');
+      });
+
+      // 5. Nitro Frames
+      document.querySelectorAll('#nitroFramesGrid .frame-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#nitroFramesGrid .frame-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          const frame = card.dataset.frame || 'none';
+          if (this.draftProfile) {
+            this.draftProfile.avatarFrame = frame;
+            this.updateLivePreview();
+            this.markDirty(true);
+            showToast(`Previewing frame!`);
+          }
+        });
+      });
+
+      // 6. Nitro CTA Button
+      const btnNitroUpgradeCTA = document.getElementById('btnNitroUpgradeCTA');
+      btnNitroUpgradeCTA?.addEventListener('click', () => {
+        showToast('DRAGME Nitro unlocked in Preview Mode! Save changes to apply.');
       });
 
       // 5. Avatar Shapes

@@ -5995,11 +5995,423 @@ button {
   color: #94a3b8;
 }
 
-/* Right Column: Settings Form */
-.settings-form-col {
+/* Top Segmented Switcher: General vs DRAGME Nitro */
+.settings-nav-switcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #090d15;
+  border: 1px solid #1a2333;
+  border-radius: 14px;
+  padding: 6px;
+}
+
+.settings-switch-btn {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-switch-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-switch-btn.active {
+  background: #121824;
+  color: #ffffff;
+  border-color: rgba(163, 230, 53, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 12px rgba(163, 230, 53, 0.12);
+}
+
+.settings-switch-btn.btn-nitro-switch.active {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.35), rgba(168, 85, 247, 0.15));
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(168, 85, 247, 0.25);
+  color: #ffffff;
+}
+
+.badge-nitro-pill {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.text-purple {
+  color: #c084fc;
+}
+
+.settings-tab-view {
+  display: none;
   flex-direction: column;
   gap: 20px;
+}
+
+.settings-tab-view.active {
+  display: flex;
+  animation: fadeInTabView 0.25s ease;
+}
+
+@keyframes fadeInTabView {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Nitro Hero Showcase Card */
+.nitro-hero-card {
+  background: linear-gradient(135deg, #130a24 0%, #200f38 50%, #0c0817 100%);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 16px;
+  padding: 26px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 32px rgba(168, 85, 247, 0.15);
+}
+
+.nitro-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.25), transparent 70%);
+  pointer-events: none;
+}
+
+.nitro-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.nitro-badge-stack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nitro-crown-pill {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nitro-live-tag {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.nitro-hero-headline {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 6px 0 2px;
+}
+
+.nitro-hero-sub {
+  font-size: 0.85rem;
+  color: #c4b5fd;
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+.btn-nitro-upgrade-glow {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  border: none;
+  color: #ffffff;
+  padding: 13px 26px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.btn-nitro-upgrade-glow:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 35px rgba(236, 72, 153, 0.6);
+}
+
+.nitro-feature-card {
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.nitro-section-title-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Animated Avatars Grid */
+.nitro-animated-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.nitro-media-card {
+  background: #080c14;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nitro-media-card:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+}
+
+.nitro-media-card.active {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.12);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+}
+
+.nitro-media-thumb-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #2a374f;
+}
+
+.nitro-media-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gif-tag {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #c084fc;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.nitro-media-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.nitro-custom-upload-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: #080c14;
+  border: 1px dashed #2a374f;
+  border-radius: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-nitro-custom-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #d8b4fe;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-nitro-custom-upload:hover {
+  background: rgba(168, 85, 247, 0.28);
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
+.nitro-upload-hint {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Dynamic Motion Banners Grid */
+.nitro-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.nitro-banner-card {
+  position: relative;
+  height: 110px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nitro-banner-card:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.25);
+}
+
+.nitro-banner-card.active {
+  border-color: #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.nitro-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nitro-banner-meta {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.88) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.banner-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Frames Grid */
+.nitro-frames-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.frame-card {
+  background: #080c14;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frame-card:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px);
+}
+
+.frame-card.active {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.frame-preview-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #141c2b;
+}
+
+.border-lime-glow {
+  border: 3px solid #a3e635;
+  box-shadow: 0 0 15px #a3e635;
+}
+
+.border-gold-glow {
+  border: 3px solid #f59e0b;
+  box-shadow: 0 0 15px #f59e0b;
+}
+
+.border-purple-glow {
+  border: 3px solid #a855f7;
+  box-shadow: 0 0 15px #a855f7;
+}
+
+.border-fire-glow {
+  border: 3px solid #f97316;
+  box-shadow: 0 0 15px #f97316;
+}
+
+.frame-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-align: center;
 }
 
 /* Settings Cards */

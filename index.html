@@ -995,237 +995,462 @@
         </div>
       </aside>
 
-      <!-- RIGHT COLUMN: STREAMLINED SETTINGS FORM -->
+      <!-- RIGHT COLUMN: STREAMLINED SETTINGS FORM WITH NITRO PERKS TOGGLE -->
       <section class="settings-form-col">
         
-        <!-- SECTION 1: VISUAL APPEARANCE (BANNER & AVATAR) -->
-        <div class="settings-card visual-header-card">
-          <div class="settings-card-header">
-            <div class="card-title-group">
-              <h2 class="card-title">Profile Appearance</h2>
-              <p class="card-subtitle">Manage your banner wallpaper and profile avatar.</p>
-            </div>
-          </div>
+        <!-- Top Segmented Switcher: General vs DRAGME Nitro -->
+        <div class="settings-nav-switcher">
+          <button type="button" class="settings-switch-btn active" id="tabSwitchGeneral" data-tab="general">
+            <i class="fa-solid fa-user-pen"></i>
+            <span>General Settings</span>
+          </button>
+          <button type="button" class="settings-switch-btn btn-nitro-switch" id="tabSwitchNitro" data-tab="nitro">
+            <i class="fa-solid fa-bolt text-purple"></i>
+            <span>DRAGME Nitro</span>
+            <span class="badge-nitro-pill">PERKS</span>
+          </button>
+        </div>
 
-          <!-- Interactive Banner Box -->
-          <div class="interactive-banner-box">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80" alt="Banner Preview" id="editorBannerPreview" class="interactive-banner-img">
-            <div class="banner-controls-overlay">
-              <input type="file" id="bannerFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
-              <button type="button" class="btn-banner-action" id="btnTriggerBannerUpload">
-                <i class="fa-solid fa-camera"></i>
-                <span>Upload Banner</span>
-              </button>
-              <button type="button" class="btn-banner-action danger" id="btnRemoveBannerPhoto">
-                <i class="fa-regular fa-trash-can"></i>
-                <span>Remove</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Preset Wallpapers Strip -->
-          <div class="presets-row-wrap">
-            <span class="presets-label">Preset Wallpapers:</span>
-            <div class="banner-presets-strip" id="bannerPresetsGrid">
-              <div class="preset-strip-pill active" data-src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80" alt="">
-                <span>Neon City</span>
-              </div>
-              <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1600&auto=format&fit=crop&q=80">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80" alt="">
-                <span>Arcade</span>
-              </div>
-              <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&auto=format&fit=crop&q=80">
-                <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=200&auto=format&fit=crop&q=80" alt="">
-                <span>Gradient</span>
-              </div>
-              <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1600&auto=format&fit=crop&q=80">
-                <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=200&auto=format&fit=crop&q=80" alt="">
-                <span>Obsidian</span>
+        <!-- ===================================================================
+             VIEW 1: GENERAL SETTINGS (FREE & ESSENTIALS)
+             =================================================================== -->
+        <div class="settings-tab-view active" id="viewGeneralSettings">
+          
+          <!-- SECTION 1: VISUAL APPEARANCE (BANNER & AVATAR) -->
+          <div class="settings-card visual-header-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Profile Appearance</h2>
+                <p class="card-subtitle">Manage your banner wallpaper and profile avatar.</p>
               </div>
             </div>
-          </div>
 
-          <div class="settings-divider"></div>
-
-          <!-- Avatar Uploader Row -->
-          <div class="avatar-manager-row">
-            <div class="avatar-interactive-anchor">
-              <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200&auto=format&fit=crop&q=80" alt="Avatar Preview" id="editorAvatarPreview" class="avatar-interactive-img">
-              <button type="button" class="avatar-cam-badge" id="btnTriggerAvatarUpload" title="Upload Photo">
-                <i class="fa-solid fa-camera"></i>
-              </button>
-              <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
-            </div>
-
-            <div class="avatar-meta-actions">
-              <div class="avatar-actions-btns">
-                <button type="button" class="btn-avatar-upload" id="btnTriggerAvatarUpload2">
-                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                  <span>Upload New Avatar</span>
+            <!-- Interactive Banner Box -->
+            <div class="interactive-banner-box">
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80" alt="Banner Preview" id="editorBannerPreview" class="interactive-banner-img">
+              <div class="banner-controls-overlay">
+                <input type="file" id="bannerFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
+                <button type="button" class="btn-banner-action" id="btnTriggerBannerUpload">
+                  <i class="fa-solid fa-camera"></i>
+                  <span>Upload Banner</span>
                 </button>
-                <button type="button" class="btn-avatar-remove" id="btnRemoveAvatarPhoto">
+                <button type="button" class="btn-banner-action danger" id="btnRemoveBannerPhoto">
                   <i class="fa-regular fa-trash-can"></i>
                   <span>Remove</span>
                 </button>
               </div>
-              
-              <div class="avatar-presets-cluster">
-                <span class="presets-label">Or choose avatar:</span>
-                <div class="avatar-presets-flex" id="avatarPresetsGrid">
-                  <div class="preset-av-bubble active" data-src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=160&auto=format&fit=crop&q=80">
-                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=80&auto=format&fit=crop&q=80" alt="Preset 1">
-                  </div>
-                  <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="Preset 2">
-                  </div>
-                  <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=160&auto=format&fit=crop&q=80">
-                    <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=80&auto=format&fit=crop&q=80" alt="Preset 3">
-                  </div>
-                  <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="Preset 4">
+            </div>
+
+            <!-- Preset Wallpapers Strip -->
+            <div class="presets-row-wrap">
+              <span class="presets-label">Preset Wallpapers:</span>
+              <div class="banner-presets-strip" id="bannerPresetsGrid">
+                <div class="preset-strip-pill active" data-src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80">
+                  <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80" alt="">
+                  <span>Neon City</span>
+                </div>
+                <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1600&auto=format&fit=crop&q=80">
+                  <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80" alt="">
+                  <span>Arcade</span>
+                </div>
+                <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&auto=format&fit=crop&q=80">
+                  <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=200&auto=format&fit=crop&q=80" alt="">
+                  <span>Gradient</span>
+                </div>
+                <div class="preset-strip-pill" data-src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1600&auto=format&fit=crop&q=80">
+                  <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=200&auto=format&fit=crop&q=80" alt="">
+                  <span>Obsidian</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-divider"></div>
+
+            <!-- Avatar Uploader Row -->
+            <div class="avatar-manager-row">
+              <div class="avatar-interactive-anchor">
+                <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200&auto=format&fit=crop&q=80" alt="Avatar Preview" id="editorAvatarPreview" class="avatar-interactive-img">
+                <button type="button" class="avatar-cam-badge" id="btnTriggerAvatarUpload" title="Upload Photo">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display: none;">
+              </div>
+
+              <div class="avatar-meta-actions">
+                <div class="avatar-actions-btns">
+                  <button type="button" class="btn-avatar-upload" id="btnTriggerAvatarUpload2">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    <span>Upload New Avatar</span>
+                  </button>
+                  <button type="button" class="btn-avatar-remove" id="btnRemoveAvatarPhoto">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <span>Remove</span>
+                  </button>
+                </div>
+                
+                <div class="avatar-presets-cluster">
+                  <span class="presets-label">Or choose avatar:</span>
+                  <div class="avatar-presets-flex" id="avatarPresetsGrid">
+                    <div class="preset-av-bubble active" data-src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=160&auto=format&fit=crop&q=80">
+                      <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=80&auto=format&fit=crop&q=80" alt="Preset 1">
+                    </div>
+                    <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="Preset 2">
+                    </div>
+                    <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=160&auto=format&fit=crop&q=80">
+                      <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=80&auto=format&fit=crop&q=80" alt="Preset 3">
+                    </div>
+                    <div class="preset-av-bubble" data-src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80">
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="Preset 4">
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- SECTION 2: PERSONAL DETAILS -->
-        <div class="settings-card">
-          <div class="settings-card-header">
-            <div class="card-title-group">
-              <h2 class="card-title">Personal Information</h2>
-              <p class="card-subtitle">Your public identity and credentials shown to the arena.</p>
+          <!-- SECTION 2: PERSONAL DETAILS -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Personal Information</h2>
+                <p class="card-subtitle">Your public identity and credentials shown to the arena.</p>
+              </div>
+            </div>
+
+            <div class="settings-form-grid">
+              <!-- Display Name -->
+              <div class="settings-field-group">
+                <label class="settings-label" for="editorDisplayNameInput">Display Name</label>
+                <div class="settings-input-wrapper">
+                  <input type="text" id="editorDisplayNameInput" class="settings-input" maxlength="50" placeholder="e.g. Nitish Kapoor" value="Nitish Kapoor">
+                  <i class="fa-solid fa-circle-check settings-valid-icon text-green" id="displayNameCheck"></i>
+                </div>
+              </div>
+
+              <!-- Username -->
+              <div class="settings-field-group">
+                <label class="settings-label" for="editorUsernameInput">Username</label>
+                <div class="settings-input-wrapper">
+                  <span class="settings-input-prefix">@</span>
+                  <input type="text" id="editorUsernameInput" class="settings-input with-prefix" maxlength="20" placeholder="username" value="nitish">
+                  <i class="fa-solid fa-circle-check settings-valid-icon text-green" id="usernameCheck"></i>
+                </div>
+                <span class="settings-field-hint" id="editorDomainPreview">dragme.gg/<span>nitish</span></span>
+              </div>
+
+              <!-- Bio -->
+              <div class="settings-field-group full-span">
+                <div class="label-with-counter">
+                  <label class="settings-label" for="editorBioInput">Bio</label>
+                  <span class="settings-counter" id="editorBioCounter">29/150</span>
+                </div>
+                <textarea id="editorBioInput" class="settings-textarea" maxlength="150" rows="3" placeholder="Tell the arena about yourself...">Same people. Different minds.</textarea>
+              </div>
+
+              <!-- Location -->
+              <div class="settings-field-group">
+                <label class="settings-label" for="editorLocationInput">Location</label>
+                <div class="settings-input-wrapper">
+                  <i class="fa-solid fa-location-dot settings-lead-icon"></i>
+                  <input type="text" id="editorLocationInput" class="settings-input with-lead" maxlength="80" placeholder="e.g. Hamirpur, HP" value="Hamirpur, HP">
+                  <button type="button" class="settings-clear-btn" id="btnClearLocation" title="Clear"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              </div>
+
+              <!-- Date of Birth -->
+              <div class="settings-field-group">
+                <label class="settings-label" for="editorDobInput">Date of Birth</label>
+                <div class="settings-input-wrapper">
+                  <i class="fa-regular fa-calendar settings-lead-icon"></i>
+                  <input type="text" id="editorDobInput" class="settings-input with-lead" placeholder="DD / MM / YYYY" value="15 / 03 / 2005">
+                </div>
+              </div>
+
+              <!-- Gender -->
+              <div class="settings-field-group">
+                <label class="settings-label" for="editorGenderSelect">Gender</label>
+                <div class="settings-input-wrapper">
+                  <i class="fa-regular fa-user settings-lead-icon"></i>
+                  <select id="editorGenderSelect" class="settings-select with-lead">
+                    <option value="Male" selected>Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="settings-form-grid">
-            <!-- Display Name -->
-            <div class="settings-field-group">
-              <label class="settings-label" for="editorDisplayNameInput">Display Name</label>
-              <div class="settings-input-wrapper">
-                <input type="text" id="editorDisplayNameInput" class="settings-input" maxlength="50" placeholder="e.g. Nitish Kapoor" value="Nitish Kapoor">
-                <i class="fa-solid fa-circle-check settings-valid-icon text-green" id="displayNameCheck"></i>
+          <!-- SECTION 3: SOCIAL LINKS -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Social Links</h2>
+                <p class="card-subtitle">Connect your external social media handles to your profile card.</p>
               </div>
             </div>
 
-            <!-- Username -->
-            <div class="settings-field-group">
-              <label class="settings-label" for="editorUsernameInput">Username</label>
-              <div class="settings-input-wrapper">
-                <span class="settings-input-prefix">@</span>
-                <input type="text" id="editorUsernameInput" class="settings-input with-prefix" maxlength="20" placeholder="username" value="nitish">
-                <i class="fa-solid fa-circle-check settings-valid-icon text-green" id="usernameCheck"></i>
+            <div class="settings-social-grid">
+              <div class="social-field-item">
+                <div class="social-badge bg-instagram"><i class="fa-brands fa-instagram"></i></div>
+                <input type="url" id="socialInstagramInput" class="social-input" placeholder="https://instagram.com/username">
+                <button type="button" class="btn-clear-social" data-target="socialInstagramInput"><i class="fa-solid fa-xmark"></i></button>
               </div>
-              <span class="settings-field-hint" id="editorDomainPreview">dragme.gg/<span>nitish</span></span>
-            </div>
 
-            <!-- Bio -->
-            <div class="settings-field-group full-span">
-              <div class="label-with-counter">
-                <label class="settings-label" for="editorBioInput">Bio</label>
-                <span class="settings-counter" id="editorBioCounter">29/150</span>
+              <div class="social-field-item">
+                <div class="social-badge bg-youtube"><i class="fa-brands fa-youtube"></i></div>
+                <input type="url" id="socialYoutubeInput" class="social-input" placeholder="https://youtube.com/@channel">
+                <button type="button" class="btn-clear-social" data-target="socialYoutubeInput"><i class="fa-solid fa-xmark"></i></button>
               </div>
-              <textarea id="editorBioInput" class="settings-textarea" maxlength="150" rows="3" placeholder="Tell the arena about yourself...">Same people. Different minds.</textarea>
-            </div>
 
-            <!-- Location -->
-            <div class="settings-field-group">
-              <label class="settings-label" for="editorLocationInput">Location</label>
-              <div class="settings-input-wrapper">
-                <i class="fa-solid fa-location-dot settings-lead-icon"></i>
-                <input type="text" id="editorLocationInput" class="settings-input with-lead" maxlength="80" placeholder="e.g. Hamirpur, HP" value="Hamirpur, HP">
-                <button type="button" class="settings-clear-btn" id="btnClearLocation" title="Clear"><i class="fa-solid fa-xmark"></i></button>
+              <div class="social-field-item">
+                <div class="social-badge bg-x"><i class="fa-brands fa-x-twitter"></i></div>
+                <input type="url" id="socialTwitterInput" class="social-input" placeholder="https://x.com/username">
+                <button type="button" class="btn-clear-social" data-target="socialTwitterInput"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <div class="social-field-item">
+                <div class="social-badge bg-discord"><i class="fa-brands fa-discord"></i></div>
+                <input type="url" id="socialDiscordInput" class="social-input" placeholder="https://discord.gg/server">
+                <button type="button" class="btn-clear-social" data-target="socialDiscordInput"><i class="fa-solid fa-xmark"></i></button>
               </div>
             </div>
+          </div>
 
-            <!-- Date of Birth -->
-            <div class="settings-field-group">
-              <label class="settings-label" for="editorDobInput">Date of Birth</label>
-              <div class="settings-input-wrapper">
-                <i class="fa-regular fa-calendar settings-lead-icon"></i>
-                <input type="text" id="editorDobInput" class="settings-input with-lead" placeholder="DD / MM / YYYY" value="15 / 03 / 2005">
+          <!-- SECTION 4: PRIVACY & VISIBILITY -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Profile Visibility</h2>
+                <p class="card-subtitle">Choose who can view your profile arena, activity, and stats.</p>
               </div>
             </div>
 
-            <!-- Gender -->
-            <div class="settings-field-group">
-              <label class="settings-label" for="editorGenderSelect">Gender</label>
-              <div class="settings-input-wrapper">
-                <i class="fa-regular fa-user settings-lead-icon"></i>
-                <select id="editorGenderSelect" class="settings-select with-lead">
-                  <option value="Male" selected>Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Non-binary">Non-binary</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
-                  <option value="Other">Other</option>
+            <div class="visibility-settings-row">
+              <div class="vis-info-col">
+                <span class="vis-title">Arena Discovery</span>
+                <span class="vis-desc">Control whether your profile appears in public searches and leaderboards.</span>
+              </div>
+              <div class="vis-select-box">
+                <i class="fa-solid fa-earth-americas vis-icon"></i>
+                <select id="editorVisibilitySelect" class="settings-select vis-select-field">
+                  <option value="public" selected>Public (Everyone)</option>
+                  <option value="followers">Followers Only</option>
+                  <option value="private">Private (Only You)</option>
                 </select>
               </div>
             </div>
           </div>
+
         </div>
 
-        <!-- SECTION 3: SOCIAL LINKS -->
-        <div class="settings-card">
-          <div class="settings-card-header">
-            <div class="card-title-group">
-              <h2 class="card-title">Social Links</h2>
-              <p class="card-subtitle">Connect your external social media handles to your profile card.</p>
+        <!-- ===================================================================
+             VIEW 2: DRAGME NITRO / PRIME PERKS STUDIO (LIVE PREVIEWABLE)
+             =================================================================== -->
+        <div class="settings-tab-view" id="viewNitroSettings" style="display: none;">
+          
+          <!-- Nitro Hero Showcase Card -->
+          <div class="nitro-hero-card">
+            <div class="nitro-hero-content">
+              <div class="nitro-badge-stack">
+                <span class="nitro-crown-pill"><i class="fa-solid fa-crown text-gold"></i> DRAGME NITRO</span>
+                <span class="nitro-live-tag">LIVE STUDIO PREVIEW</span>
+              </div>
+              <h2 class="nitro-hero-headline">Unleash Ultimate Arena Presence</h2>
+              <p class="nitro-hero-sub">Tap any animated avatar, motion banner, holographic frame, or custom theme to instantly preview how you'll look in the arena.</p>
+            </div>
+            <button type="button" class="btn-nitro-upgrade-glow" id="btnNitroUpgradeCTA">
+              <i class="fa-solid fa-bolt"></i>
+              <span>Unlock DRAGME Nitro</span>
+            </button>
+          </div>
+
+          <!-- NITRO SECTION 1: ANIMATED MOTION AVATARS -->
+          <div class="settings-card nitro-feature-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <div class="nitro-section-title-flex">
+                  <h2 class="card-title">Animated Avatars &amp; GIFs</h2>
+                  <span class="badge-nitro-pill"><i class="fa-solid fa-sparkles"></i> NITRO EXCLUSIVE</span>
+                </div>
+                <p class="card-subtitle">Select a loop-animated avatar or upload your own animated GIF.</p>
+              </div>
+            </div>
+
+            <div class="nitro-animated-grid" id="nitroAvatarPresetsGrid">
+              <!-- Animated Preset 1: Cyber Glitch -->
+              <div class="nitro-media-card" data-type="avatar" data-src="https://media.giphy.com/media/26tn3334mVoVClYGA/giphy.gif">
+                <div class="nitro-media-thumb-wrap">
+                  <img src="https://media.giphy.com/media/26tn3334mVoVClYGA/giphy.gif" alt="Cyber Glitch" class="nitro-media-thumb">
+                  <span class="gif-tag">GIF</span>
+                </div>
+                <span class="nitro-media-label">Cyber Glitch Bot</span>
+              </div>
+
+              <!-- Animated Preset 2: Dragon Flame -->
+              <div class="nitro-media-card" data-type="avatar" data-src="https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif">
+                <div class="nitro-media-thumb-wrap">
+                  <img src="https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif" alt="Dragon Flame" class="nitro-media-thumb">
+                  <span class="gif-tag">GIF</span>
+                </div>
+                <span class="nitro-media-label">Dragon Flame</span>
+              </div>
+
+              <!-- Animated Preset 3: Neon Pulse -->
+              <div class="nitro-media-card" data-type="avatar" data-src="https://media.giphy.com/media/3o7TKTDnUxE0gpnk0o/giphy.gif">
+                <div class="nitro-media-thumb-wrap">
+                  <img src="https://media.giphy.com/media/3o7TKTDnUxE0gpnk0o/giphy.gif" alt="Neon Skull" class="nitro-media-thumb">
+                  <span class="gif-tag">GIF</span>
+                </div>
+                <span class="nitro-media-label">Neon Skull Pulse</span>
+              </div>
+
+              <!-- Animated Preset 4: Hologram Cyber -->
+              <div class="nitro-media-card" data-type="avatar" data-src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif">
+                <div class="nitro-media-thumb-wrap">
+                  <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" alt="Matrix Cyber" class="nitro-media-thumb">
+                  <span class="gif-tag">GIF</span>
+                </div>
+                <span class="nitro-media-label">Matrix Cyberpunk</span>
+              </div>
+            </div>
+
+            <div class="nitro-custom-upload-bar">
+              <input type="file" id="nitroAvatarFileInput" accept="image/gif,image/webp,image/png" style="display: none;">
+              <button type="button" class="btn-nitro-custom-upload" id="btnTriggerNitroAvatar">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Upload Custom GIF Avatar</span>
+              </button>
+              <span class="nitro-upload-hint">Supports loop animated .GIF &amp; .WEBP up to 10MB</span>
             </div>
           </div>
 
-          <div class="settings-social-grid">
-            <div class="social-field-item">
-              <div class="social-badge bg-instagram"><i class="fa-brands fa-instagram"></i></div>
-              <input type="url" id="socialInstagramInput" class="social-input" placeholder="https://instagram.com/username">
-              <button type="button" class="btn-clear-social" data-target="socialInstagramInput"><i class="fa-solid fa-xmark"></i></button>
+          <!-- NITRO SECTION 2: DYNAMIC MOTION BANNERS -->
+          <div class="settings-card nitro-feature-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <div class="nitro-section-title-flex">
+                  <h2 class="card-title">Dynamic Motion Banners</h2>
+                  <span class="badge-nitro-pill"><i class="fa-solid fa-sparkles"></i> NITRO EXCLUSIVE</span>
+                </div>
+                <p class="card-subtitle">Loop animated video wallpapers for your profile arena.</p>
+              </div>
             </div>
 
-            <div class="social-field-item">
-              <div class="social-badge bg-youtube"><i class="fa-brands fa-youtube"></i></div>
-              <input type="url" id="socialYoutubeInput" class="social-input" placeholder="https://youtube.com/@channel">
-              <button type="button" class="btn-clear-social" data-target="socialYoutubeInput"><i class="fa-solid fa-xmark"></i></button>
+            <div class="nitro-banner-grid" id="nitroBannerPresetsGrid">
+              <!-- Banner 1: Cyber City Rain -->
+              <div class="nitro-banner-card" data-type="banner" data-src="https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif">
+                <img src="https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif" alt="Cyber City Rain" class="nitro-banner-img">
+                <div class="nitro-banner-meta">
+                  <span class="banner-title">Rain City Cyber 4K</span>
+                  <span class="gif-tag">MOTION</span>
+                </div>
+              </div>
+
+              <!-- Banner 2: Hyperspeed Warp -->
+              <div class="nitro-banner-card" data-type="banner" data-src="https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif">
+                <img src="https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif" alt="Hyperspace Warp" class="nitro-banner-img">
+                <div class="nitro-banner-meta">
+                  <span class="banner-title">Hyperspace Warp</span>
+                  <span class="gif-tag">MOTION</span>
+                </div>
+              </div>
+
+              <!-- Banner 3: Deep Void Nebula -->
+              <div class="nitro-banner-card" data-type="banner" data-src="https://media.giphy.com/media/BHNfhCHUkMAsCFYGKa/giphy.gif">
+                <img src="https://media.giphy.com/media/BHNfhCHUkMAsCFYGKa/giphy.gif" alt="Deep Void Nebula" class="nitro-banner-img">
+                <div class="nitro-banner-meta">
+                  <span class="banner-title">Deep Void Nebula</span>
+                  <span class="gif-tag">MOTION</span>
+                </div>
+              </div>
+
+              <!-- Banner 4: Synthwave Grid -->
+              <div class="nitro-banner-card" data-type="banner" data-src="https://media.giphy.com/media/26xBwdIuRJiAIprV6/giphy.gif">
+                <img src="https://media.giphy.com/media/26xBwdIuRJiAIprV6/giphy.gif" alt="Synthwave Grid" class="nitro-banner-img">
+                <div class="nitro-banner-meta">
+                  <span class="banner-title">Retro Synthwave 80s</span>
+                  <span class="gif-tag">MOTION</span>
+                </div>
+              </div>
             </div>
 
-            <div class="social-field-item">
-              <div class="social-badge bg-x"><i class="fa-brands fa-x-twitter"></i></div>
-              <input type="url" id="socialTwitterInput" class="social-input" placeholder="https://x.com/username">
-              <button type="button" class="btn-clear-social" data-target="socialTwitterInput"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <div class="social-field-item">
-              <div class="social-badge bg-discord"><i class="fa-brands fa-discord"></i></div>
-              <input type="url" id="socialDiscordInput" class="social-input" placeholder="https://discord.gg/server">
-              <button type="button" class="btn-clear-social" data-target="socialDiscordInput"><i class="fa-solid fa-xmark"></i></button>
+            <div class="nitro-custom-upload-bar">
+              <input type="file" id="nitroBannerFileInput" accept="image/gif,image/webp,image/png" style="display: none;">
+              <button type="button" class="btn-nitro-custom-upload" id="btnTriggerNitroBanner">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Upload Custom Motion Banner (GIF/Video)</span>
+              </button>
+              <span class="nitro-upload-hint">Full widescreen loop animation display</span>
             </div>
           </div>
+
+          <!-- NITRO SECTION 3: AVATAR FRAMES & GLOW EFFECTS -->
+          <div class="settings-card nitro-feature-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <div class="nitro-section-title-flex">
+                  <h2 class="card-title">Avatar Frames &amp; Aura Glow</h2>
+                  <span class="badge-nitro-pill"><i class="fa-solid fa-sparkles"></i> NITRO EXCLUSIVE</span>
+                </div>
+                <p class="card-subtitle">Surround your avatar with animated neon frames and custom glow.</p>
+              </div>
+            </div>
+
+            <div class="nitro-frames-grid" id="nitroFramesGrid">
+              <div class="frame-card frame-select-item" data-frame="lime_neon">
+                <div class="frame-preview-circle border-lime-glow"></div>
+                <span class="frame-title">Lime Laser Neon</span>
+              </div>
+              <div class="frame-card frame-select-item" data-frame="gold_crown">
+                <div class="frame-preview-circle border-gold-glow"></div>
+                <span class="frame-title">Royal Gold Crown</span>
+              </div>
+              <div class="frame-card frame-select-item" data-frame="galactic_violet">
+                <div class="frame-preview-circle border-purple-glow"></div>
+                <span class="frame-title">Galactic Violet</span>
+              </div>
+              <div class="frame-card frame-select-item" data-frame="fire_dragon">
+                <div class="frame-preview-circle border-fire-glow"></div>
+                <span class="frame-title">Dragon Fire Flare</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- NITRO SECTION 4: ARENA PROFILE THEMES -->
+          <div class="settings-card nitro-feature-card">
+            <div class="settings-card-header">
+              <div class="card-title-group">
+                <div class="nitro-section-title-flex">
+                  <h2 class="card-title">VIP Arena Themes</h2>
+                  <span class="badge-nitro-pill"><i class="fa-solid fa-sparkles"></i> NITRO EXCLUSIVE</span>
+                </div>
+                <p class="card-subtitle">Transform the entire color aesthetic and background gradient of your card.</p>
+              </div>
+            </div>
+
+            <div class="nitro-themes-grid" id="nitroThemesGrid">
+              <div class="theme-card theme-select-item" data-theme="cyberpunk">
+                <div class="theme-swatch theme-cyberpunk-bg"></div>
+                <span class="theme-title">Cyberpunk 2077</span>
+              </div>
+              <div class="theme-card theme-select-item" data-theme="graphite">
+                <div class="theme-swatch theme-obsidian-bg"></div>
+                <span class="theme-title">Obsidian Gold</span>
+              </div>
+              <div class="theme-card theme-select-item" data-theme="emerald">
+                <div class="theme-swatch theme-emerald-bg"></div>
+                <span class="theme-title">Emerald Matrix</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- SECTION 4: PRIVACY & VISIBILITY -->
-        <div class="settings-card">
-          <div class="settings-card-header">
-            <div class="card-title-group">
-              <h2 class="card-title">Profile Visibility</h2>
-              <p class="card-subtitle">Choose who can view your profile arena, activity, and stats.</p>
-            </div>
-          </div>
-
-          <div class="visibility-settings-row">
-            <div class="vis-info-col">
-              <span class="vis-title">Arena Discovery</span>
-              <span class="vis-desc">Control whether your profile appears in public searches and leaderboards.</span>
-            </div>
-            <div class="vis-select-box">
-              <i class="fa-solid fa-earth-americas vis-icon"></i>
-              <select id="editorVisibilitySelect" class="settings-select vis-select-field">
-                <option value="public" selected>Public (Everyone)</option>
-                <option value="followers">Followers Only</option>
-                <option value="private">Private (Only You)</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      </section>
 
       </section>
 
