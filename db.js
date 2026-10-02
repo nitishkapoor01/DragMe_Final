@@ -1,6 +1,7 @@
 /**
  * DRAGME - Scalable Enterprise Database Layer (PostgreSQL + SQLite Fallback)
  * Supports High-Throughput Connection Pooling (pg.Pool) for Millions of Users
+ * Centralized media_assets & media_usages schema with integrity indexes.
  */
 
 const { Pool } = require('pg');
@@ -178,24 +179,39 @@ const db = {
           id VARCHAR(100) PRIMARY KEY,
           owner_id VARCHAR(100),
           media_type VARCHAR(50) NOT NULL,
+          usage_type VARCHAR(50) DEFAULT 'PFP',
           mime_type VARCHAR(100) NOT NULL,
           original_filename TEXT,
-          file_size INTEGER NOT NULL,
-          width INTEGER,
-          height INTEGER,
-          duration REAL,
+          storage_key TEXT NOT NULL,
           storage_url TEXT NOT NULL,
+          poster_key TEXT,
           poster_url TEXT,
           thumbnail_url TEXT,
           variants TEXT DEFAULT '{}',
+          width INTEGER DEFAULT 0,
+          height INTEGER DEFAULT 0,
+          duration REAL DEFAULT 0,
+          size_bytes BIGINT DEFAULT 0,
+          file_size BIGINT DEFAULT 0,
+          content_hash VARCHAR(128),
+          status VARCHAR(30) DEFAULT 'READY',
+          processing_status VARCHAR(30) DEFAULT 'READY',
           is_attached SMALLINT DEFAULT 0,
           attached_entity_type VARCHAR(50),
           attached_entity_id VARCHAR(100),
-          processing_status VARCHAR(30) DEFAULT 'READY',
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TIMESTAMP WITH TIME ZONE
+        );
+
+        CREATE TABLE IF NOT EXISTS media_usages (
+          id VARCHAR(100) PRIMARY KEY,
+          media_id VARCHAR(100) NOT NULL REFERENCES media_assets(id) ON DELETE CASCADE,
+          entity_type VARCHAR(50) NOT NULL,
+          entity_id VARCHAR(100) NOT NULL,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
 
-        -- PostgreSQL Million-User Scalability Indexes
+        -- PostgreSQL Scalability Indexes
         CREATE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
         CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users(LOWER(email));
         CREATE INDEX IF NOT EXISTS idx_posts_room_created ON posts(room, created_at DESC);
@@ -204,7 +220,10 @@ const db = {
         CREATE INDEX IF NOT EXISTS idx_votes_user_post ON votes(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_saved_user_post ON saved_posts(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_media_owner ON media_assets(owner_id, created_at DESC);
-        CREATE INDEX IF NOT EXISTS idx_media_unattached ON media_assets(is_attached, created_at);
+        CREATE INDEX IF NOT EXISTS idx_media_content_hash ON media_assets(content_hash);
+        CREATE INDEX IF NOT EXISTS idx_media_status ON media_assets(status, processing_status);
+        CREATE INDEX IF NOT EXISTS idx_media_usages_media ON media_usages(media_id);
+        CREATE INDEX IF NOT EXISTS idx_media_usages_entity ON media_usages(entity_type, entity_id);
       `);
 
       // Safe migration check for existing columns
@@ -218,9 +237,25 @@ const db = {
       for (const col of cols) {
         try {
           await pgPool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ${col} VARCHAR(255) DEFAULT ''`);
-        } catch (e) {}
+        } catch (e) { }
       }
-      console.log('✅ PostgreSQL Schema & Scalable Indexes Verified.');
+
+      const mediaCols = [
+        { name: 'storage_key', type: 'TEXT' },
+        { name: 'poster_key', type: 'TEXT' },
+        { name: 'usage_type', type: 'VARCHAR(50) DEFAULT \'PFP\'' },
+        { name: 'size_bytes', type: 'BIGINT DEFAULT 0' },
+        { name: 'content_hash', type: 'VARCHAR(128)' },
+        { name: 'status', type: 'VARCHAR(30) DEFAULT \'READY\'' },
+        { name: 'deleted_at', type: 'TIMESTAMP WITH TIME ZONE' }
+      ];
+      for (const mc of mediaCols) {
+        try {
+          await pgPool.query(`ALTER TABLE media_assets ADD COLUMN IF NOT EXISTS ${mc.name} ${mc.type}`);
+        } catch (e) { }
+      }
+
+      console.log('✅ PostgreSQL Schema & Scalable Media Indexes Verified.');
     } else {
       sqliteDb.exec(`
         CREATE TABLE IF NOT EXISTS users (
@@ -309,23 +344,88 @@ const db = {
           id TEXT PRIMARY KEY,
           owner_id TEXT,
           media_type TEXT NOT NULL,
+          usage_type TEXT DEFAULT 'PFP',
           mime_type TEXT NOT NULL,
           original_filename TEXT,
-          file_size INTEGER NOT NULL,
-          width INTEGER,
-          height INTEGER,
-          duration REAL,
+          storage_key TEXT,
           storage_url TEXT NOT NULL,
+          poster_key TEXT,
           poster_url TEXT,
           thumbnail_url TEXT,
           variants TEXT DEFAULT '{}',
+          width INTEGER DEFAULT 0,
+          height INTEGER DEFAULT 0,
+          duration REAL DEFAULT 0,
+          size_bytes INTEGER DEFAULT 0,
+          file_size INTEGER DEFAULT 0,
+          content_hash TEXT,
+          status TEXT DEFAULT 'READY',
+          processing_status TEXT DEFAULT 'READY',
           is_attached INTEGER DEFAULT 0,
           attached_entity_type TEXT,
           attached_entity_id TEXT,
-          processing_status TEXT DEFAULT 'READY',
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          deleted_at DATETIME
         );
 
+        CREATE TABLE IF NOT EXISTS media_usages (
+          id TEXT PRIMARY KEY,
+          media_id TEXT NOT NULL,
+          entity_type TEXT NOT NULL,
+          entity_id TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY(media_id) REFERENCES media_assets(id) ON DELETE CASCADE
+        );
+      `);
+
+      // SQLite dynamic column migrations
+      const columnsToAdd = [
+        { table: 'users', name: 'display_name', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'bio', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'location', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'date_of_birth', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'gender', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'social_links', type: "TEXT DEFAULT '{}'" },
+        { table: 'users', name: 'visibility', type: "TEXT DEFAULT 'public'" },
+        { table: 'users', name: 'avatar_url', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'banner_url', type: "TEXT DEFAULT ''" },
+        { table: 'users', name: 'avatar_frame', type: "TEXT DEFAULT 'none'" },
+        { table: 'users', name: 'avatar_shape', type: "TEXT DEFAULT 'rectangular'" },
+        { table: 'users', name: 'profile_theme', type: "TEXT DEFAULT 'default'" },
+        { table: 'users', name: 'profile_accent', type: "TEXT DEFAULT 'lime'" },
+        { table: 'users', name: 'profile_badge', type: "TEXT DEFAULT 'senior_roaster'" },
+        { table: 'users', name: 'profile_effects', type: "TEXT DEFAULT 'none'" },
+        { table: 'users', name: 'is_premium', type: 'INTEGER DEFAULT 0' },
+        { table: 'users', name: 'badges_owned', type: "TEXT DEFAULT '[\"verified\",\"senior_roaster\",\"battle_champ\",\"problem_solver\",\"helpful\"]'" },
+        { table: 'users', name: 'rank_title', type: "TEXT DEFAULT 'Senior Roaster'" },
+        { table: 'users', name: 'reputation_score', type: 'INTEGER DEFAULT 1800' },
+        { table: 'users', name: 'cooked_ratio', type: 'INTEGER DEFAULT 100' },
+        { table: 'users', name: 'judgment_accuracy', type: 'INTEGER DEFAULT 98' },
+        { table: 'users', name: 'rank_number', type: 'INTEGER DEFAULT 143' },
+        { table: 'users', name: 'roast_points', type: 'INTEGER DEFAULT 2314' },
+        { table: 'users', name: 'next_level_points', type: 'INTEGER DEFAULT 3000' },
+        { table: 'users', name: 'followers_count', type: 'INTEGER DEFAULT 1' },
+        { table: 'users', name: 'following_count', type: 'INTEGER DEFAULT 2' },
+        { table: 'users', name: 'reactions_count', type: 'INTEGER DEFAULT 23' },
+        { table: 'media_assets', name: 'storage_key', type: 'TEXT' },
+        { table: 'media_assets', name: 'poster_key', type: 'TEXT' },
+        { table: 'media_assets', name: 'usage_type', type: "TEXT DEFAULT 'PFP'" },
+        { table: 'media_assets', name: 'size_bytes', type: 'INTEGER DEFAULT 0' },
+        { table: 'media_assets', name: 'content_hash', type: 'TEXT' },
+        { table: 'media_assets', name: 'status', type: "TEXT DEFAULT 'READY'" },
+        { table: 'media_assets', name: 'deleted_at', type: 'DATETIME' }
+      ];
+
+      for (const col of columnsToAdd) {
+        try {
+          sqliteDb.exec(`ALTER TABLE ${col.table} ADD COLUMN ${col.name} ${col.type};`);
+        } catch (e) {
+          // Column already exists or handled
+        }
+      }
+
+      // Create scalable indexes after columns exist
+      sqliteDb.exec(`
         CREATE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
         CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users(LOWER(email));
         CREATE INDEX IF NOT EXISTS idx_posts_room_created ON posts(room, created_at DESC);
@@ -334,47 +434,11 @@ const db = {
         CREATE INDEX IF NOT EXISTS idx_votes_user_post ON votes(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_saved_user_post ON saved_posts(user_id, post_id);
         CREATE INDEX IF NOT EXISTS idx_media_owner ON media_assets(owner_id, created_at DESC);
-        CREATE INDEX IF NOT EXISTS idx_media_unattached ON media_assets(is_attached, created_at);
+        CREATE INDEX IF NOT EXISTS idx_media_content_hash ON media_assets(content_hash);
+        CREATE INDEX IF NOT EXISTS idx_media_status ON media_assets(status, processing_status);
+        CREATE INDEX IF NOT EXISTS idx_media_usages_media ON media_usages(media_id);
+        CREATE INDEX IF NOT EXISTS idx_media_usages_entity ON media_usages(entity_type, entity_id);
       `);
-
-      // SQLite dynamic column migrations
-      const columnsToAdd = [
-        { name: 'display_name', type: "TEXT DEFAULT ''" },
-        { name: 'bio', type: "TEXT DEFAULT ''" },
-        { name: 'location', type: "TEXT DEFAULT ''" },
-        { name: 'date_of_birth', type: "TEXT DEFAULT ''" },
-        { name: 'gender', type: "TEXT DEFAULT ''" },
-        { name: 'social_links', type: "TEXT DEFAULT '{}'" },
-        { name: 'visibility', type: "TEXT DEFAULT 'public'" },
-        { name: 'avatar_url', type: "TEXT DEFAULT ''" },
-        { name: 'banner_url', type: "TEXT DEFAULT ''" },
-        { name: 'avatar_frame', type: "TEXT DEFAULT 'none'" },
-        { name: 'avatar_shape', type: "TEXT DEFAULT 'rectangular'" },
-        { name: 'profile_theme', type: "TEXT DEFAULT 'default'" },
-        { name: 'profile_accent', type: "TEXT DEFAULT 'lime'" },
-        { name: 'profile_badge', type: "TEXT DEFAULT 'senior_roaster'" },
-        { name: 'profile_effects', type: "TEXT DEFAULT 'none'" },
-        { name: 'is_premium', type: 'INTEGER DEFAULT 0' },
-        { name: 'badges_owned', type: "TEXT DEFAULT '[\"verified\",\"senior_roaster\",\"battle_champ\",\"problem_solver\",\"helpful\"]'" },
-        { name: 'rank_title', type: "TEXT DEFAULT 'Senior Roaster'" },
-        { name: 'reputation_score', type: 'INTEGER DEFAULT 1800' },
-        { name: 'cooked_ratio', type: 'INTEGER DEFAULT 100' },
-        { name: 'judgment_accuracy', type: 'INTEGER DEFAULT 98' },
-        { name: 'rank_number', type: 'INTEGER DEFAULT 143' },
-        { name: 'roast_points', type: 'INTEGER DEFAULT 2314' },
-        { name: 'next_level_points', type: 'INTEGER DEFAULT 3000' },
-        { name: 'followers_count', type: 'INTEGER DEFAULT 1' },
-        { name: 'following_count', type: 'INTEGER DEFAULT 2' },
-        { name: 'reactions_count', type: 'INTEGER DEFAULT 23' }
-      ];
-
-      for (const col of columnsToAdd) {
-        try {
-          sqliteDb.exec(`ALTER TABLE users ADD COLUMN ${col.name} ${col.type};`);
-        } catch (e) {
-          // Column already exists or handled
-        }
-      }
     }
   }
 };

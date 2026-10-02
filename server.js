@@ -6,8 +6,12 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const db = require('./db');
-const MediaProcessor = require('./mediaProcessor');
-const { MEDIA_LIMITS, UPLOADS_DIR } = require('./mediaConfig');
+const MediaProcessor = require('./services/mediaProcessor');
+const MediaService = require('./services/mediaService');
+const StorageService = require('./services/storageService');
+const MediaDeliveryService = require('./services/mediaDeliveryService');
+const MediaQueue = require('./services/mediaQueue');
+const { MEDIA_LIMITS, ANIMATION_POLICY, UPLOADS_DIR } = require('./config/mediaConfig');
 
 const app = express();
 const PORT = process.env.PORT || 5173;
@@ -325,23 +329,83 @@ app.post('/api/auth/login', rateLimiter({ windowMs: 60000, max: 15 }), async (re
 });
 
 // =============================================================================
-// MEDIA STORAGE & UPLOAD SYSTEM
+// CENTRALIZED MEDIA SERVICE & UPLOAD SYSTEM (6 PIPELINES)
 // =============================================================================
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-// GET CENTRALIZED MEDIA LIMITS
+// GET CENTRALIZED MEDIA LIMITS & ANIMATION POLICY
 app.get('/api/media/limits', (req, res) => {
-  return res.json({ success: true, limits: MEDIA_LIMITS });
+  return res.json({ success: true, limits: MEDIA_LIMITS, animationPolicy: ANIMATION_POLICY });
 });
 
-// PRODUCTION-GRADE MEDIA PIPELINE UPLOAD ENDPOINT
-app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 20 }), async (req, res) => {
+// GET MEDIA OBSERVABILITY METRICS & WORKER QUEUE STATS
+app.get('/api/media/metrics', (req, res) => {
+  return res.json({ success: true, metrics: MediaService.getMetrics() });
+});
+
+// GET BACKGROUND QUEUE JOB STATUS
+app.get('/api/media/jobs/:jobId', (req, res) => {
+  const job = MediaService.getJobStatus(req.params.jobId);
+  if (!job) {
+    return res.status(404).json({ error: 'Media job not found or expired.' });
+  }
+  return res.json({ success: true, job });
+});
+
+// GET MEDIA ASSET METADATA & CDN DELIVERY URLS
+app.get('/api/media/assets/:id', async (req, res) => {
+  try {
+    const asset = await MediaService.getMediaAsset(req.params.id);
+    if (!asset) {
+      return res.status(404).json({ error: 'Media asset not found.' });
+    }
+    return res.json({ success: true, asset });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve media asset.' });
+  }
+});
+
+// DELETE MEDIA ASSET
+app.delete('/api/media/assets/:id', requireAuth, async (req, res) => {
+  try {
+    const asset = await db.get('SELECT * FROM media_assets WHERE id = ?', [req.params.id]);
+    if (!asset) {
+      return res.status(404).json({ error: 'Media asset not found.' });
+    }
+    if (asset.owner_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Not authorized to delete this media asset.' });
+    }
+
+    if (asset.storage_key) {
+      await StorageService.delete(asset.storage_key);
+    } else if (asset.storage_url) {
+      await MediaProcessor.deleteMediaByUrl(asset.storage_url);
+    }
+    if (asset.poster_key) {
+      await StorageService.delete(asset.poster_key);
+    }
+
+    await db.run('DELETE FROM media_assets WHERE id = ?', [asset.id]);
+    await db.run('DELETE FROM media_usages WHERE media_id = ?', [asset.id]);
+
+    return res.json({ success: true, message: 'Media asset deleted successfully.' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to delete media asset.' });
+  }
+});
+
+// UNIFIED CENTRALIZED MEDIA UPLOAD ENDPOINT (Supports both /api/upload/media and /api/media/upload)
+const handleMediaUpload = async (req, res) => {
   try {
     const rawData = req.body.data || req.body.base64Data;
     const filename = req.body.filename;
-    const type = req.body.type;
+    const type = req.body.type || 'avatar';
+    const asyncMode = Boolean(req.body.async || req.query.async === 'true');
+    const entityType = req.body.entityType || null;
+    const entityId = req.body.entityId || null;
+
     if (!rawData || typeof rawData !== 'string') {
       return res.status(400).json({ error: 'Media payload data is required.' });
     }
@@ -362,64 +426,82 @@ app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 2
       return res.status(400).json({ error: 'Empty media buffer provided.' });
     }
 
-    const uploadType = type || 'avatar';
-
-    // Execute Production Pipeline: Validate -> Safety -> Process -> Responsive Compress -> Posters
-    const result = await MediaProcessor.processMedia(buffer, uploadType, req.user);
-
-    // Register Media Asset in Database
-    try {
-      await db.run(
-        `INSERT INTO media_assets (id, owner_id, media_type, mime_type, original_filename, file_size, width, height, duration, storage_url, poster_url, thumbnail_url, variants, is_attached, processing_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'READY')`,
-        [
-          result.mediaId,
-          req.user.id,
-          uploadType,
-          result.mimeType,
-          filename ? String(filename).substring(0, 100) : 'upload',
-          result.fileSize,
-          result.width || 0,
-          result.height || 0,
-          result.duration || 0,
-          result.storageUrl,
-          result.posterUrl || result.storageUrl,
-          result.thumbnailUrl || result.storageUrl,
-          JSON.stringify(result.variants || {})
-        ]
-      );
-    } catch (dbErr) {
-      console.warn('Non-fatal media registration warning:', dbErr.message);
-    }
+    // Execute via ONE Centralized Media Service
+    const result = await MediaService.uploadMedia({
+      buffer,
+      uploadType: type,
+      user: req.user,
+      filename,
+      entityType,
+      entityId,
+      asyncMode
+    });
 
     return res.json({
       success: true,
       mediaId: result.mediaId,
-      url: result.storageUrl,
-      mediaUrl: result.storageUrl,
+      url: result.url,
+      mediaUrl: result.url,
+      originalUrl: result.url,
       posterUrl: result.posterUrl,
       thumbnailUrl: result.thumbnailUrl,
       variants: result.variants,
       width: result.width,
       height: result.height,
-      fileSize: result.fileSize,
+      fileSize: result.sizeBytes || result.fileSize,
+      sizeBytes: result.sizeBytes || result.fileSize,
       mimeType: result.mimeType,
       isAnimated: result.isAnimated,
-      duration: result.duration
+      duration: result.duration,
+      status: result.status,
+      isDeduplicated: Boolean(result.isDeduplicated),
+      jobId: result.jobId || null
     });
   } catch (err) {
     console.error('Media pipeline processing error:', err.message);
     return res.status(400).json({ error: err.message || 'Media processing failed.' });
   }
+};
+
+app.post('/api/upload/media', requireAuth, rateLimiter({ windowMs: 60000, max: 20 }), handleMediaUpload);
+app.post('/api/media/upload', requireAuth, rateLimiter({ windowMs: 60000, max: 20 }), handleMediaUpload);
+
+// ADMIN ON-DEMAND STORAGE GARBAGE COLLECTOR & ORPHAN PRUNER
+app.post('/api/admin/media/cleanup', requireAuth, rateLimiter({ windowMs: 60000, max: 10 }), async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Access denied: Admin privileges required.' });
+  }
+
+  try {
+    const result = await MediaService.runCleanup(0); // prune all unreferenced immediately
+    return res.json({
+      success: true,
+      message: `Cleaned ${result.filesPruned} orphaned media files and freed ${result.freedMb} MB of storage.`,
+      metrics: MediaService.getMetrics()
+    });
+  } catch (err) {
+    console.error('Storage garbage collection error:', err);
+    return res.status(500).json({ error: 'Failed to run media cleanup.' });
+  }
 });
 
-// Periodic Temp Media Cleanup (Runs every hour)
-setInterval(() => {
+// Periodic Storage Pruning & Temp Media Cleanup (Runs every 3 hours)
+setInterval(async () => {
   try {
-    MediaProcessor.cleanupOldTempMedia();
+    await MediaService.runCleanup(2 * 60 * 60 * 1000);
   } catch (err) {
     console.error('Media cleanup error:', err);
   }
-}, 60 * 60 * 1000);
+}, 3 * 60 * 60 * 1000);
+
+// Run an initial orphan sweep on startup (in background)
+setTimeout(async () => {
+  try {
+    await MediaService.runCleanup(60 * 1000);
+  } catch (e) {
+    console.warn('Initial media sweep warning:', e.message);
+  }
+}, 2000);
 
 // GET CURRENT USER (/me)
 app.get('/api/auth/me', optionalAuth, async (req, res) => {
@@ -674,11 +756,15 @@ app.put('/api/users/profile', requireAuth, rateLimiter({ windowMs: 60000, max: 3
       await db.run('UPDATE comments SET author_avatar = ? WHERE (author_id = ? OR LOWER(author_username) = LOWER(?))', [cleanAvatarUrl, userId, cleanUsername]);
       try {
         await db.run("UPDATE media_assets SET is_attached = 1, attached_entity_type = 'user_avatar', attached_entity_id = ? WHERE storage_url = ? OR poster_url = ?", [userId, cleanAvatarUrl, cleanAvatarUrl]);
+        // Purge previous replaced avatar files from disk to prevent storage clutter
+        await MediaProcessor.deleteUserPreviousMedia(userId, 'avatar', cleanAvatarUrl, db);
       } catch (mErr) {}
     }
     if (cleanBannerUrl !== currentDbUser.banner_url && cleanBannerUrl) {
       try {
         await db.run("UPDATE media_assets SET is_attached = 1, attached_entity_type = 'user_banner', attached_entity_id = ? WHERE storage_url = ? OR poster_url = ?", [userId, cleanBannerUrl, cleanBannerUrl]);
+        // Purge previous replaced banner files from disk to prevent storage clutter
+        await MediaProcessor.deleteUserPreviousMedia(userId, 'banner', cleanBannerUrl, db);
       } catch (mErr) {}
     }
 
@@ -960,6 +1046,15 @@ app.post('/api/posts', requireAuth, rateLimiter({ windowMs: 60000, max: 10 }), a
       flairClass,
       heatPercent
     ]);
+
+    if (attachedFile && typeof attachedFile === 'string' && attachedFile.startsWith('/uploads/')) {
+      try {
+        const asset = await db.get('SELECT id FROM media_assets WHERE storage_url = ? OR storage_key = ?', [attachedFile, attachedFile.replace(/^\/uploads\//, '')]);
+        if (asset) {
+          await MediaService.attachMediaUsage(asset.id, 'post_media', postId);
+        }
+      } catch (mErr) {}
+    }
 
     return res.status(201).json({
       message: 'Post published successfully!',
