@@ -181,6 +181,7 @@
 - **Status**: Implemented & Verified (34/34 Tests Passing)
 - **Components & Features**:
   - **Left**: 38x38px rounded container with 11px radius, subtle border, containing 3-line balanced hamburger that morphs into 'X' when open.
-  - **Center**: Absolute-centered DRAGME brand logo composed of bold white `DR`, high-definition neon lime Origami Crown `A` polygon SVG vector, and bold neon lime `GME`.
+  - **Center**: Absolute-centered DRAGME brand logo composed of bold white `DR`, official `crown_icon.png` 3D asset replacing the letter 'A', and bold neon lime `GME`.
   - **Right**: Streak/Cooked indicator capsule (`[ 🔥 12 ]`) with flame icon and bold count, paired with white notification bell with glowing red circular badge (`[ 🔔³ ]`).
+
 
