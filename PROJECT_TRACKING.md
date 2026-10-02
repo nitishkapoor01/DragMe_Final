@@ -176,3 +176,11 @@
 - **Components & Features**:
   - Restored and stabilized the 5-item bottom dock navbar with asymmetric center button.
   - Smooth scroll collapse into right-side profile capsule (`.nav-collapsed`) with instant re-expansion on scroll up or tap.
+
+### [2026-10-02 21:50] — DRAGME Mobile Top App Bar Pixel-Exact Reference Alignment
+- **Status**: Implemented & Verified (34/34 Tests Passing)
+- **Components & Features**:
+  - **Left**: 38x38px rounded container with 11px radius, subtle border, containing 3-line balanced hamburger that morphs into 'X' when open.
+  - **Center**: Absolute-centered DRAGME brand logo composed of bold white `DR`, high-definition neon lime Origami Crown `A` polygon SVG vector, and bold neon lime `GME`.
+  - **Right**: Streak/Cooked indicator capsule (`[ 🔥 12 ]`) with flame icon and bold count, paired with white notification bell with glowing red circular badge (`[ 🔔³ ]`).
+
