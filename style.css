@@ -144,33 +144,77 @@ button {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 220px;
+  gap: 12px;
+  min-width: 200px;
 }
 
-.icon-btn-plain {
-  color: var(--text-med);
-  font-size: 1.1rem;
-  padding: 6px;
-  border-radius: var(--radius-sm);
-  display: flex;
+/* 3-Lines Hamburger Menu Button (Desktop & Mobile) */
+.mob-drawer-toggle-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.icon-btn-plain:hover {
-  background: var(--bg-subtle);
-  color: var(--text-pure);
+.mob-drawer-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
+.mob-drawer-toggle-btn:active {
+  transform: scale(0.92);
+}
+
+.ham-box {
+  width: 18px;
+  height: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ham-line {
+  width: 100%;
+  height: 2px;
+  background: #FFFFFF;
+  border-radius: 2px;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.mob-drawer-toggle-btn.is-open .ham-top {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.mob-drawer-toggle-btn.is-open .ham-mid {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mob-drawer-toggle-btn.is-open .ham-bot {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+/* DRAGME Brand Logo with Crown Icon in place of 'A' (DR + 👑 + GME) */
 .brand-logo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 0;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
+  outline: none;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -178,37 +222,46 @@ button {
   opacity: 0.95;
 }
 
-.brand-logo-desktop {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.logo-text-dr {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-weight: 800;
+  font-size: 1.38rem;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  line-height: 1;
+  display: inline-block;
 }
 
-.brand-logo-desktop .brand-crown-icon {
-  height: 28px;
+.logo-crown-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1px;
+  line-height: 1;
+}
+
+.brand-crown-icon {
+  height: 22px;
   width: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 10px rgba(163, 230, 53, 0.45));
+  filter: drop-shadow(0 0 8px rgba(163, 230, 53, 0.45));
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform: translateY(-0.5px);
 }
 
-.brand-logo:hover .brand-logo-desktop .brand-crown-icon {
+.brand-logo:hover .brand-crown-icon {
   transform: translateY(-0.5px) scale(1.08);
 }
 
-.brand-logo-desktop .logo-text {
+.logo-text-gme {
   font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-weight: 800;
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  font-size: 1.38rem;
+  letter-spacing: -0.02em;
   color: #FFFFFF;
   line-height: 1;
-}
-
-.brand-logo-mobile {
-  display: none !important;
+  display: inline-block;
 }
 
 /* Center Search */

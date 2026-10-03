@@ -243,8 +243,7 @@
     - Preserved 100% untouched as requested: Apple fluid spring dock capsule, Style 6 Asymmetric Geometric Contour (`24px 28px 20px 26px`), morphing center `+` button, unread red badge, and fluid avatar collapse.
     - **Tap Interaction Refinement**: When collapsed into the right docked profile capsule, tapping now smoothly expands the navigation bar back first (`nav.classList.remove('nav-collapsed')`) instead of directly jumping to the profile page. Once fully expanded, subsequent taps on Profile navigate as normal.
     - **Home Button Navigation Fix**: Unified `mobNavHome` / `navHome` / `brandLogo` click handling so tapping Home from any view (profile, edit profile, login, room, or search) properly routes to `Router.navigate('home')`, closes all active drawers and overlays, restores collapsed header/bottom bar states, resets feed tabs to "For You", and smoothly scrolls to top.
-  - **Laptop/Desktop Brand Logo Restoration**:
-    - Restored exact original desktop brand presentation: Glowing 3D green Crown icon on the left followed by bold white `DRAGME` typography, preserving the mobile spring-collapsed `DR` + Crown + `GME` variant strictly for mobile viewports.
-
-
-
+  - **Desktop UI Consistency (Gaps, Top-Left 3-Lines Menu, Crown-as-'A' Wordmark)**:
+    - **Post Feed Spacing**: Eliminated excessive gaps between feed post cards and internal post margins on desktop/laptop, streamlining `.posts-stream` gap to `12px` and post card padding to `14px 16px`.
+    - **Top-Left 3-Lines Hamburger Menu Button**: Restored the 3-lines hamburger toggle button (`☰` / `.mob-drawer-toggle-btn` / `#toggleSidebarBtn`) on the top-left for desktop/laptop viewports, enabling smooth left drawer/sidebar toggle on all screen sizes.
+    - **Crown-as-'A' Wordmark on Desktop**: Unified the brand wordmark across both desktop and mobile to display `DR` + Crown icon (`👑`) in place of 'A' + `GME` (`.logo-text-dr` + `.brand-crown-icon` + `.logo-text-gme`) with `1.38rem` bold white typography.
