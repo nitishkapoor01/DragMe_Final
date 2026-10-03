@@ -1702,18 +1702,34 @@ document.addEventListener('DOMContentLoaded', () => {
       let flairText = post.flair || '';
       if (flairText) {
         const fLower = flairText.toLowerCase();
-        if (fLower.includes('roast') || fLower.includes('hot take')) {
+        if (fLower.includes('hot take') || fLower.includes('hottake')) {
+          flairTagClass = 'tag-hot-take';
+          flairIcon = '<i class="fa-solid fa-bolt text-red"></i>';
+          flairText = 'Hot Take';
+        } else if (fLower.includes('roast')) {
           flairTagClass = 'tag-roast';
           flairIcon = '<i class="fa-solid fa-fire text-orange"></i>';
           flairText = 'Roast';
-        } else if (fLower.includes('help') || fLower.includes('question')) {
+        } else if (fLower.includes('question')) {
+          flairTagClass = 'tag-question';
+          flairIcon = '<i class="fa-solid fa-circle-question text-blue"></i>';
+          flairText = 'Question';
+        } else if (fLower.includes('help')) {
           flairTagClass = 'tag-help-wanted';
-          flairIcon = '<i class="fa-solid fa-circle-question"></i>';
+          flairIcon = '<i class="fa-solid fa-hand-holding-hand text-blue"></i>';
           flairText = 'Help';
         } else if (fLower.includes('confession')) {
           flairTagClass = 'tag-confession';
           flairIcon = '<i class="fa-solid fa-mask text-purple"></i>';
           flairText = 'Confession';
+        } else if (fLower.includes('conversation') || fLower.includes('discuss')) {
+          flairTagClass = 'tag-conversation';
+          flairIcon = '<i class="fa-regular fa-comments text-gray"></i>';
+          flairText = 'Conversation';
+        } else if (fLower.includes('poll')) {
+          flairTagClass = 'tag-poll';
+          flairIcon = '<i class="fa-solid fa-chart-simple text-blue"></i>';
+          flairText = 'Poll';
         }
       }
 

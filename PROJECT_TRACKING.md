@@ -247,3 +247,27 @@
     - **Post Feed Spacing**: Eliminated excessive gaps between feed post cards and internal post margins on desktop/laptop, streamlining `.posts-stream` gap to `12px` and post card padding to `14px 16px`.
     - **Top-Left 3-Lines Hamburger Menu Button**: Restored the 3-lines hamburger toggle button (`☰` / `.mob-drawer-toggle-btn` / `#toggleSidebarBtn`) on the top-left for desktop/laptop viewports, enabling smooth left drawer/sidebar toggle on all screen sizes.
     - **Crown-as-'A' Wordmark on Desktop**: Unified the brand wordmark across both desktop and mobile to display `DR` + Crown icon (`👑`) in place of 'A' + `GME` (`.logo-text-dr` + `.brand-crown-icon` + `.logo-text-gme`) with `1.38rem` bold white typography.
+
+### [2026-10-03 10:25] — Continuous Dark Editorial Feed Redesign (No Post Cards • 1px Dividers)
+- **Status**: Implemented, Verified & Fully Integrated
+- **Key Enhancements**:
+  - **Single Continuous Dark Surface (`#080B0F`)**:
+    - Completely removed all separate post card containers, rounded rectangle outer cards, individual card shadows, and card background blocks (`#10151C`).
+    - Every post sits directly on `#080B0F`.
+    - Posts are separated exclusively by a subtle 1px horizontal divider (`border-bottom: 1px solid rgba(255, 255, 255, 0.07)`).
+    - Added comfortable vertical padding (`22px` top/bottom, `16px` horizontal content padding) for natural breathing room.
+  - **Author Row & Rectangular PFPs**:
+    - Preserved vertical rectangular portrait PFPs (`34px x 42px`, `aspect-ratio: 4/5`, `border-radius: 6px`; strictly no circular avatars).
+    - Compact hierarchy: Display name (`#F2F4F7`, 700 bold), verified green badge, `@username` (`#98A1AE`), timestamp dot + time (`#667180`).
+    - Post type label pills (Help, Roast, Confession, Question, Hot Take, Conversation, Poll) with subtle semantic outlines (no full-card coloring).
+  - **Typography & Content Hierarchy**:
+    - Strong scan-friendly titles (`1.22rem` / ~20px, `#F2F4F7`, 700 bold).
+    - Readable body text (`0.96rem`, `#98A1AE`, `1.52` line-height).
+    - Media framed with `12px` rounded corners in `#0C1117` sitting directly in the feed flow without outer cards or neon glow.
+  - **Action Row & Crown Reaction**:
+    - Crown (♕), Comments (○), Share (↗), Save (♧) in muted gray (`#98A1AE` / `#667180`) with comfortable `24px` spacing.
+    - No action-button pills or individual backgrounds.
+    - Crown idle: Gray outline. On tap: Spring compress/release, lime fill (`#B7FF3C`), counter +1.
+  - **Thread / Comment Nested Style**:
+    - Comments rendered on continuous surface with thin vertical connector lines for nested replies without heavy comment cards.
+
