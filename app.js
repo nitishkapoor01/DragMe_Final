@@ -3019,11 +3019,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       document.getElementById('mobNavProfile')?.addEventListener('click', (e) => {
-        this.setActive('mobNavProfile');
         const nav = document.getElementById('mobileBottomNav');
         if (nav?.classList.contains('nav-collapsed')) {
+          e.preventDefault();
+          e.stopPropagation();
           nav.classList.remove('nav-collapsed');
+          return;
         }
+        this.setActive('mobNavProfile');
         if (!AuthManager.requireAuth({ type: 'profile' }, 'Sign in or create an account to view your profile.', 'Profile')) {
           return;
         }
