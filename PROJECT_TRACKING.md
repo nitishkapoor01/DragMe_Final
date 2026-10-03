@@ -257,7 +257,7 @@
     - Posts are separated exclusively by a subtle 1px horizontal divider (`border-bottom: 1px solid rgba(255, 255, 255, 0.07)`).
     - Added comfortable vertical padding (`22px` top/bottom, `16px` horizontal content padding) for natural breathing room.
   - **Author Row & Rectangular PFPs**:
-    - Preserved vertical rectangular portrait PFPs (`34px x 42px`, `aspect-ratio: 4/5`, `border-radius: 6px`; strictly no circular avatars).
+    - Enhanced vertical rectangular portrait PFPs to **44px x 54px** (desktop) / **42px x 52px** (mobile) with `8px` border radius and `4:5` portrait aspect ratio (strictly no circular avatars), making user profile pictures clear, recognizable, and prominent.
     - Compact hierarchy: Display name (`#F2F4F7`, 700 bold), verified green badge, `@username` (`#98A1AE`), timestamp dot + time (`#667180`).
     - Post type label pills (Help, Roast, Confession, Question, Hot Take, Conversation, Poll) with subtle semantic outlines (no full-card coloring).
   - **Typography & Content Hierarchy**:
@@ -270,4 +270,5 @@
     - Crown idle: Gray outline. On tap: Spring compress/release, lime fill (`#B7FF3C`), counter +1.
   - **Thread / Comment Nested Style**:
     - Comments rendered on continuous surface with thin vertical connector lines for nested replies without heavy comment cards.
+
 

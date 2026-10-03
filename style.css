@@ -1021,13 +1021,13 @@ button {
 }
 
 .post-pfp-frame {
-  width: 34px;
-  height: 42px;
-  border-radius: 6px;
+  width: 44px;
+  height: 54px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
   background: #0C1117;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   aspect-ratio: 4/5;
   display: flex;
   align-items: center;
@@ -1040,7 +1040,7 @@ button {
   aspect-ratio: 4/5;
   object-fit: cover;
   display: block;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .post-pfp-ghost {
@@ -3861,15 +3861,15 @@ button {
     gap: 10px !important;
   }
 
-  /* AUTHOR ROW: Vertical Rectangular PFP (4:5 ratio, 6px radius — strictly no circular avatar) */
+  /* AUTHOR ROW: Vertical Rectangular PFP (4:5 ratio, 8px radius — strictly no circular avatar) */
   .post-pfp-frame {
-    width: 34px !important;
-    height: 42px !important;
+    width: 42px !important;
+    height: 52px !important;
     aspect-ratio: 4 / 5 !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
     background: #0C1117 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
     flex-shrink: 0 !important;
   }
 
@@ -3880,7 +3880,7 @@ button {
     color: #a855f7 !important;
     background: rgba(168, 85, 247, 0.1) !important;
     border: 1px solid rgba(168, 85, 247, 0.25) !important;
-    font-size: 0.95rem !important;
+    font-size: 1.1rem !important;
   }
 
   .post-pfp-img {
@@ -3888,7 +3888,7 @@ button {
     height: 100% !important;
     aspect-ratio: 4 / 5 !important;
     object-fit: cover !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     display: block !important;
   }
 
