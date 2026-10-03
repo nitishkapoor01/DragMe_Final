@@ -208,29 +208,43 @@
     - `@media (prefers-reduced-motion: reduce)` support.
     - Localized DOM manipulation without whole-feed re-renders.
 
-### [2026-10-03 09:50] — Mobile Top Header Rebuild, Apple Fluid Crown Collapse & CLS Optimization
+### [2026-10-03 10:00] — Mobile Home Feed Full Redesign (Calm Surface • Clear Hierarchy • Loud Interactions)
 - **Status**: Implemented, 100% Tested & Verified
 - **Architecture & Enhancements**:
-  - **Unified Single-Container Mobile Header**:
-    - Combined Top Navigation Row (`[ ☰ ]`, `[ 👑 DRAGME ]`, `[ 🔥 12 ]`, `[ 🔔³ ]`) and Feed Streams Tab Bar (`For You`, `Following`, `Trending`) into a single `<header class="top-nav" id="topNav">` container.
-    - Preserved dynamic expanding/sliding lime green switch underline indicator (`.feed-tab-slider`) on tab selection.
-    - Desktop navigation kept strictly isolated in clean single-row layout without feed tab pollution.
-  - **Apple Fluid Spring Crown Logo Collapse (No Pill)**:
-    - Zero pill capsule container / zero background box-shadow in collapsed state.
-    - All peripheral header elements smoothly suck directly inward into the central Crown Logo on scroll down:
-      - 3-Bars Hamburger: `translate3d(calc(50vw - 30px), 0, 0) scale(0.15)`
-      - Cooked Flame & Notifications: `translate3d(calc(-50vw + 30px), 0, 0) scale(0.15)`
-      - DR and GME Brand Text: `scale(0)` inward to crown
-      - Feed Tabs: `translate3d(0, -36px, 0) scale(0.25)` upward into crown
-    - Tuned with Apple fluid spring curve `cubic-bezier(0.16, 1, 0.3, 1)` (480ms) and delayed opacity fade for clearly visible physical travel.
-    - Crown logo in collapsed state scales to `0.85` and smoothly transitions to monochromatic grayscale (`grayscale(100%) opacity(0.55)`).
-    - On hover/tap or scroll up, instantly restores full vibrant glowing lime color.
-    - Logo click navigates home and smoothly scrolls back to top without shifting from position (`transform: translate(-50%, -50%)` firmly locked).
-  - **Intentional Scroll-Up Spring Back**:
-    - Scroll-up reveal configured with ~20px delta threshold (`currentY < lastScrollY - 20`) preventing accidental twitch activations while enabling smooth immediate spring-back anywhere on feed scroll.
-  - **Cumulative Layout Shift (CLS) Optimization**:
-    - Resolved CLS issues (`0.44 -> <0.1`) by adding explicit `aspect-ratio: 16 / 9;` and reserved `min-height: 160px/200px` to `.post-media-frame` and `img.post-media-img` across desktop and mobile.
-    - Added `contain: layout style paint;` and reserved dimensions to avatars and post cards to prevent content jumping during image load.
+  - **Exact Color System Applied**:
+    - Page Background: `#080B0F`
+    - Post Cards: `#10151C` (active/pressed: `#131A22`)
+    - Secondary Surfaces: `#0C1117`
+    - Bottom Navigation: `#0D1219`
+    - Borders: `rgba(255, 255, 255, 0.07)`
+    - Typography: Primary `#F2F4F7`, Secondary `#98A1AE`, Muted `#667180`
+    - Accent: DRAGME Lime `#B7FF3C` (strictly restrained to active states & interactive moments; zero rainbow cards, zero full-neon flood).
+  - **Header & Feed Tabs**:
+    - Perfectly centered DRAGME wordmark (`#F2F4F7`, crown `#B7FF3C`).
+    - Cooked counter rendered as a clean independent minimal stat (flame + count `#F2F4F7`).
+    - Notification bell with crisp small red unread dot/badge (`#EF4444`, `14px`, border `#080B0F`).
+    - Feed Tabs (`For You | Following | Trending`): Inactive `#667180`, active `#F2F4F7`, sliding 2px lime switch indicator (`#B7FF3C`).
+  - **Post Cards & Spacing**:
+    - Refined 16px internal padding, 16px gap rhythm between cards.
+    - Soft 4px shadow (`rgba(0,0,0,0.4)`), 16px border-radius, 1px border (`rgba(255,255,255,0.07)`).
+  - **Author Row & Rectangular PFPs**:
+    - Vertical rectangular PFPs (4:5 ratio, `34px x 42px`, `6px` radius; strictly NO circular avatars).
+    - Compact hierarchy: Display name (`#F2F4F7`, 700 bold), verified green badge, `@username` (`#98A1AE`), timestamp dot + time (`#667180`), clean category tag, 3-dot menu (`#667180`).
+  - **Typography & Media**:
+    - Titles: Strong, scan-friendly `1.22rem` (~20px) semibold/bold typography in `#F2F4F7`.
+    - Body: Softer `#98A1AE` with enhanced `1.58` line spacing for effortless readability.
+    - Media: Contained inside card with `12px` rounded corners, `16:9` ratio, `#0C1117` background, zero permanent neon glow.
+  - **Action Bar & Crown Reaction**:
+    - `Crown`, `Comments`, `Share`, `Save` in calm muted gray `#98A1AE` / `#667180`.
+    - Crown idle: Gray outline (`stroke: #98A1AE`, fill transparent).
+    - Crown liked: Filled lime (`#B7FF3C`), counter +1 smoothly in lime, spring compress/release animation with subtle particle burst.
+    - Crown unreacted: Compresses, drains lime fill, counter -1, settles into exact gray outline.
+  - **Bottom Navigation**:
+    - Elevated `#0D1219` surface with `1px rgba(255,255,255,0.07)` border and `20px` radius.
+    - Inactive items `#667180`, active destination `#B7FF3C` with lime underline indicator.
+    - Restrained prominent center `+` button in `#B7FF3C` with dark `#080B0F` icon morphing to `×`.
+    - Messages with small red unread dot (`#EF4444`).
+    - Profile tab using vertical rectangular PFP (`20px x 25px`, `4px` radius, 4:5 ratio).
 
 
 
