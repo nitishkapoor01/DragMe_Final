@@ -164,6 +164,8 @@ const db = {
         CREATE TABLE IF NOT EXISTS votes (
           user_id VARCHAR(100) NOT NULL,
           post_id VARCHAR(100) NOT NULL,
+          reaction_type VARCHAR(30) DEFAULT 'crown',
+          is_super SMALLINT DEFAULT 0,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (user_id, post_id)
         );
@@ -255,6 +257,11 @@ const db = {
         } catch (e) { }
       }
 
+      try {
+        await pgPool.query("ALTER TABLE votes ADD COLUMN IF NOT EXISTS reaction_type VARCHAR(30) DEFAULT 'crown'");
+        await pgPool.query("ALTER TABLE votes ADD COLUMN IF NOT EXISTS is_super SMALLINT DEFAULT 0");
+      } catch (e) { }
+
       console.log('✅ PostgreSQL Schema & Scalable Media Indexes Verified.');
     } else {
       sqliteDb.exec(`
@@ -329,6 +336,8 @@ const db = {
         CREATE TABLE IF NOT EXISTS votes (
           user_id TEXT NOT NULL,
           post_id TEXT NOT NULL,
+          reaction_type TEXT DEFAULT 'crown',
+          is_super INTEGER DEFAULT 0,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (user_id, post_id)
         );
@@ -413,7 +422,9 @@ const db = {
         { table: 'media_assets', name: 'size_bytes', type: 'INTEGER DEFAULT 0' },
         { table: 'media_assets', name: 'content_hash', type: 'TEXT' },
         { table: 'media_assets', name: 'status', type: "TEXT DEFAULT 'READY'" },
-        { table: 'media_assets', name: 'deleted_at', type: 'DATETIME' }
+        { table: 'media_assets', name: 'deleted_at', type: 'DATETIME' },
+        { table: 'votes', name: 'reaction_type', type: "TEXT DEFAULT 'crown'" },
+        { table: 'votes', name: 'is_super', type: 'INTEGER DEFAULT 0' }
       ];
 
       for (const col of columnsToAdd) {

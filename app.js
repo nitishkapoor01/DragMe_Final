@@ -501,74 +501,76 @@ const MediaPreviewEngine = {
 // Initial Seed Posts (Matching Screenshot)
 const SEED_POSTS = [
   {
-    id: 'post-riya-1',
-    title: '',
-    author: 'Riya',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+    id: 'post-nightrider-1',
+    title: 'First Full-Stack Post in SQLite',
+    author: 'NightRider',
+    handle: '@nightrider',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=NightRider',
     isAnonymous: false,
-    isVerified: true,
-    room: 'hot_takes',
-    roomDisplayName: 'r/hot_takes',
-    timeAgo: '2h',
-    flair: 'Hot Take',
-    flairClass: 'tag-hot-take',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-    content: 'Most people are not busy, they are just not disciplined.',
-    dragCount: 342,
-    commentCount: 62,
+    isVerified: false,
+    room: 'tech_ai',
+    roomDisplayName: 'r/tech_ai',
+    timeAgo: '3d ago',
+    flair: 'Roast',
+    flairClass: 'tag-roast',
+    imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&auto=format&fit=crop&q=80',
+    content: 'Unfiltered high-energy discussion saved directly to SQLite backend.',
+    dragCount: 3,
+    commentCount: 1,
     heatPercent: 96,
     hasVoted: false,
     isSaved: false,
     comments: [
-      { id: 'c1', author: 'Aarav', timeAgo: '1h', text: 'Hard truth nobody wants to hear.' },
-      { id: 'c2', author: 'Tanya', timeAgo: '45m', text: 'Discipline > Motivation any day.' }
+      { id: 'c1', author: 'DevZero', timeAgo: '2d ago', text: 'SQLite WAL mode rocks!' }
     ]
   },
   {
-    id: 'post-anon-2',
-    title: "What's a skill everyone should learn before 25??",
-    author: 'Anonymous',
-    avatar: null,
-    isAnonymous: true,
-    isVerified: false,
-    room: 'help_wanted',
-    roomDisplayName: 'r/help_wanted',
-    timeAgo: '4h',
-    flair: 'Help Wanted',
-    flairClass: 'tag-help-wanted',
-    imageUrl: null,
-    content: 'Looking for practical skills that actually help in real life and career. Drop your suggestions.',
-    dragCount: 128,
-    commentCount: 87,
-    heatPercent: 91,
-    hasVoted: false,
-    isSaved: false,
-    comments: [
-      { id: 'c3', author: 'Nikhil', timeAgo: '3h', text: 'Financial literacy and how compounding works.' },
-      { id: 'c4', author: 'DevZero', timeAgo: '2h', text: 'Communication and how to articulate technical problems simply.' }
-    ]
-  },
-  {
-    id: 'post-karan-3',
-    title: '',
-    author: 'Karan',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+    id: 'post-devzero-2',
+    title: 'Unpopular Opinion: 90% of "Agentic" SaaS are just 3 chained API calls',
+    author: 'DevZero',
+    handle: '@devzero',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
     isAnonymous: false,
     isVerified: true,
-    room: 'general',
-    roomDisplayName: 'r/general',
-    timeAgo: '6h',
-    flair: '',
-    flairClass: '',
-    imageUrl: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=1200&auto=format&fit=crop&q=80',
-    content: 'Some places just feel like home.',
-    dragCount: 521,
-    commentCount: 34,
-    heatPercent: 98,
+    room: 'tech_ai',
+    roomDisplayName: 'r/tech_ai',
+    timeAgo: '3d ago',
+    flair: 'Roast',
+    flairClass: 'tag-roast',
+    imageUrl: null,
+    content: 'Why does every startup slap a $49/mo paywall on a basic python script with 3 tool calls and call it an Autonomous Agent? Let us have an honest debate.',
+    dragCount: 96,
+    commentCount: 17,
+    heatPercent: 99,
     hasVoted: false,
     isSaved: false,
     comments: [
-      { id: 'c5', author: 'Riya', timeAgo: '5h', text: 'Stunning view! Where was this shot?' }
+      { id: 'c2', author: 'chip_drill', timeAgo: '2d ago', text: 'Spitting absolute facts.' }
+    ]
+  },
+  {
+    id: 'post-chipdrill-3',
+    title: 'Can someone explain this to me please?',
+    author: 'chip_drill',
+    handle: '@deep_stack',
+    avatar: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    isVerified: true,
+    room: 'help_wanted',
+    roomDisplayName: 'r/help_wanted',
+    timeAgo: '5d ago',
+    flair: 'Help',
+    flairClass: 'tag-help-wanted',
+    imageUrl: null,
+    codeSnippet: '1   File "app.py", line 42, in <module>\n2     import something\n3             ^',
+    content: "I'm getting this error while deploying. I've checked my environment variables but still not working...",
+    dragCount: 24,
+    commentCount: 5,
+    heatPercent: 92,
+    hasVoted: false,
+    isSaved: false,
+    comments: [
+      { id: 'c3', author: 'DevZero', timeAgo: '4d ago', text: 'Check your PYTHONPATH or virtualenv activation.' }
     ]
   }
 ];
@@ -1117,27 +1119,49 @@ class DragMeEngine {
     return list;
   }
 
-  async toggleDrag(postId) {
+  async toggleDrag(postId, { reactionType = 'crown', isSuper = false, switchOnly = false, remove = false } = {}) {
     const post = this.posts.find(p => p.id === postId);
     if (!post) return null;
     
+    const wasVoted = Boolean(post.hasVoted);
+    const sameReaction = (post.reactionType || 'crown') === reactionType;
+    const sameSuper = Boolean(post.isSuper) === isSuper;
+
     // Optimistic UI update
-    if (post.hasVoted) {
-      post.dragCount = Math.max(0, post.dragCount - 1);
+    if (wasVoted && (remove || (sameReaction && sameSuper && !switchOnly))) {
+      // Toggle OFF
+      post.dragCount = Math.max(0, post.dragCount - (post.isSuper ? 2 : 1));
       post.hasVoted = false;
+      post.reactionType = null;
+      post.isSuper = false;
+    } else if (wasVoted) {
+      // Switch Reaction or Upgrade to Super
+      post.reactionType = reactionType;
+      post.isSuper = isSuper || Boolean(post.isSuper);
+      if (isSuper && !wasVoted) post.dragCount += 1;
+      post.heatPercent = Math.min(100, (post.heatPercent || 85) + (isSuper ? 4 : 1));
     } else {
-      post.dragCount += 1;
+      // New Reaction
+      post.dragCount += (isSuper ? 2 : 1);
       post.hasVoted = true;
-      post.heatPercent = Math.min(100, post.heatPercent + 2);
+      post.reactionType = reactionType;
+      post.isSuper = isSuper;
+      post.heatPercent = Math.min(100, (post.heatPercent || 85) + (isSuper ? 5 : 2));
     }
     this.save();
 
     // Server-Authoritative sync
     try {
-      const res = await AuthAPI.request(`/api/posts/${postId}/vote`, { method: 'POST' });
+      const res = await AuthAPI.request(`/api/posts/${postId}/vote`, {
+        method: 'POST',
+        body: JSON.stringify({ reactionType, isSuper, switchOnly, remove })
+      });
       if (res && res.dragCount !== undefined) {
         post.dragCount = res.dragCount;
         post.hasVoted = res.hasVoted;
+        post.reactionType = res.reactionType;
+        post.isSuper = res.isSuper;
+        post.heatPercent = res.heatPercent;
         this.save();
       }
     } catch (e) {}
@@ -1460,6 +1484,11 @@ class SoundFXEngine {
 
   // Minimal Vote Haptic Tick
   playVote() {
+    this.playCrownBurst();
+  }
+
+  // Tactile Crown Tap (320Hz crisp click)
+  playCrownTap() {
     try {
       this.init();
       if (!this.ctx) return;
@@ -1467,17 +1496,92 @@ class SoundFXEngine {
 
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(480, now);
-      osc.frequency.exponentialRampToValueAtTime(720, now + 0.03);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.025);
 
       gain.gain.setValueAtTime(0.06, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start(now);
-      osc.stop(now + 0.035);
+      osc.stop(now + 0.03);
+    } catch (e) {}
+  }
+
+  // Warm Golden Crown Burst
+  playCrownBurst() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+
+      // Tone 1 (Base Lime Energy)
+      const osc1 = this.ctx.createOscillator();
+      const gain1 = this.ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(520, now);
+      osc1.frequency.exponentialRampToValueAtTime(780, now + 0.06);
+
+      gain1.gain.setValueAtTime(0.08, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc1.connect(gain1);
+      gain1.connect(this.ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.08);
+
+      // Tone 2 (Warm Golden Shimmer)
+      const osc2 = this.ctx.createOscillator();
+      const gain2 = this.ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(1040, now + 0.02);
+      osc2.frequency.exponentialRampToValueAtTime(1560, now + 0.09);
+
+      gain2.gain.setValueAtTime(0.035, now + 0.02);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+      osc2.connect(gain2);
+      gain2.connect(this.ctx.destination);
+      osc2.start(now + 0.02);
+      osc2.stop(now + 0.1);
+    } catch (e) {}
+  }
+
+  // Resonant Super Crown Chime
+  playSuperCrown() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+
+      [640, 960, 1280].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const delay = idx * 0.03;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + delay);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.25, now + delay + 0.12);
+
+        gain.gain.setValueAtTime(0.07, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.15);
+      });
+    } catch (e) {}
+  }
+
+  triggerHaptic(type = 'light') {
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        if (type === 'light') navigator.vibrate([10]);
+        else if (type === 'medium') navigator.vibrate([22]);
+        else if (type === 'super') navigator.vibrate([15, 30, 40]);
+      }
     } catch (e) {}
   }
 }
@@ -1565,6 +1669,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      let codeMarkup = '';
+      if (post.codeSnippet || post.code_snippet) {
+        const rawSnippet = post.codeSnippet || post.code_snippet;
+        codeMarkup = `
+          <div class="post-code-block-wrap">
+            <pre class="post-code-content"><code>${escapeHtml(rawSnippet)}</code></pre>
+            <button class="btn-copy-code-snippet" onclick="navigator.clipboard.writeText(\`${escapeHtml(rawSnippet)}\`);" title="Copy snippet" type="button">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        `;
+      }
+
       const resolvedAvatarUrl = AvatarService.get(post.isAnonymous ? 'Masked Persona' : (post.avatar || post.author), post.isAnonymous);
       const authorAvatar = post.isAnonymous
         ? `<div class="post-pfp-frame post-pfp-ghost" title="Anonymous Persona">
@@ -1574,19 +1691,29 @@ document.addEventListener('DOMContentLoaded', () => {
              <img src="${escapeHtml(resolvedAvatarUrl)}" alt="${escapeHtml(post.author)}" class="post-pfp-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=window.GUEST_SILHOUETTE_SVG;">
            </div>`;
 
-      const displayName = post.author;
-      const usernameHandle = post.isAnonymous ? '' : `@${post.author.toLowerCase().replace(/ /g, '')}`;
+      const displayName = post.author || post.author_username || 'Anonymous';
+      const isVerified = Boolean(post.isVerified || post.is_verified || ['DevZero', 'chip_drill', 'Riya', 'Tester Supreme'].includes(displayName));
+      const verifiedBadge = isVerified ? `<i class="fa-solid fa-circle-check verified-badge-mini"></i>` : '';
 
-      let flairTagClass = 'tag-general';
-      let flairIcon = '<i class="fa-solid fa-bolt"></i>';
-      if (post.flair) {
-        const fLower = post.flair.toLowerCase();
-        if (fLower.includes('hot take') || fLower.includes('roast')) {
+      const usernameHandle = post.isAnonymous ? '' : (post.handle || `@${displayName.toLowerCase().replace(/\s+/g, '')}`);
+
+      let flairTagClass = 'tag-roast';
+      let flairIcon = '<i class="fa-solid fa-fire text-orange"></i>';
+      let flairText = post.flair || '';
+      if (flairText) {
+        const fLower = flairText.toLowerCase();
+        if (fLower.includes('roast') || fLower.includes('hot take')) {
           flairTagClass = 'tag-roast';
           flairIcon = '<i class="fa-solid fa-fire text-orange"></i>';
+          flairText = 'Roast';
         } else if (fLower.includes('help') || fLower.includes('question')) {
           flairTagClass = 'tag-help-wanted';
-          flairIcon = '<i class="fa-regular fa-circle-question"></i>';
+          flairIcon = '<i class="fa-solid fa-circle-question"></i>';
+          flairText = 'Help';
+        } else if (fLower.includes('confession')) {
+          flairTagClass = 'tag-confession';
+          flairIcon = '<i class="fa-solid fa-mask text-purple"></i>';
+          flairText = 'Confession';
         }
       }
 
@@ -1598,6 +1725,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="post-header-details">
                 <div class="post-author-name-row">
                   <span class="meta-author-name">${escapeHtml(displayName)}</span>
+                  ${verifiedBadge}
                 </div>
                 <div class="post-author-sub-row">
                   ${usernameHandle ? `<span class="post-handle-text">${escapeHtml(usernameHandle)}</span>` : ''}
@@ -1607,7 +1735,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             <div class="meta-right-group">
-              ${post.flair ? `<span class="post-category-tag ${flairTagClass}">${flairIcon} <span>${escapeHtml(post.flair)}</span></span>` : ''}
+              ${flairText ? `<span class="post-category-tag ${flairTagClass}">${flairIcon} <span>${escapeHtml(flairText)}</span></span>` : ''}
               <button class="btn-post-menu" title="Options" type="button"><i class="fa-solid fa-ellipsis"></i></button>
             </div>
           </div>
@@ -1617,13 +1745,39 @@ document.addEventListener('DOMContentLoaded', () => {
           ${post.content ? `<div class="post-text-body">${escapeHtml(post.content)}</div>` : ''}
 
           ${mediaMarkup}
+          ${codeMarkup}
 
           <div class="post-bottom-actions">
             <div class="post-actions-left">
-              <button class="post-action-btn drag-crown-btn ${post.hasVoted ? 'voted' : ''}" data-action="vote" data-id="${post.id}" title="Crown Drag" type="button">
-                <i class="fa-solid fa-crown ${post.hasVoted ? 'voted-crown' : ''}"></i>
-                <span class="vote-count">${post.dragCount}</span>
-              </button>
+              ${(() => {
+                const reactionType = post.reactionType || 'crown';
+                const isSuper = Boolean(post.isSuper);
+                const reactionClass = post.hasVoted ? `reaction-${reactionType}` : '';
+                const superClass = isSuper ? 'is-super' : '';
+                const isVoted = Boolean(post.hasVoted);
+
+                return `
+                  <button class="post-action-btn drag-crown-btn ${isVoted ? 'voted' : ''} ${reactionClass} ${superClass}" 
+                          data-action="crown" 
+                          data-id="${post.id}" 
+                          data-reaction="${escapeHtml(reactionType)}"
+                          data-is-super="${isSuper ? '1' : '0'}"
+                          aria-label="${isVoted ? 'Remove crown from this post' : 'Crown this post'}"
+                          aria-pressed="${isVoted ? 'true' : 'false'}"
+                          title="Tap: Crown • Hold: Reactions • Double Tap: Super Crown" 
+                          type="button">
+                    <span class="crown-svg-wrap">
+                      <svg class="crown-svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                        <path class="crown-stroke" d="M3 18h18v2H3v-2zm1.5-12l3.5 6 4-8 4 8 3.5-6L21 16H3l1.5-10z"/>
+                        <path class="crown-fill" d="M3 18h18v2H3v-2zm1.5-12l3.5 6 4-8 4 8 3.5-6L21 16H3l1.5-10z"/>
+                      </svg>
+                    </span>
+                    <span class="vote-count-wrap" data-post-id="${post.id}">
+                      <span class="vote-count-digit" id="crownCount-${post.id}">${post.dragCount}</span>
+                    </span>
+                  </button>
+                `;
+              })()}
 
               <button class="post-action-btn post-comment-btn" data-action="comment" data-id="${post.id}" title="Comments" type="button">
                 <i class="fa-regular fa-comment"></i>
@@ -2891,9 +3045,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const topNav = document.getElementById('topNav');
 
             if (topNav && window.innerWidth <= 860) {
-              if (currentY > 40) {
+              // Collapse on solid scroll down, spring-back on intentional scroll up (~20px) or at top
+              if (currentY > 60 && currentY > this.lastScrollY + 8) {
                 topNav.classList.add('top-nav-scrolled');
-              } else {
+              } else if (currentY < this.lastScrollY - 20 || currentY < 20) {
                 topNav.classList.remove('top-nav-scrolled');
               }
             }
@@ -2955,63 +3110,10 @@ document.addEventListener('DOMContentLoaded', () => {
   MobileCreateSystem.init();
   MobileNavSystem.init();
 
-  // Action Delegation on Posts Feed
-  postsStream.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (btn) {
-      const action = btn.dataset.action;
-      const id = btn.dataset.id;
-      if (!action || !id) return;
-
-      if (action === 'vote') {
-        // Micro-compression animation on Crown reaction button
-        btn.classList.add('btn-react-anim');
-        setTimeout(() => btn.classList.remove('btn-react-anim'), 450);
-
-        const updated = store.toggleDrag(id);
-        if (updated) {
-          if (updated.hasVoted) sfx.playVote();
-          renderFeed();
-          showToast(updated.hasVoted ? 'Drag crowned! +1' : 'Crown removed');
-        }
-      } else if (action === 'save') {
-        btn.classList.add('btn-react-anim');
-        setTimeout(() => btn.classList.remove('btn-react-anim'), 300);
-
-        const updated = store.toggleSave(id);
-        if (updated) {
-          renderFeed();
-          showToast(updated.isSaved ? 'Saved to bookmarks' : 'Removed from bookmarks');
-        }
-      } else if (action === 'comment') {
-        btn.classList.add('btn-react-anim');
-        setTimeout(() => btn.classList.remove('btn-react-anim'), 200);
-        openCommentsDrawer(id);
-      } else if (action === 'share') {
-        btn.classList.add('btn-react-anim');
-        setTimeout(() => btn.classList.remove('btn-react-anim'), 200);
-        navigator.clipboard.writeText(window.location.href);
-        showToast('Link copied to clipboard!');
-      }
-      return;
-    }
-
-    // Direct click on post content/card opens thread discussion with subtle press feedback
-    const postCard = e.target.closest('.reddit-post-card');
-    if (postCard && !e.target.closest('a')) {
-      const postId = postCard.dataset.postId;
-      if (postId) {
-        postCard.style.transform = 'scale(0.99)';
-        setTimeout(() => {
-          postCard.style.transform = '';
-          openCommentsDrawer(postId);
-        }, 100);
-      }
-    }
-  });
+  // Action Delegation handled by Central Feed Action Controller
 
   // =============================================================================
-  // DRAGME MOBILE FEED TABS CONTROLLER (DYNAMIC SWITCH & CLEAN COLLAPSE)
+  // DRAGME MOBILE FEED TABS CONTROLLER (SELECT EXPAND & COLLAPSE ANIMATION)
   // =============================================================================
   const FeedTabsController = {
     slider: null,
@@ -3027,7 +3129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-selected', tab.classList.contains('active') ? 'true' : 'false');
 
-        // Accessible subtle touch feedback
         const handlePress = () => { tab.style.transform = 'scale(0.96)'; };
         const handleRelease = () => { tab.style.transform = ''; };
         tab.addEventListener('mousedown', handlePress);
@@ -3047,33 +3148,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const prevActive = document.querySelector('.feed-tab.active');
       if (tab === prevActive) return;
 
-      // Dynamic switch animation from old tab to new tab
+      // Dynamic switch animation: expand from previous tab, slide to new tab, then collapse
       if (this.slider && prevActive) {
         if (this.collapseTimer) clearTimeout(this.collapseTimer);
 
-        const prevWidth = Math.max(30, Math.min(prevActive.offsetWidth * 0.65, 56));
+        const prevWidth = Math.max(36, Math.min(prevActive.offsetWidth * 0.68, 64));
         const prevOffset = prevActive.offsetLeft + (prevActive.offsetWidth - prevWidth) / 2;
 
-        // Start position at old tab
+        // Position & Expand at origin tab
         this.slider.style.transition = 'none';
         this.slider.style.width = `${prevWidth}px`;
         this.slider.style.transform = `translate3d(${prevOffset}px, 0, 0) scaleX(1)`;
+        this.slider.style.opacity = '1';
         this.slider.classList.add('sliding');
         void this.slider.offsetWidth; // Force reflow
 
-        // Travel to new tab
-        const targetWidth = Math.max(30, Math.min(tab.offsetWidth * 0.65, 56));
+        // Travel smoothly to selected tab
+        const targetWidth = Math.max(36, Math.min(tab.offsetWidth * 0.68, 64));
         const targetOffset = tab.offsetLeft + (tab.offsetWidth - targetWidth) / 2;
 
         this.slider.style.transition = 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease';
         this.slider.style.width = `${targetWidth}px`;
         this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0) scaleX(1)`;
 
-        // Gracefully collapse / fade out after settling at target tab
+        // Smoothly collapse into selected tab
         this.collapseTimer = setTimeout(() => {
           if (this.slider) {
-            this.slider.style.transition = 'transform 0.24s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease';
+            this.slider.style.transition = 'transform 0.24s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.22s ease';
             this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0) scaleX(0.2)`;
+            this.slider.style.opacity = '0';
             this.slider.classList.remove('sliding');
           }
         }, 340);
@@ -3319,35 +3422,543 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Comment posted!');
   });
 
-  // Action Delegation on Posts Feed
+  // =============================================================================
+  // DRAGME CROWN REACTION ENGINE (40-POINT PRODUCTION SPECIFICATION)
+  // =============================================================================
+  const CrownStates = {
+    IDLE: 'IDLE',
+    HOVER: 'HOVER',
+    PRESSING: 'PRESSING',
+    RELEASING: 'RELEASING',
+    ACTIVATING: 'ACTIVATING',
+    ACTIVE: 'ACTIVE',
+    UNREACTING: 'UNREACTING',
+    LONG_PRESS: 'LONG_PRESS',
+    SUPER_CROWN: 'SUPER_CROWN',
+    DISABLED: 'DISABLED',
+    OPTIMISTIC_PENDING: 'OPTIMISTIC_PENDING',
+    ERROR_ROLLBACK: 'ERROR_ROLLBACK'
+  };
+
+  const CrownReactionEngine = {
+    states: {}, // { [postId]: CrownStates }
+    longPressTimer: null,
+    longPressTriggered: false,
+    activePicker: null,
+    lastTapTimes: {},
+    inFlight: {}, // Network in-flight lock
+    
+    reactionMeta: {
+      crown: { icon: 'fa-solid fa-crown', label: 'Crown', color: '#B7F34A' },
+      fire: { icon: 'fa-solid fa-fire', label: 'Fire', color: '#FF7043' },
+      insightful: { icon: 'fa-solid fa-lightbulb', label: 'Insightful', color: '#29B6F6' },
+      support: { icon: 'fa-solid fa-handshake', label: 'Support', color: '#5C6BC0' },
+      heartfelt: { icon: 'fa-solid fa-heart', label: 'Heartfelt', color: '#AB47BC' },
+      mindblown: { icon: 'fa-solid fa-brain', label: 'Mind Blown', color: '#FFCA28' }
+    },
+
+    init() {
+      // Dismiss reaction picker on click outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.reaction-picker-pill') && !e.target.closest('.drag-crown-btn')) {
+          this.closePicker();
+        }
+      });
+
+      // Keyboard accessibility (Space / Enter on focused Crown button)
+      postsStream?.addEventListener('keydown', (e) => {
+        const crownBtn = e.target.closest('.drag-crown-btn');
+        if (crownBtn && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          const postId = crownBtn.dataset.id;
+          if (postId) this.handleSingleTap(crownBtn, postId);
+        }
+      });
+    },
+
+    getState(postId) {
+      return this.states[postId] || CrownStates.IDLE;
+    },
+
+    setState(postId, state) {
+      this.states[postId] = state;
+    },
+
+    closePicker() {
+      if (this.activePicker) {
+        this.activePicker.classList.add('closing');
+        setTimeout(() => {
+          this.activePicker?.remove();
+          this.activePicker = null;
+        }, 180);
+      }
+    },
+
+    spawnActivationRipple(btn) {
+      const ripple = document.createElement('div');
+      ripple.className = 'crown-activation-ripple';
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 320);
+    },
+
+    spawnParticles(btn, isSuper = false, isGold = true) {
+      const container = document.createElement('div');
+      container.className = 'crown-particles-anchor';
+      btn.appendChild(container);
+
+      const count = isSuper ? 6 : 4;
+      const angleStep = 360 / count;
+
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = `crown-float-particle ${isGold || isSuper ? 'gold' : ''}`;
+        particle.innerHTML = '<i class="fa-solid fa-crown"></i>';
+
+        const angle = (angleStep * i) + (Math.random() * 20 - 10);
+        const rad = (angle * Math.PI) / 180;
+        const dist = isSuper ? 38 + Math.random() * 12 : 24 + Math.random() * 8;
+        const tx = Math.cos(rad) * dist;
+        const ty = Math.sin(rad) * dist - 16;
+        const rot = (Math.random() * 50 - 25);
+
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        particle.style.setProperty('--rot', `${rot}deg`);
+
+        container.appendChild(particle);
+      }
+
+      setTimeout(() => container.remove(), 500);
+    },
+
+    spawnShockwave(btn) {
+      const ring = document.createElement('div');
+      ring.className = 'crown-shockwave-ring';
+      btn.appendChild(ring);
+      setTimeout(() => ring.remove(), 500);
+    },
+
+    showSupportFeedback(btn, message = 'You showed support.') {
+      const existing = btn.querySelector('.support-feedback-pill');
+      if (existing) existing.remove();
+
+      const pill = document.createElement('div');
+      pill.className = 'support-feedback-pill';
+      pill.textContent = message;
+      btn.appendChild(pill);
+      setTimeout(() => pill.remove(), 1600);
+    },
+
+    rollCount(postId, newCount, isIncrement) {
+      const countEl = document.getElementById(`crownCount-${postId}`);
+      if (!countEl) return;
+      countEl.classList.remove('roll-up', 'roll-down');
+      void countEl.offsetWidth; // reflow
+      countEl.textContent = newCount;
+      countEl.classList.add(isIncrement ? 'roll-up' : 'roll-down');
+    },
+
+    updateButtonDOM(btn, { isVoted, reactionType = 'crown', isSuper = false, count }) {
+      if (!btn) return;
+      
+      btn.classList.toggle('voted', isVoted);
+      btn.classList.toggle('is-super', isSuper && isVoted);
+      btn.setAttribute('aria-pressed', isVoted ? 'true' : 'false');
+      btn.setAttribute('aria-label', isVoted ? 'Remove crown from this post' : 'Crown this post');
+
+      // Clear reaction color classes and apply current
+      Object.keys(this.reactionMeta).forEach(t => btn.classList.remove(`reaction-${t}`));
+      if (isVoted) btn.classList.add(`reaction-${reactionType}`);
+
+      if (count !== undefined) {
+        const countEl = document.getElementById(`crownCount-${btn.dataset.id}`);
+        if (countEl) countEl.textContent = count;
+      }
+    },
+
+    openPicker(btn, postId) {
+      this.closePicker();
+      this.longPressTriggered = true;
+      this.setState(postId, CrownStates.LONG_PRESS);
+
+      const picker = document.createElement('div');
+      picker.className = 'reaction-picker-pill';
+      picker.setAttribute('role', 'toolbar');
+      picker.setAttribute('aria-label', 'Reaction picker');
+
+      const reactions = ['crown', 'fire', 'insightful', 'support', 'heartfelt', 'mindblown'];
+      picker.innerHTML = reactions.map(type => {
+        const meta = this.reactionMeta[type];
+        return `
+          <button type="button" class="reaction-picker-item item-${type}" data-reaction="${type}" title="${meta.label}" aria-label="${meta.label}">
+            <i class="${meta.icon}"></i>
+          </button>
+        `;
+      }).join('');
+
+      picker.querySelectorAll('.reaction-picker-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+          sfx.playCrownTap();
+          sfx.triggerHaptic('light');
+        });
+
+        item.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const targetReaction = item.dataset.reaction;
+          this.closePicker();
+
+          if (!AuthManager.requireAuth({ type: 'vote', postId }, 'Log in to react to this post.', 'React to Post')) {
+            return;
+          }
+
+          sfx.playCrownBurst();
+          sfx.triggerHaptic('medium');
+          this.spawnParticles(btn, false, true);
+          this.spawnActivationRipple(btn);
+          btn.classList.add('is-activating');
+          setTimeout(() => btn.classList.remove('is-activating'), 450);
+
+          const post = store.posts.find(p => p.id === postId);
+          const wasVoted = post?.hasVoted;
+          const oldCount = post?.dragCount || 0;
+          const newCount = wasVoted ? oldCount : oldCount + 1;
+
+          this.rollCount(postId, newCount, true);
+          this.updateButtonDOM(btn, { isVoted: true, reactionType: targetReaction, isSuper: false });
+
+          try {
+            const updated = await store.toggleDrag(postId, { reactionType: targetReaction, switchOnly: true });
+            if (updated) {
+              const label = this.reactionMeta[targetReaction]?.label || 'Reaction';
+              showToast(`Reacted with ${label}!`);
+            }
+          } catch (err) {
+            this.handleRollback(btn, postId, wasVoted, oldCount);
+          }
+        });
+      });
+
+      btn.appendChild(picker);
+      this.activePicker = picker;
+      sfx.playCrownTap();
+      sfx.triggerHaptic('medium');
+    },
+
+    async handleSingleTap(btn, postId) {
+      if (!AuthManager.requireAuth({ type: 'vote', postId }, 'Log in to react to this post.', 'Crown Post')) {
+        return;
+      }
+
+      // Check in-flight lock
+      if (this.inFlight[postId]) return;
+      this.inFlight[postId] = true;
+
+      const post = store.posts.find(p => p.id === postId);
+      const willCrown = !post?.hasVoted;
+      const oldCount = post?.dragCount || 0;
+      const newCount = willCrown ? oldCount + 1 : Math.max(0, oldCount - 1);
+
+      this.setState(postId, CrownStates.OPTIMISTIC_PENDING);
+
+      if (willCrown) {
+        // 7, 8, 9, 10. Activation sequence
+        btn.classList.add('is-activating');
+        this.spawnActivationRipple(btn);
+        this.spawnParticles(btn, false, true);
+        sfx.playCrownBurst();
+        sfx.triggerHaptic('medium');
+        this.showSupportFeedback(btn, 'You showed support.');
+
+        setTimeout(() => {
+          btn.classList.remove('is-activating');
+          this.setState(postId, CrownStates.ACTIVE);
+        }, 460);
+      } else {
+        // 17. Unreacting sequence
+        btn.classList.add('is-unreacting');
+        sfx.playCrownTap();
+        sfx.triggerHaptic('light');
+
+        setTimeout(() => {
+          btn.classList.remove('is-unreacting');
+          this.setState(postId, CrownStates.IDLE);
+        }, 280);
+      }
+
+      // 12. Odometer count animation
+      this.rollCount(postId, newCount, willCrown);
+      this.updateButtonDOM(btn, { isVoted: willCrown, reactionType: 'crown', isSuper: false });
+
+      // 13, 14, 15. Server sync & rollback handling
+      try {
+        const updated = await store.toggleDrag(postId, { reactionType: 'crown', isSuper: false });
+        if (updated) {
+          this.updateButtonDOM(btn, { 
+            isVoted: updated.hasVoted, 
+            reactionType: updated.reactionType || 'crown', 
+            isSuper: updated.isSuper,
+            count: updated.dragCount 
+          });
+        }
+      } catch (err) {
+        this.handleRollback(btn, postId, !willCrown, oldCount);
+      } finally {
+        this.inFlight[postId] = false;
+      }
+    },
+
+    async handleSuperCrown(btn, postId) {
+      if (!AuthManager.requireAuth({ type: 'vote', postId }, 'Log in to react to this post.', 'Super Crown')) {
+        return;
+      }
+
+      if (this.inFlight[postId]) return;
+      this.inFlight[postId] = true;
+
+      const post = store.posts.find(p => p.id === postId);
+      const wasVoted = post?.hasVoted;
+      const oldCount = post?.dragCount || 0;
+      const newCount = wasVoted ? (post.isSuper ? oldCount : oldCount + 1) : oldCount + 2;
+
+      this.setState(postId, CrownStates.SUPER_CROWN);
+
+      // 22. Super crown physical shockwave & bounce
+      btn.classList.add('is-super-activating');
+      this.spawnShockwave(btn);
+      this.spawnParticles(btn, true, true);
+      sfx.playSuperCrown();
+      sfx.triggerHaptic('super');
+      this.showSupportFeedback(btn, '⚡ Super Crown!');
+
+      setTimeout(() => {
+        btn.classList.remove('is-super-activating');
+        this.setState(postId, CrownStates.ACTIVE);
+      }, 500);
+
+      this.rollCount(postId, newCount, true);
+      this.updateButtonDOM(btn, { isVoted: true, reactionType: 'crown', isSuper: true });
+
+      try {
+        const updated = await store.toggleDrag(postId, { reactionType: 'crown', isSuper: true, switchOnly: true });
+        if (updated) {
+          this.updateButtonDOM(btn, { 
+            isVoted: updated.hasVoted, 
+            reactionType: updated.reactionType || 'crown', 
+            isSuper: updated.isSuper,
+            count: updated.dragCount 
+          });
+          showToast('⚡ Super Crown applied! +2');
+        }
+      } catch (err) {
+        this.handleRollback(btn, postId, wasVoted, oldCount);
+      } finally {
+        this.inFlight[postId] = false;
+      }
+    },
+
+    handleRollback(btn, postId, wasVoted, oldCount) {
+      // 15. Graceful Error Rollback
+      this.setState(postId, CrownStates.ERROR_ROLLBACK);
+      this.rollCount(postId, oldCount, !wasVoted);
+      this.updateButtonDOM(btn, { isVoted: wasVoted, reactionType: 'crown', isSuper: false });
+      showToast("Couldn't update reaction. Try again.");
+      setTimeout(() => this.setState(postId, wasVoted ? CrownStates.ACTIVE : CrownStates.IDLE), 250);
+    }
+  };
+
+  CrownReactionEngine.init();
+
+  // Who Reacted Modal Controller
+  const WhoReactedModal = {
+    overlay: document.getElementById('whoReactedOverlay'),
+    listWrap: document.getElementById('whoReactedList'),
+    activeTab: 'all',
+    currentPostId: null,
+    data: null,
+
+    init() {
+      document.getElementById('btnCloseWhoReacted')?.addEventListener('click', () => this.close());
+      this.overlay?.addEventListener('click', (e) => {
+        if (e.target === this.overlay) this.close();
+      });
+
+      ['all', 'friends', 'topReactors'].forEach(tab => {
+        document.getElementById(`whoTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.addEventListener('click', () => {
+          this.switchTab(tab);
+        });
+      });
+    },
+
+    open(postId) {
+      this.currentPostId = postId;
+      this.activeTab = 'all';
+      if (this.overlay) this.overlay.style.display = 'flex';
+      if (this.listWrap) {
+        this.listWrap.innerHTML = `
+          <div class="who-reacted-loading">
+            <i class="fa-solid fa-spinner fa-spin text-lime"></i>
+            <span>Loading reactions...</span>
+          </div>
+        `;
+      }
+      this.fetchReactors(postId);
+    },
+
+    close() {
+      if (this.overlay) this.overlay.style.display = 'none';
+      this.currentPostId = null;
+      this.data = null;
+    },
+
+    switchTab(tab) {
+      this.activeTab = tab;
+      document.querySelectorAll('.who-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector(`.who-tab-btn[data-tab="${tab}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+      this.renderList();
+    },
+
+    async fetchReactors(postId) {
+      try {
+        const res = await AuthAPI.request(`/api/posts/${postId}/reactors`);
+        if (res) {
+          this.data = res;
+          const countAll = document.getElementById('whoCountAll');
+          const countFriends = document.getElementById('whoCountFriends');
+          const countTop = document.getElementById('whoCountTop');
+          if (countAll) countAll.textContent = res.all?.length || 0;
+          if (countFriends) countFriends.textContent = res.friends?.length || 0;
+          if (countTop) countTop.textContent = res.topReactors?.length || 0;
+          this.renderList();
+        }
+      } catch (err) {
+        if (this.listWrap) {
+          this.listWrap.innerHTML = `
+            <div class="who-reacted-empty">
+              <i class="fa-solid fa-triangle-exclamation text-orange"></i>
+              <span>Could not load reactors.</span>
+            </div>
+          `;
+        }
+      }
+    },
+
+    renderList() {
+      if (!this.data || !this.listWrap) return;
+      const list = this.data[this.activeTab] || [];
+
+      if (list.length === 0) {
+        this.listWrap.innerHTML = `
+          <div class="who-reacted-empty">
+            <i class="fa-solid fa-crown" style="font-size: 1.5rem; opacity: 0.4;"></i>
+            <span>No reactors in this category yet.</span>
+          </div>
+        `;
+        return;
+      }
+
+      this.listWrap.innerHTML = list.map(r => `
+        <div class="who-reactor-item">
+          <div class="who-reactor-left">
+            <img src="${escapeHtml(r.avatarUrl)}" alt="${escapeHtml(r.displayName)}" class="who-reactor-avatar" onerror="this.src=window.GUEST_SILHOUETTE_SVG;">
+            <div class="who-reactor-info">
+              <div class="who-reactor-name-row">
+                <span class="who-reactor-name">${escapeHtml(r.displayName)}</span>
+                ${r.isSuper ? '<i class="fa-solid fa-bolt who-reactor-super-badge" title="Super Crown Reactor"></i>' : ''}
+                ${r.isPremium ? '<i class="fa-solid fa-circle-check text-lime" style="font-size: 0.75rem;"></i>' : ''}
+              </div>
+              <span class="who-reactor-handle">@${escapeHtml(r.username)} · ${escapeHtml(r.timeAgo)}</span>
+            </div>
+          </div>
+          <div class="who-reactor-badge" style="color: ${r.reactionColor}; border: 1px solid ${r.reactionColor}33;">
+            <i class="${escapeHtml(r.reactionIcon)}"></i>
+            <span style="font-size: 0.76rem; font-weight: 600;">${escapeHtml(r.reactionLabel)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  };
+
+  WhoReactedModal.init();
+
+  // Pointerdown and Pointerup delegation on postsStream for Crown tactile touch
+  postsStream.addEventListener('pointerdown', (e) => {
+    const crownBtn = e.target.closest('.drag-crown-btn');
+    if (crownBtn) {
+      const postId = crownBtn.dataset.id;
+      crownBtn.classList.add('is-pressing');
+      CrownReactionEngine.longPressTriggered = false;
+
+      // 18. Long press threshold (450ms)
+      CrownReactionEngine.longPressTimer = setTimeout(() => {
+        crownBtn.classList.remove('is-pressing');
+        CrownReactionEngine.openPicker(crownBtn, postId);
+      }, 450);
+    }
+  });
+
+  const clearCrownPress = (e) => {
+    const crownBtn = e.target.closest('.drag-crown-btn');
+    if (crownBtn) {
+      crownBtn.classList.remove('is-pressing');
+    }
+    if (CrownReactionEngine.longPressTimer) {
+      clearTimeout(CrownReactionEngine.longPressTimer);
+      CrownReactionEngine.longPressTimer = null;
+    }
+  };
+
+  postsStream.addEventListener('pointerup', clearCrownPress);
+  postsStream.addEventListener('pointerleave', clearCrownPress);
+  postsStream.addEventListener('pointercancel', clearCrownPress);
+
+  // Central Action Delegation on Posts Feed
   postsStream.addEventListener('click', (e) => {
+    // If click was on count wrap specifically, open "Who Reacted"
+    const countWrap = e.target.closest('.vote-count-wrap');
+    if (countWrap) {
+      e.stopPropagation();
+      const postId = countWrap.dataset.postId;
+      if (postId) WhoReactedModal.open(postId);
+      return;
+    }
+
     const btn = e.target.closest('button');
     if (btn) {
       const action = btn.dataset.action;
       const id = btn.dataset.id;
       if (!action || !id) return;
 
-      if (action === 'vote') {
-        if (!AuthManager.requireAuth({ type: 'vote', postId: id }, 'Log in to react to this post.', 'React to Post')) {
+      if (action === 'crown') {
+        // If long press picker was opened, ignore tap
+        if (CrownReactionEngine.longPressTriggered) {
+          CrownReactionEngine.longPressTriggered = false;
           return;
         }
-        const updated = store.toggleDrag(id);
-        if (updated) {
-          if (updated.hasVoted) sfx.playVote();
-          renderFeed();
-          showToast(updated.hasVoted ? 'Drag upvoted! +1' : 'Vote removed');
+
+        const now = Date.now();
+        const lastTap = CrownReactionEngine.lastTapTimes[id] || 0;
+        if (now - lastTap < 260) {
+          // Double Tap: Super Crown
+          CrownReactionEngine.handleSuperCrown(btn, id);
+          CrownReactionEngine.lastTapTimes[id] = 0;
+        } else {
+          CrownReactionEngine.lastTapTimes[id] = now;
+          CrownReactionEngine.handleSingleTap(btn, id);
         }
+      } else if (action === 'who-reacted') {
+        WhoReactedModal.open(id);
       } else if (action === 'save') {
         if (!AuthManager.requireAuth({ type: 'save', postId: id }, 'Log in to save this post.', 'Save Post')) {
           return;
         }
-        const updated = store.toggleSave(id);
-        if (updated) {
-          renderFeed();
-          showToast(updated.isSaved ? 'Saved to bookmarks' : 'Removed from bookmarks');
-        }
+        store.toggleSave(id).then(updated => {
+          if (updated) {
+            renderFeed(false);
+            showToast(updated.isSaved ? 'Saved to bookmarks' : 'Removed from bookmarks');
+          }
+        });
       } else if (action === 'comment') {
-        // Guests CAN open the comments drawer to read public discussion!
         openCommentsDrawer(id);
       } else if (action === 'share') {
         navigator.clipboard.writeText(window.location.href);
@@ -3356,9 +3967,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Direct click on post content/card opens thread discussion (Public discovery)
+    // Direct click on post content/card opens thread discussion
     const postCard = e.target.closest('.reddit-post-card');
-    if (postCard && !e.target.closest('a')) {
+    if (postCard && !e.target.closest('a') && !e.target.closest('.reaction-picker-pill')) {
       const postId = postCard.dataset.postId;
       if (postId) {
         openCommentsDrawer(postId);
@@ -6859,6 +7470,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (brandLogo) {
     brandLogo.addEventListener('click', (e) => {
       e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       Router.navigate('home');
       renderFeed();
     });

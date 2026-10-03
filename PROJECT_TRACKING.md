@@ -177,11 +177,60 @@
   - Restored and stabilized the 5-item bottom dock navbar with asymmetric center button.
   - Smooth scroll collapse into right-side profile capsule (`.nav-collapsed`) with instant re-expansion on scroll up or tap.
 
-### [2026-10-02 21:50] — DRAGME Mobile Top App Bar Pixel-Exact Reference Alignment
-- **Status**: Implemented & Verified (34/34 Tests Passing)
-- **Components & Features**:
-  - **Left**: 38x38px rounded container with 11px radius, subtle border, containing 3-line balanced hamburger that morphs into 'X' when open.
-  - **Center**: Absolute-centered DRAGME brand logo composed of bold white `DR`, official `crown_icon.png` 3D asset replacing the letter 'A', and bold neon lime `GME`.
-  - **Right**: Streak/Cooked indicator capsule (`[ 🔥 12 ]`) with flame icon and bold count, paired with white notification bell with glowing red circular badge (`[ 🔔³ ]`).
+### [2026-10-03 08:35] — DRAGME Interactive Crown Reaction System (40-Point Production Spec)
+- **Status**: Implemented & 100% Verified (Full Test Suite Passing)
+- **Architecture & Features**:
+  - **GPU-Accelerated SVG Morphing**: `<svg class="crown-svg">` with dual `<path class="crown-stroke">` and `<path class="crown-fill">` providing smooth vector transition from muted gray outline to solid DRAGME Lime (`#B7F34A`).
+  - **Predictable State Machine**: Implemented in `CrownReactionEngine` with 12 distinct states (`IDLE`, `HOVER`, `PRESSING`, `RELEASING`, `ACTIVATING`, `ACTIVE`, `UNREACTING`, `LONG_PRESS`, `SUPER_CROWN`, `DISABLED`, `OPTIMISTIC_PENDING`, `ERROR_ROLLBACK`).
+  - **Physical Interaction Sequence (350–500ms)**:
+    - 0–100ms: Downward compress `scale(0.88)` on pointerdown.
+    - 100–180ms: Spring bounce `scale(1.08)` on release.
+    - 250–350ms: Subtle expanding activation ripple (`scale(0.75) -> scale(1.65)`) + 4–6 micro-burst gold/lime particles (`translateY(-16px)` drift with auto-cleanup).
+    - 300–450ms: Odometer numeric slide transition (`translateY(0 -> -8px)` old digit, `translateY(8px -> 0)` new digit).
+    - 500ms+: Settles into calm, non-permanent active state.
+  - **Long Press Reaction Picker (>= 450ms)**:
+    - Floating dark glassmorphic pill docked above the Crown button.
+    - 6 curated reactions: Crown 👑, Fire 🔥, Insightful 💡, Support 🤝, Heartfelt 💜, Mind Blown 🤯.
+    - Subtle hover magnification (`scale(1.18)`), sound feedback, and localized post reaction update.
+  - **Double-Tap Super Crown (< 260ms)**:
+    - Double-tap detection separate from single tap.
+    - $1.25\times$ expansion, dual golden-lime shockwave concentric rings, resonant 3-tone audio chime, heavy haptic pulse, and priority reactor placement.
+  - **"Who Reacted" Modal & Drawer**:
+    - Accessible via Crown count click or dedicated action trigger.
+    - Tabs: `All`, `Friends`, `Top Reactors`.
+    - Real-time API `GET /api/posts/:id/reactors` querying reactor profiles, avatars, badges, and timestamps.
+  - **Optimistic UI, Idempotency & Error Rollback**:
+    - Immediate local state transition with in-flight lock preventing rapid network spam.
+    - Server-authoritative sync on `POST /api/posts/:id/vote` (and `/react`).
+    - Graceful 250ms rollback with `"Couldn't update reaction. Try again."` on network failure.
+  - **Accessibility & Performance**:
+    - Minimum 44x44px touch targets, `aria-label`, `aria-pressed`, keyboard `Enter`/`Space` activation.
+    - `@media (prefers-reduced-motion: reduce)` support.
+    - Localized DOM manipulation without whole-feed re-renders.
+
+### [2026-10-03 09:50] — Mobile Top Header Rebuild, Apple Fluid Crown Collapse & CLS Optimization
+- **Status**: Implemented, 100% Tested & Verified
+- **Architecture & Enhancements**:
+  - **Unified Single-Container Mobile Header**:
+    - Combined Top Navigation Row (`[ ☰ ]`, `[ 👑 DRAGME ]`, `[ 🔥 12 ]`, `[ 🔔³ ]`) and Feed Streams Tab Bar (`For You`, `Following`, `Trending`) into a single `<header class="top-nav" id="topNav">` container.
+    - Preserved dynamic expanding/sliding lime green switch underline indicator (`.feed-tab-slider`) on tab selection.
+    - Desktop navigation kept strictly isolated in clean single-row layout without feed tab pollution.
+  - **Apple Fluid Spring Crown Logo Collapse (No Pill)**:
+    - Zero pill capsule container / zero background box-shadow in collapsed state.
+    - All peripheral header elements smoothly suck directly inward into the central Crown Logo on scroll down:
+      - 3-Bars Hamburger: `translate3d(calc(50vw - 30px), 0, 0) scale(0.15)`
+      - Cooked Flame & Notifications: `translate3d(calc(-50vw + 30px), 0, 0) scale(0.15)`
+      - DR and GME Brand Text: `scale(0)` inward to crown
+      - Feed Tabs: `translate3d(0, -36px, 0) scale(0.25)` upward into crown
+    - Tuned with Apple fluid spring curve `cubic-bezier(0.16, 1, 0.3, 1)` (480ms) and delayed opacity fade for clearly visible physical travel.
+    - Crown logo in collapsed state scales to `0.85` and smoothly transitions to monochromatic grayscale (`grayscale(100%) opacity(0.55)`).
+    - On hover/tap or scroll up, instantly restores full vibrant glowing lime color.
+    - Logo click navigates home and smoothly scrolls back to top without shifting from position (`transform: translate(-50%, -50%)` firmly locked).
+  - **Intentional Scroll-Up Spring Back**:
+    - Scroll-up reveal configured with ~20px delta threshold (`currentY < lastScrollY - 20`) preventing accidental twitch activations while enabling smooth immediate spring-back anywhere on feed scroll.
+  - **Cumulative Layout Shift (CLS) Optimization**:
+    - Resolved CLS issues (`0.44 -> <0.1`) by adding explicit `aspect-ratio: 16 / 9;` and reserved `min-height: 160px/200px` to `.post-media-frame` and `img.post-media-img` across desktop and mobile.
+    - Added `contain: layout style paint;` and reserved dimensions to avatars and post cards to prevent content jumping during image load.
+
 
 

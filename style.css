@@ -109,7 +109,7 @@ button {
 .text-muted { color: var(--text-low) !important; }
 
 /* ==========================================================================
-   TOP APP BAR (EXACT SCREENSHOT MATCH)
+   TOP APP BAR (EXACT SCREENSHOT MATCH FOR DESKTOP)
    ========================================================================== */
 .top-nav {
   position: fixed;
@@ -125,6 +125,19 @@ button {
   padding: 0 20px;
   z-index: 500;
   width: 100%;
+}
+
+.top-nav-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+
+/* Feed tabs are integrated only in mobile header */
+.feed-tabs-header {
+  display: none !important;
 }
 
 .nav-left {
@@ -162,7 +175,7 @@ button {
 }
 
 .brand-logo:hover {
-  transform: scale(1.02);
+  opacity: 0.92;
 }
 
 .logo-text-dr {
@@ -1096,7 +1109,10 @@ button {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  background: #000;
+  background: #0d1117;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
   max-height: 500px;
   display: flex;
   align-items: center;
@@ -1106,6 +1122,7 @@ button {
 .post-media-img {
   width: 100%;
   height: 100%;
+  aspect-ratio: 16 / 9;
   max-height: 500px;
   object-fit: cover;
   display: block;
@@ -1206,28 +1223,608 @@ button {
   transform: scale(0.92);
 }
 
+/* ==========================================================================
+   DRAGME CROWN REACTION SYSTEM — 40-POINT PRODUCTION CSS SPECIFICATION
+   ========================================================================== */
+
+:root {
+  --dragme-lime: #B7F34A;
+  --dragme-gold: #FFD54F;
+  --dragme-bg-dark: #080B0F;
+  --dragme-card-surface: #0D1117;
+  --dragme-text-primary: #F3F4F6;
+  --dragme-text-secondary: #9AA3AF;
+  --dragme-text-muted: #667080;
+}
+
+.drag-crown-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  color: var(--dragme-text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: color 0.16s ease, background 0.16s ease, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.drag-crown-btn:focus-visible {
+  box-shadow: 0 0 0 2px rgba(183, 243, 74, 0.4);
+}
+
+/* 5. Desktop Hover */
+@media (hover: hover) and (pointer: fine) {
+  .drag-crown-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255, 255, 255, 0.03);
+    transform: translate3d(0, -1px, 0) scale(1.04);
+  }
+  
+  .drag-crown-btn:hover .crown-svg {
+    filter: drop-shadow(0 2px 5px rgba(183, 243, 74, 0.2));
+  }
+}
+
+/* SVG Crown Component & Vector Morphing */
+.crown-svg-wrap {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.crown-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  overflow: visible;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+  will-change: transform;
+}
+
+.crown-svg .crown-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke-opacity 0.16s ease, stroke-width 0.16s ease, stroke 0.16s ease;
+  opacity: 0.85;
+}
+
+.crown-svg .crown-fill {
+  fill: currentColor;
+  opacity: 0;
+  transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), fill 0.16s ease;
+}
+
+/* 6. Pressing State */
+.drag-crown-btn.is-pressing {
+  transform: scale(0.88) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 7 & 8. Morphing & Activating States */
+.drag-crown-btn.is-activating .crown-svg {
+  animation: crownBounceMorph 420ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.drag-crown-btn.is-activating .crown-stroke {
+  stroke-opacity: 0;
+}
+
+.drag-crown-btn.is-activating .crown-fill {
+  opacity: 1;
+  fill: var(--dragme-lime);
+}
+
+/* 17. Unreacting State */
+.drag-crown-btn.is-unreacting .crown-svg {
+  animation: crownUnreactBounce 260ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.drag-crown-btn.is-unreacting .crown-fill {
+  opacity: 0;
+}
+
+.drag-crown-btn.is-unreacting .crown-stroke {
+  stroke-opacity: 0.85;
+}
+
+/* 11 & 39. Final Active State (Clean & Calm) */
 .drag-crown-btn.voted {
-  color: #a3e635 !important;
+  color: var(--dragme-lime) !important;
 }
 
-.voted-crown {
-  color: #a3e635 !important;
+.drag-crown-btn.voted .crown-stroke {
+  stroke-opacity: 0;
 }
 
-.post-save-btn.saved {
-  color: #F3F4F6 !important;
+.drag-crown-btn.voted .crown-fill {
+  opacity: 1;
+  fill: var(--dragme-lime) !important;
 }
 
-/* Micro-interaction scale animation for reaction buttons */
-.btn-react-anim {
-  animation: crownReactScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+.drag-crown-btn.voted.is-super {
+  color: var(--dragme-gold) !important;
 }
 
-@keyframes crownReactScale {
+.drag-crown-btn.voted.is-super .crown-fill {
+  fill: var(--dragme-gold) !important;
+}
+
+/* Reaction Types */
+.reaction-fire.voted { color: #FF7043 !important; }
+.reaction-fire.voted .crown-fill { fill: #FF7043 !important; }
+
+.reaction-insightful.voted { color: #29B6F6 !important; }
+.reaction-insightful.voted .crown-fill { fill: #29B6F6 !important; }
+
+.reaction-support.voted { color: #5C6BC0 !important; }
+.reaction-support.voted .crown-fill { fill: #5C6BC0 !important; }
+
+.reaction-heartfelt.voted { color: #AB47BC !important; }
+.reaction-heartfelt.voted .crown-fill { fill: #AB47BC !important; }
+
+.reaction-mindblown.voted { color: #FFCA28 !important; }
+.reaction-mindblown.voted .crown-fill { fill: #FFCA28 !important; }
+
+/* 9. Activation Ripple */
+.crown-activation-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  margin-left: -12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dragme-lime);
+  pointer-events: none;
+  animation: activationRipple 280ms cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  z-index: 10;
+}
+
+@keyframes activationRipple {
+  0% { transform: scale(0.75); opacity: 0.45; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+
+/* 10. Crown Micro-burst Particles */
+.crown-particles-anchor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 120;
+}
+
+.crown-float-particle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  color: var(--dragme-lime);
+  font-size: 10px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: crownParticleFly 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.crown-float-particle.gold {
+  color: var(--dragme-gold);
+}
+
+@keyframes crownParticleFly {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(var(--tx, 0px), var(--ty, -24px), 0) scale(1) rotate(var(--rot, 0deg));
+    opacity: 0;
+  }
+}
+
+/* 22. Super Crown Bounce & Concentric Rings */
+.drag-crown-btn.is-super-activating .crown-svg {
+  animation: crownSuperBounce 480ms cubic-bezier(0.175, 0.885, 0.32, 1.35) both;
+}
+
+.crown-shockwave-ring {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  margin-left: -11px;
+  border-radius: 50%;
+  border: 2px solid var(--dragme-gold);
+  pointer-events: none;
+  animation: shockwaveExpand 480ms cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  z-index: 10;
+}
+
+@keyframes shockwaveExpand {
+  0% { transform: scale(0.6); opacity: 0.9; border-color: var(--dragme-lime); }
+  50% { border-color: var(--dragme-gold); }
+  100% { transform: scale(2.6); opacity: 0; border-color: rgba(255, 213, 79, 0); }
+}
+
+@keyframes crownBounceMorph {
+  0% { transform: scale(0.88); }
+  40% { transform: scale(1.18); color: var(--dragme-gold); filter: drop-shadow(0 0 10px rgba(255, 213, 79, 0.5)); }
+  70% { transform: scale(0.97); }
+  100% { transform: scale(1); color: var(--dragme-lime); filter: none; }
+}
+
+@keyframes crownUnreactBounce {
   0% { transform: scale(1); }
-  25% { transform: scale(0.88); }
-  65% { transform: scale(1.10); }
+  50% { transform: scale(0.92); }
   100% { transform: scale(1); }
+}
+
+@keyframes crownSuperBounce {
+  0% { transform: scale(0.86); }
+  35% { transform: scale(1.42) rotate(-8deg); color: var(--dragme-gold); filter: drop-shadow(0 0 16px var(--dragme-gold)); }
+  65% { transform: scale(1.08) rotate(4deg); }
+  100% { transform: scale(1.12) rotate(0deg); }
+}
+
+/* 12. Odometer Count Transition */
+.vote-count-wrap {
+  display: inline-flex;
+  position: relative;
+  overflow: hidden;
+  height: 1.25em;
+  line-height: 1.25em;
+  vertical-align: middle;
+}
+
+.vote-count-digit {
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  font-variant-numeric: tabular-nums;
+}
+
+.vote-count-digit.roll-up {
+  animation: digitRollUp 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vote-count-digit.roll-down {
+  animation: digitRollDown 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes digitRollUp {
+  0% { transform: translate3d(0, 8px, 0); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+
+@keyframes digitRollDown {
+  0% { transform: translate3d(0, -8px, 0); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+
+/* 18 & 19. Floating Reaction Picker */
+.reaction-picker-pill {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: -8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  background: rgba(13, 17, 23, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.8), 0 0 16px rgba(183, 243, 74, 0.12);
+  z-index: 400;
+  animation: reactionPickerPop 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.reaction-picker-pill.closing {
+  animation: reactionPickerClose 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes reactionPickerPop {
+  0% { transform: translate3d(0, 6px, 0) scale(0.92); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes reactionPickerClose {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  100% { transform: translate3d(0, 4px, 0) scale(0.96); opacity: 0; }
+}
+
+.reaction-picker-item {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.12s ease;
+  user-select: none;
+  outline: none;
+}
+
+.reaction-picker-item:hover, .reaction-picker-item:focus-visible {
+  transform: scale(1.18) translate3d(0, -2px, 0);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.reaction-picker-item.item-crown { color: var(--dragme-lime); }
+.reaction-picker-item.item-fire { color: #FF7043; }
+.reaction-picker-item.item-insightful { color: #29B6F6; }
+.reaction-picker-item.item-support { color: #5C6BC0; }
+.reaction-picker-item.item-heartfelt { color: #AB47BC; }
+.reaction-picker-item.item-mindblown { color: #FFCA28; }
+
+/* 32. Support Feedback Pill */
+.support-feedback-pill {
+  position: absolute;
+  bottom: -24px;
+  left: 4px;
+  background: rgba(13, 17, 23, 0.95);
+  border: 1px solid rgba(183, 243, 74, 0.35);
+  color: var(--dragme-lime);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: feedbackPillFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 100;
+}
+
+@keyframes feedbackPillFade {
+  0% { transform: translate3d(0, 6px, 0); opacity: 0; }
+  15% { transform: translate3d(0, 0, 0); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate3d(0, -4px, 0); opacity: 0; }
+}
+
+/* 27. Accessibility & Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .drag-crown-btn,
+  .crown-svg,
+  .vote-count-digit,
+  .reaction-picker-pill {
+    animation: none !important;
+    transition: opacity 0.15s ease, color 0.15s ease !important;
+  }
+
+  .crown-activation-ripple,
+  .crown-float-particle,
+  .crown-shockwave-ring {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   WHO REACTED MODAL & DRAWER STYLING
+   ========================================================================== */
+
+.who-reacted-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: modalBackdropFade 0.2s ease both;
+}
+
+.who-reacted-modal {
+  background: #0E1218;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 24px rgba(198, 255, 0, 0.1);
+  animation: modalWindowSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  overflow: hidden;
+}
+
+.who-reacted-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.who-reacted-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.who-reacted-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #F3F4F6;
+  margin: 0;
+}
+
+.btn-close-who-reacted {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: #9AA3AF;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-close-who-reacted:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+}
+
+.who-reacted-tabs-nav {
+  display: flex;
+  padding: 10px 16px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.who-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #8A929B;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.16s ease;
+}
+
+.who-tab-btn:hover {
+  color: #F3F4F6;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.who-tab-btn.active {
+  background: rgba(198, 255, 0, 0.12);
+  border-color: rgba(198, 255, 0, 0.35);
+  color: #C6FF00;
+}
+
+.who-tab-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.who-reacted-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  max-height: 400px;
+}
+
+.who-reactor-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 8px;
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+
+.who-reactor-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.who-reactor-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.who-reactor-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1A212D;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.who-reactor-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.who-reactor-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.who-reactor-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #F3F4F6;
+}
+
+.who-reactor-super-badge {
+  color: #FFD54F;
+  font-size: 0.75rem;
+}
+
+.who-reactor-handle {
+  font-size: 0.76rem;
+  color: #717D8A;
+}
+
+.who-reactor-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.who-reacted-loading, .who-reacted-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 36px 16px;
+  color: #717D8A;
+  font-size: 0.85rem;
 }
 
 .feed-end-indicator {
@@ -2485,136 +3082,71 @@ button {
 @media (max-width: 640px) {
   :root {
     --header-h: 52px;
+    --tabs-h: 44px;
+    --header-total-h: 96px;
   }
 
   .app-layout-grid {
-    margin-top: var(--header-h) !important;
-    padding: 6px 12px 80px 12px !important;
+    margin-top: calc(var(--header-total-h) + 4px) !important;
+    padding: 4px 12px 80px 12px !important;
   }
 
   /* =============================================================================
-     DRAGME MOBILE FEED TABS — MINIMAL EDITORIAL SWITCH TRANSITION
-     [ For You ]        [ Following ]        [ Trending ]
-     ============================================================================= */
-  .feed-tabs-header {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-    margin: 0 0 14px 0 !important;
-    padding: 0 0 2px 0 !important;
-    background: transparent !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  }
-
-  .feed-main-tabs {
-    display: flex !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    width: 100% !important;
-    max-width: 380px !important;
-    margin: 0 auto !important;
-    padding: 0 4px !important;
-    position: relative !important;
-    gap: 0 !important;
-  }
-
-  .feed-tab {
-    flex: 1 !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: transparent !important;
-    border: none !important;
-    color: #667080 !important;
-    font-size: 0.94rem !important;
-    font-weight: 500 !important;
-    letter-spacing: -0.01em !important;
-    cursor: pointer !important;
-    user-select: none !important;
-    -webkit-tap-highlight-color: transparent !important;
-    position: relative !important;
-    padding: 0 8px !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    outline: none !important;
-    transition: color 0.18s cubic-bezier(0.22, 1, 0.36, 1), transform 0.15s ease !important;
-  }
-
-  .feed-tab:hover {
-    color: #9AA3AF !important;
-    background: transparent !important;
-  }
-
-  .feed-tab:active {
-    transform: scale(0.96) !important;
-    color: #F3F4F6 !important;
-  }
-
-  /* Active Tab: Pure bright white text with NO pill, NO neon, NO permanent glow */
-  .feed-tab.active {
-    color: #F3F4F6 !important;
-    font-weight: 600 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-
-  /* Dynamic Sliding Switch Line: Appears only during tab switch, then smoothly collapses */
-  .feed-tab-slider {
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    height: 2px;
-    background: #ffffff;
-    border-radius: 99px;
-    box-shadow: 0 1px 4px rgba(255, 255, 255, 0.25);
-    pointer-events: none;
-    opacity: 0;
-    transform: scaleX(0);
-    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
-    will-change: transform, width, opacity;
-    z-index: 2;
-  }
-
-  .feed-tab-slider.sliding {
-    opacity: 1;
-  }
-
-  /* =============================================================================
-     MOBILE TOP APP BAR (BALANCED & EDITORIAL)
-     [ ☰ ]                    [ 👑 DRAGME ]                    [ 🔥 12 ] [ 🔔³ ]
+     DRAGME MOBILE INTEGRATED TOP HEADER WITH TABS IN ONE CONTAINER
+     Row 1: [ ☰ ]        [ 👑 DRAGME ]        [ 🔥 12 ] [ 🔔³ ]
+     Row 2: [ For You ]  [ Following ]        [ Trending ]
      ============================================================================= */
   .top-nav {
-    padding: 0 14px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    box-sizing: border-box;
-    background: rgba(8, 11, 15, 0.96);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    transition: height 0.24s cubic-bezier(0.16, 1, 0.3, 1), background 0.24s ease;
-    padding-top: env(safe-area-inset-top, 0);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: var(--header-total-h) !important;
+    min-height: var(--header-total-h) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(8, 11, 15, 0.98) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    z-index: 1000 !important;
+    padding: 0 !important;
+    padding-top: env(safe-area-inset-top, 0) !important;
+    transition: background 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.48s ease, 
+                box-shadow 0.48s ease, 
+                backdrop-filter 0.48s ease !important;
+    will-change: background, border-color, box-shadow;
+    pointer-events: auto;
   }
 
+  /* Scrolled State: Full bar fades transparent, crown stays centered */
   .top-nav.top-nav-scrolled {
-    height: 48px;
-    background: rgba(8, 11, 15, 0.98);
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
   }
 
-  /* LEFT: Hamburger Drawer Toggle Button with Morphing 3 Lines */
+  .top-nav-main-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: var(--header-h) !important;
+    width: 100% !important;
+    padding: 0 14px !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  /* LEFT SIDE (3 Bars Hamburger): Sucks smoothly into the center crown logo */
   .nav-left {
     display: flex;
     align-items: center;
@@ -2623,31 +3155,42 @@ button {
   }
 
   .mob-drawer-toggle-btn {
-    width: 38px;
-    height: 38px;
-    background: #0E1217;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 11px;
+    width: 32px;
+    height: 32px;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     cursor: pointer;
     outline: none;
-    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s, background 0.15s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     padding: 0;
+    transform-origin: center center;
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) 0.06s !important;
+    will-change: transform, opacity;
   }
 
   .mob-drawer-toggle-btn:active {
-    transform: scale(0.94);
-    border-color: rgba(255, 255, 255, 0.16);
-    background: #151c26;
+    transform: scale(0.92);
+  }
+
+  .top-nav.top-nav-scrolled .mob-drawer-toggle-btn {
+    transform: translate3d(calc(50vw - 30px), 0, 0) scale(0.15) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.06s !important;
   }
 
   .ham-box {
-    width: 17px;
-    height: 12px;
+    width: 20px;
+    height: 13px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -2656,7 +3199,7 @@ button {
 
   .ham-line {
     width: 100%;
-    height: 2px;
+    height: 2.2px;
     background: #FFFFFF;
     border-radius: 2px;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
@@ -2665,7 +3208,7 @@ button {
 
   /* Morph into X when menu is opened */
   .mob-drawer-toggle-btn.is-open .ham-top {
-    transform: translateY(5px) rotate(45deg);
+    transform: translateY(5.5px) rotate(45deg);
   }
 
   .mob-drawer-toggle-btn.is-open .ham-mid {
@@ -2674,25 +3217,185 @@ button {
   }
 
   .mob-drawer-toggle-btn.is-open .ham-bot {
-    transform: translateY(-5px) rotate(-45deg);
+    transform: translateY(-5.5px) rotate(-45deg);
   }
 
-  /* CENTER: DRAGME Logo strictly centered without shifting */
-  .brand-logo {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: inline-flex;
+  /* RIGHT SIDE (🔥 Cooked & 🔔 Notifications): Sucks smoothly into the center crown logo */
+  .nav-right {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1px;
-    text-decoration: none;
-    user-select: none;
-    cursor: pointer;
-    z-index: 1;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    z-index: 2;
   }
 
+  .nav-right-auth {
+    display: flex !important;
+    align-items: center;
+    gap: 14px;
+    transform-origin: center center;
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) 0.06s !important;
+    will-change: transform, opacity;
+  }
+
+  .top-nav.top-nav-scrolled .nav-right-auth {
+    transform: translate3d(calc(-50vw + 30px), 0, 0) scale(0.15) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.06s !important;
+  }
+
+  /* FEED TABS ROW (For You, Following, Trending): Sucks upwards into the center crown logo */
+  .feed-tabs-header {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: var(--tabs-h) !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+    opacity: 1;
+    transform-origin: center top;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s !important;
+    will-change: transform, opacity;
+  }
+
+  .top-nav.top-nav-scrolled .feed-tabs-header {
+    transform: translate3d(0, -36px, 0) scale(0.25) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.04s !important;
+  }
+
+  .feed-main-tabs {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    position: relative !important;
+    gap: 0 !important;
+  }
+
+  .feed-tab {
+    flex: 1 !important;
+    height: var(--tabs-h) !important;
+    min-height: var(--tabs-h) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    color: #8b949e !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    position: relative !important;
+    padding: 0 12px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    transition: color 0.18s cubic-bezier(0.22, 1, 0.36, 1), transform 0.15s ease !important;
+  }
+
+  .feed-tab:hover {
+    color: #cbd5e1 !important;
+    background: transparent !important;
+  }
+
+  .feed-tab:active {
+    transform: scale(0.96) !important;
+    color: #ffffff !important;
+  }
+
+  /* Active Tab: Pure bright white text */
+  .feed-tab.active {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Dynamic Sliding Switch Line: Appears on select/switch, then smoothly collapses */
+  .feed-tab-slider {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    height: 2.5px;
+    background: #a3e635;
+    border-radius: 99px;
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.7);
+    pointer-events: none;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
+    will-change: transform, width, opacity;
+    z-index: 3;
+  }
+
+  .feed-tab-slider.sliding {
+    opacity: 1;
+  }
+
+  /* CENTER: DRAGME BRAND LOGO & CROWN ICON (The central anchor point) */
+  .brand-logo {
+    position: absolute !important;
+    left: 50% !important;
+    top: calc(var(--header-h) / 2) !important;
+    transform: translate(-50%, -50%) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    text-decoration: none !important;
+    user-select: none !important;
+    cursor: pointer !important;
+    z-index: 5 !important;
+    pointer-events: auto !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform;
+  }
+
+  .brand-logo:hover,
+  .brand-logo:active,
+  .brand-logo:focus {
+    transform: translate(-50%, -50%) !important;
+    outline: none !important;
+  }
+
+  /* Scrolled: Logo stays right at top center, scaled down smoothly */
+  .top-nav.top-nav-scrolled .brand-logo {
+    transform: translate(-50%, -50%) scale(0.9) !important;
+  }
+
+  .top-nav.top-nav-scrolled .brand-logo:hover,
+  .top-nav.top-nav-scrolled .brand-logo:active,
+  .top-nav.top-nav-scrolled .brand-logo:focus {
+    transform: translate(-50%, -50%) scale(0.9) !important;
+    outline: none !important;
+  }
+
+  /* DR and GME text smoothly squeeze into the crown icon from left & right */
   .logo-text-dr {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 1.35rem;
@@ -2700,6 +3403,41 @@ button {
     letter-spacing: -0.02em;
     color: #FFFFFF;
     line-height: 1;
+    display: inline-block;
+    transform-origin: right center;
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s !important;
+    will-change: transform, opacity;
+  }
+
+  .top-nav.top-nav-scrolled .logo-text-dr {
+    transform: scale(0) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .logo-text-gme {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    line-height: 1;
+    display: inline-block;
+    transform-origin: left center;
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s !important;
+    will-change: transform, opacity;
+  }
+
+  .top-nav.top-nav-scrolled .logo-text-gme {
+    transform: scale(0) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .logo-crown-wrap {
@@ -2715,17 +3453,28 @@ button {
     width: auto;
     object-fit: contain;
     display: block;
-    filter: drop-shadow(0 0 6px rgba(163, 230, 53, 0.45));
-    transform: translateY(-0.5px);
+    filter: grayscale(0%) drop-shadow(0 0 6px rgba(163, 230, 53, 0.45));
+    opacity: 1;
+    transform: translateY(-0.5px) scale(1);
+    transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform, filter, opacity;
   }
 
-  .logo-text-gme {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.35rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: #a3e635;
-    line-height: 1;
+  /* Crown icon in collapsed scrolled state: Monochromatic grayscale with subtle reduced opacity */
+  .top-nav.top-nav-scrolled .brand-crown-icon {
+    transform: translateY(-0.5px) scale(0.85) !important;
+    filter: grayscale(100%) brightness(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8)) !important;
+    opacity: 0.55 !important;
+    transition-delay: 0.06s !important;
+  }
+
+  .top-nav.top-nav-scrolled .brand-logo:hover .brand-crown-icon,
+  .top-nav.top-nav-scrolled .brand-logo:active .brand-crown-icon {
+    transform: translateY(-0.5px) scale(0.95) !important;
+    filter: grayscale(0%) drop-shadow(0 0 14px rgba(163, 230, 53, 0.95)) drop-shadow(0 4px 14px rgba(0, 0, 0, 0.9)) !important;
+    opacity: 1 !important;
   }
 
   /* Hide Search, Plus, Guest Text, Divider, Chat, and Profile from Mobile Top Header */
@@ -2738,7 +3487,7 @@ button {
     display: none !important;
   }
 
-  /* RIGHT: EXACTLY 2 ITEMS [ 🔥 12 ] and [ 🔔³ ] */
+  /* RIGHT: EXACTLY 2 ITEMS [ 🔥 12 ] and [ 🔔³ ] (Clean minimal matching screenshot) */
   .nav-right {
     display: flex;
     align-items: center;
@@ -2750,45 +3499,34 @@ button {
   .nav-right-auth {
     display: flex !important;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
-  /* 1. Cooked Flame Indicator Capsule */
+  /* 1. Cooked Flame Indicator (Clean minimal) */
   .stat-cooked-meter {
-    height: 34px;
-    padding: 0 11px;
-    background: #0E1217;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
+    height: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     cursor: pointer;
     outline: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s, background 0.16s;
-  }
-
-  .stat-cooked-meter:active {
-    transform: scale(0.96);
-    background: #141a22;
-    border-color: rgba(255, 255, 255, 0.16);
   }
 
   .cooked-flame-icon {
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     color: #f97316;
     line-height: 1;
   }
 
-  .stat-cooked-meter.increment-flame .cooked-flame-icon {
-    transform: scale(1.12);
-  }
-
   .cooked-num-val {
     font-family: 'Outfit', 'Inter', sans-serif;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #FFFFFF;
     line-height: 1;
@@ -2800,20 +3538,19 @@ button {
 
   /* 2. Notification Bell with Red Circular Glow Badge */
   #notifBtn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: transparent;
     border: none;
     color: #FFFFFF;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     position: relative;
     cursor: pointer;
     outline: none;
     padding: 0;
-    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -2983,32 +3720,267 @@ button {
     display: none;
   }
 
-  /* Mobile Feed Post Cards */
+  /* =============================================================================
+     EXACT MOBILE FEED POST CARDS (MATCHING SCREENSHOT)
+     ============================================================================= */
+  .posts-stream {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
   .reddit-post-card {
-    padding: 16px 16px;
-    border-radius: 16px;
-    margin-bottom: 14px;
-    background: #0D1117;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 14px 16px 12px 16px !important;
+    border-radius: 16px !important;
+    margin-bottom: 0 !important;
+    background: #0d1117 !important;
+    border: 1px solid rgba(255, 255, 255, 0.065) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .post-meta-line {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 8px !important;
+  }
+
+  .meta-left-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .post-pfp-frame {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    background: #141a24 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    aspect-ratio: 1/1 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .post-pfp-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    display: block !important;
+  }
+
+  .post-header-details {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+  }
+
+  .post-author-name-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+
+  .meta-author-name {
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  .verified-badge-mini {
+    color: #22c55e !important;
+    font-size: 0.82rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .post-author-sub-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 0.80rem !important;
+    color: #717d91 !important;
+    font-weight: 500 !important;
+  }
+
+  .meta-right-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .post-category-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 3px 10px !important;
+    border-radius: 9999px !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+  }
+
+  .post-category-tag.tag-roast {
+    background: rgba(249, 115, 22, 0.12) !important;
+    color: #fb923c !important;
+    border: 1px solid rgba(249, 115, 22, 0.32) !important;
+  }
+
+  .post-category-tag.tag-help-wanted {
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.32) !important;
+  }
+
+  .post-category-tag.tag-confession {
+    background: rgba(168, 85, 247, 0.12) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(168, 85, 247, 0.32) !important;
+  }
+
+  .btn-post-menu {
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important;
+    font-size: 1rem !important;
+    padding: 2px 4px !important;
+    cursor: pointer !important;
+    outline: none !important;
   }
 
   .post-headline-title {
-    font-size: 1.12rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: #F3F4F6;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    color: #ffffff !important;
+    margin: 8px 0 6px 0 !important;
+    letter-spacing: -0.01em !important;
   }
 
   .post-text-body {
-    font-size: 0.94rem;
-    line-height: 1.5;
-    color: #C4CBD4;
+    font-size: 0.90rem !important;
+    line-height: 1.48 !important;
+    color: #94a3b8 !important;
+    margin: 0 0 10px 0 !important;
+  }
+
+  .post-media-frame {
+    margin: 6px 0 10px 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: #0d1117 !important;
+    width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    min-height: 160px !important;
+    max-height: 240px !important;
+  }
+
+  .post-media-img {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    max-height: 240px !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .post-code-block-wrap {
+    background: #080b12 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    margin: 6px 0 10px 0 !important;
+    position: relative !important;
+  }
+
+  .post-code-content {
+    margin: 0 !important;
+    font-family: 'JetBrains Mono', 'Consolas', monospace !important;
+    font-size: 0.80rem !important;
+    line-height: 1.5 !important;
+    color: #38bdf8 !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+  }
+
+  .btn-copy-code-snippet {
+    position: absolute !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    padding: 4px !important;
   }
 
   .post-bottom-actions {
-    gap: 12px;
-    padding-top: 8px;
-    flex-wrap: nowrap;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-top: 6px !important;
+    margin-top: 2px !important;
+    border-top: none !important;
+  }
+
+  .post-actions-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+  }
+
+  .drag-crown-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #a3e635 !important;
+    font-size: 0.90rem !important;
+    font-weight: 700 !important;
+    padding: 4px 4px !important;
+    min-height: 32px !important;
+    min-width: auto !important;
+    cursor: pointer !important;
+  }
+
+  .drag-crown-btn .crown-svg {
+    fill: #a3e635 !important;
+    stroke: #a3e635 !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .drag-crown-btn .vote-count-digit {
+    color: #a3e635 !important;
+  }
+
+  .post-comment-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    padding: 4px 4px !important;
+    cursor: pointer !important;
+  }
+
+  .post-share-btn,
+  .post-save-btn {
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    font-size: 0.90rem !important;
+    padding: 4px 4px !important;
+    cursor: pointer !important;
   }
 
   /* Native Apple Bottom Sheet Modal on Mobile Phones */

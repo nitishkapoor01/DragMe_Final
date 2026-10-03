@@ -845,11 +845,17 @@ app.get('/api/users/:username/posts', optionalAuth, async (req, res) => {
 
     const formattedPosts = await Promise.all(posts.map(async (post) => {
       let hasVoted = false;
+      let reactionType = null;
+      let isSuper = false;
       let isSaved = false;
 
       if (currentUserId) {
-        const voteCheck = await db.get('SELECT 1 FROM votes WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
-        hasVoted = Boolean(voteCheck);
+        const voteCheck = await db.get('SELECT reaction_type, is_super FROM votes WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
+        if (voteCheck) {
+          hasVoted = true;
+          reactionType = voteCheck.reaction_type || 'crown';
+          isSuper = Boolean(voteCheck.is_super);
+        }
 
         const saveCheck = await db.get('SELECT 1 FROM saved_posts WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
         isSaved = Boolean(saveCheck);
@@ -874,6 +880,8 @@ app.get('/api/users/:username/posts', optionalAuth, async (req, res) => {
         commentCount: post.comment_count,
         heatPercent: post.heat_percent,
         hasVoted,
+        reactionType,
+        isSuper,
         isSaved,
         comments: postComments.map(c => ({
           id: c.id,
@@ -953,11 +961,17 @@ app.get('/api/posts', optionalAuth, async (req, res) => {
     // Fetch user interactions & comments
     const formattedPosts = await Promise.all(posts.map(async (post) => {
       let hasVoted = false;
+      let reactionType = null;
+      let isSuper = false;
       let isSaved = false;
 
       if (currentUserId) {
-        const voteCheck = await db.get('SELECT 1 FROM votes WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
-        hasVoted = Boolean(voteCheck);
+        const voteCheck = await db.get('SELECT reaction_type, is_super FROM votes WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
+        if (voteCheck) {
+          hasVoted = true;
+          reactionType = voteCheck.reaction_type || 'crown';
+          isSuper = Boolean(voteCheck.is_super);
+        }
 
         const saveCheck = await db.get('SELECT 1 FROM saved_posts WHERE user_id = ? AND post_id = ?', [currentUserId, post.id]);
         isSaved = Boolean(saveCheck);
@@ -988,6 +1002,8 @@ app.get('/api/posts', optionalAuth, async (req, res) => {
         commentCount: post.comment_count,
         heatPercent: post.heat_percent,
         hasVoted,
+        reactionType,
+        isSuper,
         isSaved,
         comments: commentsFormatted
       };
@@ -1085,10 +1101,15 @@ app.post('/api/posts', requireAuth, rateLimiter({ windowMs: 60000, max: 10 }), a
   }
 });
 
-// VOTE ON POST (Requires Authentication)
-app.post('/api/posts/:id/vote', requireAuth, async (req, res) => {
+// CROWN REACTION / VOTE ON POST (Requires Authentication)
+const handleVoteOrReact = async (req, res) => {
   const postId = req.params.id;
   const userId = req.user.id;
+  const rawType = (req.body?.reactionType || 'crown').toString().toLowerCase().trim();
+  const validReactions = ['crown', 'fire', 'insightful', 'support', 'heartfelt', 'mindblown'];
+  const targetReaction = validReactions.includes(rawType) ? rawType : 'crown';
+  const isSuper = Boolean(req.body?.isSuper);
+  const explicitRemove = req.body?.remove === true;
 
   try {
     const post = await db.get('SELECT id, drag_count, heat_percent FROM posts WHERE id = ?', [postId]);
@@ -1096,21 +1117,51 @@ app.post('/api/posts/:id/vote', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'Post not found.' });
     }
 
-    const existingVote = await db.get('SELECT 1 FROM votes WHERE user_id = ? AND post_id = ?', [userId, postId]);
+    const existingVote = await db.get('SELECT reaction_type, is_super FROM votes WHERE user_id = ? AND post_id = ?', [userId, postId]);
 
     let hasVoted = false;
     let newDragCount = post.drag_count;
     let newHeat = post.heat_percent;
+    let finalReaction = targetReaction;
+    let finalIsSuper = isSuper;
 
     if (existingVote) {
-      await db.run('DELETE FROM votes WHERE user_id = ? AND post_id = ?', [userId, postId]);
-      newDragCount = Math.max(0, post.drag_count - 1);
-      hasVoted = false;
+      const sameType = (existingVote.reaction_type || 'crown') === targetReaction;
+      const sameSuper = Boolean(existingVote.is_super) === isSuper;
+
+      if (explicitRemove || (sameType && sameSuper && !req.body?.switchOnly)) {
+        // Toggle OFF
+        await db.run('DELETE FROM votes WHERE user_id = ? AND post_id = ?', [userId, postId]);
+        newDragCount = Math.max(0, post.drag_count - 1);
+        hasVoted = false;
+        finalReaction = null;
+        finalIsSuper = false;
+      } else {
+        // Switch reaction or upgrade to Super Crown
+        await db.run('UPDATE votes SET reaction_type = ?, is_super = ? WHERE user_id = ? AND post_id = ?', [
+          targetReaction,
+          isSuper ? 1 : (existingVote.is_super || 0),
+          userId,
+          postId
+        ]);
+        hasVoted = true;
+        finalReaction = targetReaction;
+        finalIsSuper = isSuper || Boolean(existingVote.is_super);
+        newHeat = Math.min(100, post.heat_percent + (isSuper ? 4 : 1));
+      }
     } else {
-      await db.run('INSERT INTO votes (user_id, post_id) VALUES (?, ?)', [userId, postId]);
+      // New Reaction
+      await db.run('INSERT INTO votes (user_id, post_id, reaction_type, is_super) VALUES (?, ?, ?, ?)', [
+        userId,
+        postId,
+        targetReaction,
+        isSuper ? 1 : 0
+      ]);
       newDragCount = post.drag_count + 1;
-      newHeat = Math.min(100, post.heat_percent + 2);
+      newHeat = Math.min(100, post.heat_percent + (isSuper ? 5 : 2));
       hasVoted = true;
+      finalReaction = targetReaction;
+      finalIsSuper = isSuper;
     }
 
     await db.run('UPDATE posts SET drag_count = ?, heat_percent = ? WHERE id = ?', [newDragCount, newHeat, postId]);
@@ -1118,12 +1169,89 @@ app.post('/api/posts/:id/vote', requireAuth, async (req, res) => {
     return res.json({
       postId,
       hasVoted,
+      reactionType: finalReaction,
+      isSuper: finalIsSuper,
       dragCount: newDragCount,
       heatPercent: newHeat
     });
   } catch (err) {
-    console.error('Vote error:', err);
-    return res.status(500).json({ error: 'Server error processing vote.' });
+    console.error('Vote/React error:', err);
+    return res.status(500).json({ error: 'Server error processing reaction.' });
+  }
+};
+
+app.post('/api/posts/:id/vote', requireAuth, handleVoteOrReact);
+app.post('/api/posts/:id/react', requireAuth, handleVoteOrReact);
+
+// WHO REACTED PANEL ENDPOINT (Public & Authenticated Discovery)
+app.get('/api/posts/:id/reactors', optionalAuth, async (req, res) => {
+  const postId = req.params.id;
+  const currentUserId = req.user ? req.user.id : null;
+
+  try {
+    const post = await db.get('SELECT id, author_username, is_anonymous FROM posts WHERE id = ?', [postId]);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    const reactorRows = await db.all(`
+      SELECT v.user_id, v.reaction_type, v.is_super, v.created_at,
+             u.username, u.display_name, u.avatar_url, u.is_premium, u.rank_title, u.reputation_score
+      FROM votes v
+      LEFT JOIN users u ON v.user_id = u.id
+      WHERE v.post_id = ?
+      ORDER BY v.is_super DESC, v.created_at DESC
+    `, [postId]);
+
+    const reactionIconMap = {
+      crown: { icon: 'fa-solid fa-crown', label: 'Crown', color: '#C6FF00' },
+      fire: { icon: 'fa-solid fa-fire', label: 'Fire', color: '#FF7043' },
+      insightful: { icon: 'fa-solid fa-lightbulb', label: 'Insightful', color: '#29B6F6' },
+      support: { icon: 'fa-solid fa-handshake', label: 'Support', color: '#5C6BC0' },
+      heartfelt: { icon: 'fa-solid fa-heart', label: 'Heartfelt', color: '#AB47BC' },
+      mindblown: { icon: 'fa-solid fa-brain', label: 'Mind Blown', color: '#FFCA28' }
+    };
+
+    const counts = { crown: 0, fire: 0, insightful: 0, support: 0, heartfelt: 0, mindblown: 0 };
+
+    const formattedReactors = reactorRows.map(r => {
+      const type = (r.reaction_type || 'crown').toLowerCase();
+      if (counts[type] !== undefined) counts[type]++;
+
+      const isCurrent = currentUserId && currentUserId === r.user_id;
+      const meta = reactionIconMap[type] || reactionIconMap.crown;
+
+      return {
+        userId: r.user_id,
+        username: r.username || 'dragme_user',
+        displayName: r.display_name || r.username || 'Arena Member',
+        avatarUrl: r.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(r.username || 'reactor')}`,
+        rankTitle: r.rank_title || 'Roaster',
+        isPremium: Boolean(r.is_premium),
+        isSuper: Boolean(r.is_super),
+        isCurrentUser: Boolean(isCurrent),
+        reactionType: type,
+        reactionIcon: meta.icon,
+        reactionLabel: meta.label,
+        reactionColor: meta.color,
+        timeAgo: formatTimeAgo(r.created_at)
+      };
+    });
+
+    const topReactors = formattedReactors.filter(r => r.isSuper || (r.isPremium)).slice(0, 15);
+    const friends = formattedReactors.slice(0, 10); // Connected network reactors
+
+    return res.json({
+      postId,
+      total: formattedReactors.length,
+      counts,
+      all: formattedReactors,
+      friends,
+      topReactors
+    });
+  } catch (err) {
+    console.error('Fetch reactors error:', err);
+    return res.status(500).json({ error: 'Server error retrieving reactors.' });
   }
 });
 
@@ -1262,48 +1390,69 @@ async function startServer() {
         INSERT INTO posts (id, author_id, author_username, author_avatar, is_anonymous, room, room_display_name, title, content, image_url, flair, flair_class, drag_count, comment_count, heat_percent)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
-        'post-reddit-1',
-        'usr_champ_ahri',
-        'champ_ahri',
-        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&auto=format&fit=crop&q=80',
+        'post-nightrider-1',
+        'usr_nightrider',
+        'NightRider',
+        'https://api.dicebear.com/7.x/bottts/svg?seed=NightRider',
         0,
         'tech_ai',
-        'tech_ai',
-        'Can someone explain this to me please?',
-        'Why is the Gemini model standing alone in the top-tier? I am looking to purchase a model for my unreal engine project but I do not know which one offers the smartest support; could someone explain this and offer some advice?',
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
-        'Question / Help',
-        'flair-blue',
-        285,
-        2,
-        92
+        'r/tech_ai',
+        'First Full-Stack Post in SQLite',
+        'Unfiltered high-energy discussion saved directly to SQLite backend.',
+        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&auto=format&fit=crop&q=80',
+        'Roast',
+        'tag-roast',
+        3,
+        1,
+        96
       ]);
 
       await db.run(`
         INSERT INTO posts (id, author_id, author_username, author_avatar, is_anonymous, room, room_display_name, title, content, image_url, flair, flair_class, drag_count, comment_count, heat_percent)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
-        'post-reddit-2',
-        'usr_tester_supreme',
-        'Tester Supreme',
-        'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300&auto=format&fit=crop&q=80',
+        'post-devzero-2',
+        'usr_devzero',
+        'DevZero',
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
         0,
-        'confessions',
-        'Confessions',
-        'Confession from Hamirpur',
-        'h\n\nFull stack pixel-perfect design in progress.',
+        'tech_ai',
+        'r/tech_ai',
+        'Unpopular Opinion: 90% of "Agentic" SaaS are just 3 chained API calls',
+        'Why does every startup slap a $49/mo paywall on a basic python script with 3 tool calls and call it an Autonomous Agent? Let us have an honest debate.',
         null,
-        'Confession',
-        'flair-confession',
-        23,
-        1,
-        88
+        'Roast',
+        'tag-roast',
+        96,
+        17,
+        99
+      ]);
+
+      await db.run(`
+        INSERT INTO posts (id, author_id, author_username, author_avatar, is_anonymous, room, room_display_name, title, content, image_url, flair, flair_class, drag_count, comment_count, heat_percent)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        'post-chipdrill-3',
+        'usr_chipdrill',
+        'chip_drill',
+        'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&auto=format&fit=crop&q=80',
+        0,
+        'help_wanted',
+        'r/help_wanted',
+        'Can someone explain this to me please?',
+        "I'm getting this error while deploying. I've checked my environment variables but still not working...",
+        null,
+        'Help',
+        'tag-help-wanted',
+        24,
+        5,
+        92
       ]);
 
       await db.run(`
         INSERT INTO comments (id, post_id, author_id, author_username, text)
         VALUES (?, ?, ?, ?, ?)
-      `, ['c1', 'post-reddit-1', 'usr_arch', 'CodeArchitect', 'Gemini 3.7 Reasoning handles large codebase memory better for game engines.']);
+      `, ['c1', 'post-nightrider-1', 'usr_devzero', 'DevZero', 'SQLite WAL mode rocks!']);
     }
 
     // Hourly Unattached Temp Media Garbage Collector

@@ -20,97 +20,110 @@
   <link rel="stylesheet" href="style.css?v=6.7">
 </head>
 <body>
-  <!-- EXACT TOP APP BAR MATCHING SCREENSHOT -->
+  <!-- EXACT TOP APP BAR WITH INTEGRATED FEED TABS (MATCHING SCREENSHOT) -->
   <header class="top-nav" id="topNav">
-    <div class="nav-left">
-      <!-- Left sidebar drawer toggle button (3 lines morphing to X) -->
-      <button class="icon-btn-plain mob-drawer-toggle-btn" id="toggleSidebarBtn" title="Open Navigation Menu" type="button" aria-label="Open Navigation Drawer">
-        <span class="ham-box">
-          <span class="ham-line ham-top"></span>
-          <span class="ham-line ham-mid"></span>
-          <span class="ham-line ham-bot"></span>
-        </span>
-      </button>
-
-      <!-- Official DRAGME Brand Logo with Crown Icon in place of 'A' -->
-      <a href="#" class="brand-logo" id="brandLogo" aria-label="DRAGME Home">
-        <span class="logo-text-dr">DR</span>
-        <span class="logo-crown-wrap">
-          <img src="crown_icon.png" alt="A" class="brand-crown-icon">
-        </span>
-        <span class="logo-text-gme">GME</span>
-      </a>
-    </div>
-
-    <!-- Center Search Bar (Desktop only, hidden on mobile) -->
-    <div class="nav-center">
-      <div class="search-container" id="searchContainer">
-        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input 
-          type="text" 
-          id="globalSearchInput" 
-          placeholder="Search posts, people, or communities..." 
-          autocomplete="off"
-        />
-        <div class="search-shortcut-wrap">
-          <kbd class="search-shortcut">/</kbd>
-          <button class="clear-search-btn" id="clearSearchBtn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-right" id="navRightContainer">
-      <!-- Universal Capsule + Post Trigger (Desktop only) -->
-      <button class="nav-capsule-plus-btn dragme-plus-trigger" id="btn-header-create-post" title="Create Post" type="button">
-        <span class="capsule-plus-circle">
-          <i class="fa-solid fa-plus"></i>
-        </span>
-        <i class="fa-solid fa-chevron-down capsule-chevron"></i>
-      </button>
-
-      <!-- GUEST HEADER ACTIONS (Desktop only) -->
-      <div class="nav-right-guest" id="guestNavRight" style="display: flex;">
-        <button type="button" class="btn-guest-auth-login" id="btnGuestHeaderLogin">
-          <span>Log In</span>
+    <div class="top-nav-main-row" id="topNavMainRow">
+      <div class="nav-left">
+        <!-- Left sidebar drawer toggle button (3 lines morphing to X) -->
+        <button class="icon-btn-plain mob-drawer-toggle-btn" id="toggleSidebarBtn" title="Open Navigation Menu" type="button" aria-label="Open Navigation Drawer">
+          <span class="ham-box">
+            <span class="ham-line ham-top"></span>
+            <span class="ham-line ham-mid"></span>
+            <span class="ham-line ham-bot"></span>
+          </span>
         </button>
-        <button type="button" class="btn-guest-auth-signup" id="btnGuestHeaderSignup">
-          <i class="fa-solid fa-crown" style="font-size: 0.75rem;"></i>
-          <span>Sign Up</span>
-        </button>
+
+        <!-- Official DRAGME Brand Logo with Crown Icon in place of 'A' -->
+        <a href="#" class="brand-logo" id="brandLogo" aria-label="DRAGME Home">
+          <span class="logo-text-dr">DR</span>
+          <span class="logo-crown-wrap">
+            <img src="crown_icon.png" alt="A" class="brand-crown-icon">
+          </span>
+          <span class="logo-text-gme">GME</span>
+        </a>
       </div>
 
-      <!-- MAIN HEADER ACTIONS (Active on mobile & authenticated desktop) -->
-      <div class="nav-right-auth" id="authNavRight">
-        <!-- Vertical Divider (Desktop only) -->
-        <div class="nav-header-divider"></div>
-
-        <!-- 1. Cooked Metric [ 🔥 12 ] -->
-        <div class="stat-cooked-meter" id="cookedMeterBadge" title="Cooked Level" role="button" tabindex="0">
-          <i class="fa-solid fa-fire cooked-flame-icon"></i>
-          <span class="cooked-num-val" id="userCookedVal">12</span>
-          <span class="cooked-label-tag">COOKED</span>
-        </div>
-
-        <!-- Messages / Chat (Desktop only, mobile has bottom bar) -->
-        <button class="icon-nav-btn" id="chatBtn" title="Messages" type="button">
-          <i class="fa-regular fa-comment"></i>
-          <span class="nav-badge-pill" id="unreadMessagesCount">3</span>
-        </button>
-
-        <!-- 2. Notifications [ 🔔³ ] -->
-        <button class="icon-nav-btn" id="notifBtn" title="Notifications" type="button" aria-label="Notifications">
-          <i class="fa-regular fa-bell"></i>
-          <span class="nav-badge-pill" id="unreadNotifsCount">3</span>
-        </button>
-
-        <!-- 3. User Avatar with Online Dot & Dropdown Chevron [ PFP ⌄ ] -->
-        <button class="user-nav-dropdown" id="userProfileDropdown" type="button" title="Profile &amp; Account" aria-controls="dragmeProfileDrawerHub" aria-haspopup="dialog" aria-expanded="false" aria-label="Profile and Settings">
-          <div class="nav-avatar-wrap">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="nav-user-avatar" id="navHeaderUserAvatar">
-            <span class="nav-user-status-dot"></span>
+      <!-- Center Search Bar (Desktop only, hidden on mobile) -->
+      <div class="nav-center">
+        <div class="search-container" id="searchContainer">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            placeholder="Search posts, people, or communities..." 
+            autocomplete="off"
+          />
+          <div class="search-shortcut-wrap">
+            <kbd class="search-shortcut">/</kbd>
+            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <i class="fa-solid fa-chevron-down user-dropdown-chevron"></i>
+        </div>
+      </div>
+
+      <div class="nav-right" id="navRightContainer">
+        <!-- Universal Capsule + Post Trigger (Desktop only) -->
+        <button class="nav-capsule-plus-btn dragme-plus-trigger" id="btn-header-create-post" title="Create Post" type="button">
+          <span class="capsule-plus-circle">
+            <i class="fa-solid fa-plus"></i>
+          </span>
+          <i class="fa-solid fa-chevron-down capsule-chevron"></i>
         </button>
+
+        <!-- GUEST HEADER ACTIONS (Desktop only) -->
+        <div class="nav-right-guest" id="guestNavRight" style="display: flex;">
+          <button type="button" class="btn-guest-auth-login" id="btnGuestHeaderLogin">
+            <span>Log In</span>
+          </button>
+          <button type="button" class="btn-guest-auth-signup" id="btnGuestHeaderSignup">
+            <i class="fa-solid fa-crown" style="font-size: 0.75rem;"></i>
+            <span>Sign Up</span>
+          </button>
+        </div>
+
+        <!-- MAIN HEADER ACTIONS (Active on mobile & authenticated desktop) -->
+        <div class="nav-right-auth" id="authNavRight">
+          <!-- Vertical Divider (Desktop only) -->
+          <div class="nav-header-divider"></div>
+
+          <!-- 1. Cooked Metric [ 🔥 12 ] -->
+          <div class="stat-cooked-meter" id="cookedMeterBadge" title="Cooked Level" role="button" tabindex="0">
+            <i class="fa-solid fa-fire cooked-flame-icon"></i>
+            <span class="cooked-num-val" id="userCookedVal">12</span>
+            <span class="cooked-label-tag">COOKED</span>
+          </div>
+
+          <!-- Messages / Chat (Desktop only, mobile has bottom bar) -->
+          <button class="icon-nav-btn" id="chatBtn" title="Messages" type="button">
+            <i class="fa-regular fa-comment"></i>
+            <span class="nav-badge-pill" id="unreadMessagesCount">3</span>
+          </button>
+
+          <!-- 2. Notifications [ 🔔³ ] -->
+          <button class="icon-nav-btn" id="notifBtn" title="Notifications" type="button" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="nav-badge-pill" id="unreadNotifsCount">3</span>
+          </button>
+
+          <!-- 3. User Avatar with Online Dot & Dropdown Chevron [ PFP ⌄ ] -->
+          <button class="user-nav-dropdown" id="userProfileDropdown" type="button" title="Profile &amp; Account" aria-controls="dragmeProfileDrawerHub" aria-haspopup="dialog" aria-expanded="false" aria-label="Profile and Settings">
+            <div class="nav-avatar-wrap">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="nav-user-avatar" id="navHeaderUserAvatar">
+              <span class="nav-user-status-dot"></span>
+            </div>
+            <i class="fa-solid fa-chevron-down user-dropdown-chevron"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed Sort & Filter Tabs Bar (For You, Following, Trending) DIRECTLY INSIDE HEADER -->
+    <div class="feed-tabs-header" id="feedTabsHeader" role="tablist" aria-label="Feed Streams">
+      <div class="feed-main-tabs" id="feedMainTabs">
+        <button class="feed-tab sort-tab active" data-sort="hot" data-tab="for-you" role="tab" aria-selected="true" id="tabForYou">For You</button>
+        <button class="feed-tab sort-tab" data-sort="following" data-tab="following" role="tab" aria-selected="false" id="tabFollowing">Following</button>
+        <button class="feed-tab sort-tab" data-sort="top" data-tab="trending" role="tab" aria-selected="false" id="tabTrending">Trending</button>
+        <!-- Single Sliding Underline Indicator -->
+        <div class="feed-tab-slider" id="feedTabSlider" aria-hidden="true"></div>
       </div>
     </div>
   </header>
@@ -231,17 +244,6 @@
       
       <!-- HOME FEED CONTAINER -->
       <div class="home-feed-view" id="homeFeedContainer">
-        
-        <!-- Feed Sort & Filter Tabs Bar (For You, Following, Trending) -->
-        <div class="feed-tabs-header" id="feedTabsHeader" role="tablist" aria-label="Feed Streams">
-          <div class="feed-main-tabs" id="feedMainTabs">
-            <button class="feed-tab sort-tab active" data-sort="hot" data-tab="for-you" role="tab" aria-selected="true" id="tabForYou">For You</button>
-            <button class="feed-tab sort-tab" data-sort="following" data-tab="following" role="tab" aria-selected="false" id="tabFollowing">Following</button>
-            <button class="feed-tab sort-tab" data-sort="top" data-tab="trending" role="tab" aria-selected="false" id="tabTrending">Trending</button>
-            <!-- Single Persistent Sliding Underline Indicator -->
-            <div class="feed-tab-slider" id="feedTabSlider" aria-hidden="true"></div>
-          </div>
-        </div>
 
         <!-- Quick Post Card (Matching Screenshot) -->
         <div class="dragme-create-card" id="dragmeCreateCard">
@@ -2836,6 +2838,40 @@
       <img src="crown_icon.png" alt="DRAGME" class="init-splash-crown">
       <div class="init-splash-pulse"></div>
       <span class="init-splash-text">DRAGME</span>
+    </div>
+  </div>
+
+  <!-- WHO REACTED MODAL (CROWN REACTION SYSTEM) -->
+  <div class="who-reacted-overlay" id="whoReactedOverlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="whoReactedTitle">
+    <div class="who-reacted-modal" id="whoReactedModal">
+      <div class="who-reacted-header">
+        <div class="who-reacted-title-wrap">
+          <i class="fa-solid fa-crown text-lime"></i>
+          <h3 class="who-reacted-title" id="whoReactedTitle">Who Reacted</h3>
+        </div>
+        <button type="button" class="btn-close-who-reacted" id="btnCloseWhoReacted" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="who-reacted-tabs-nav">
+        <button type="button" class="who-tab-btn active" data-tab="all" id="whoTabAll">
+          All <span class="who-tab-count" id="whoCountAll">0</span>
+        </button>
+        <button type="button" class="who-tab-btn" data-tab="friends" id="whoTabFriends">
+          Friends <span class="who-tab-count" id="whoCountFriends">0</span>
+        </button>
+        <button type="button" class="who-tab-btn" data-tab="topReactors" id="whoTabTop">
+          Top Reactors <span class="who-tab-count" id="whoCountTop">0</span>
+        </button>
+      </div>
+
+      <div class="who-reacted-list-wrap" id="whoReactedList">
+        <div class="who-reacted-loading">
+          <i class="fa-solid fa-spinner fa-spin text-lime"></i>
+          <span>Loading reactions...</span>
+        </div>
+      </div>
     </div>
   </div>
 
