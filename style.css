@@ -4191,7 +4191,7 @@ button {
     max-width: 100%;
   }
   /* =============================================================================
-     DRAG MOBILE BOTTOM APP NAVIGATION (CALM ELEVATED SURFACE • LOUD ACTIVE DESTINATIONS)
+     DRAG MOBILE BOTTOM APP NAVIGATION (APPLE FLUID SPRING COLLAPSE & MOTION)
      [ Home ]   [ Search ]   [ + ]   [ Messages ]   [ Profile ]
      ============================================================================= */
   .mobile-bottom-nav {
@@ -4204,10 +4204,11 @@ button {
     max-width: 440px;
     margin: 0;
     height: 58px;
-    background: #0D1219 !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.75) !important;
+    background: linear-gradient(180deg, #101522 0%, #090c14 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 24px 28px 20px 26px; /* Subtle Style 6 Asymmetric Geometric Contour */
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.82), 0 0 0 1px rgba(255, 255, 255, 0.02);
     z-index: 1500;
     align-items: center;
     justify-content: center;
@@ -4237,12 +4238,12 @@ button {
     width: 50px;
     max-width: 50px;
     height: 50px;
-    border-radius: 25px !important;
+    border-radius: 25px;
     padding: 0;
     opacity: 0.82;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    background: #0D1219 !important;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.78) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: linear-gradient(180deg, #141b27 0%, #0c1018 100%);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.04);
     cursor: pointer;
   }
 
@@ -4250,8 +4251,8 @@ button {
   .mobile-bottom-nav.nav-collapsed:active {
     opacity: 1;
     transform: scale(0.98);
-    border-color: rgba(255, 255, 255, 0.24) !important;
-    background: #131A22 !important;
+    border-color: rgba(255, 255, 255, 0.28);
+    background: #182030;
   }
 
   /* Left items gracefully fade & tuck with Apple ease */
@@ -4293,13 +4294,12 @@ button {
     padding: 0;
   }
 
-  /* Clean Collapsed Avatar (Vertical Rectangular) */
+  /* Clean Collapsed Avatar */
   .mobile-bottom-nav.nav-collapsed #mobNavProfile .mob-nav-portrait {
-    width: 22px !important;
-    height: 28px !important;
-    border-radius: 4px !important;
-    aspect-ratio: 4 / 5 !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.24) !important;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.24);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease;
   }
@@ -4319,7 +4319,7 @@ button {
     overflow: hidden;
   }
 
-  /* Navigation Items (Muted Gray #667180 by Default) */
+  /* Navigation Items (Quiet Muted Gray #64748b by Default) */
   .mob-nav-item {
     display: flex;
     flex-direction: column;
@@ -4330,7 +4330,7 @@ button {
     height: 100%;
     background: transparent;
     border: none;
-    color: #667180 !important;
+    color: #64748b;
     cursor: pointer;
     outline: none;
     user-select: none;
@@ -4352,7 +4352,7 @@ button {
     justify-content: center;
     font-size: 1.15rem;
     height: 22px;
-    color: #667180 !important;
+    color: #64748b;
     transition: color 0.2s ease, transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
@@ -4360,7 +4360,7 @@ button {
     font-size: 0.62rem;
     font-weight: 600;
     letter-spacing: 0.01em;
-    color: #667180 !important;
+    color: #64748b;
     line-height: 1;
     transition: color 0.2s ease;
   }
@@ -4374,24 +4374,24 @@ button {
     width: 14px;
     height: 2px;
     border-radius: 2px;
-    background: #B7FF3C !important;
-    box-shadow: 0 0 6px rgba(183, 255, 60, 0.5) !important;
+    background: #a3e635;
+    box-shadow: 0 0 6px rgba(163, 230, 53, 0.6);
     opacity: 0;
     transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.24s ease;
   }
 
-  /* Active State (DRAGME Lime #B7FF3C ONLY) */
+  /* Active State */
   .mob-nav-item.active {
-    color: #B7FF3C !important;
+    color: #a3e635;
   }
 
   .mob-nav-item.active .mob-nav-icon-wrap {
-    color: #B7FF3C !important;
+    color: #a3e635;
     transform: translateY(-1px);
   }
 
   .mob-nav-item.active .mob-nav-label {
-    color: #B7FF3C !important;
+    color: #a3e635;
     font-weight: 700;
   }
 
@@ -4400,13 +4400,13 @@ button {
     transform: translateX(-50%) scaleX(1);
   }
 
-  /* Messages Unread Notification Badge (Red #EF4444 ONLY) */
+  /* Messages Unread Notification Badge (Red ONLY) */
   .mob-nav-unread-badge {
     position: absolute;
     top: -3px;
     right: -6px;
-    background: #EF4444 !important;
-    color: #FFFFFF !important;
+    background: #ff3366;
+    color: #ffffff;
     font-size: 0.52rem;
     font-weight: 900;
     min-width: 13px;
@@ -4416,13 +4416,13 @@ button {
     align-items: center;
     justify-content: center;
     padding: 0 2px;
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
-    border: 1.5px solid #0D1219 !important;
+    box-shadow: 0 0 6px rgba(255, 51, 102, 0.7);
+    border: 1.5px solid #090c14;
     line-height: 1;
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  /* Profile Tab (VERTICAL RECTANGULAR PFP, 4:5 ratio — strictly no circular avatar) */
+  /* Profile Tab (CIRCULAR AVATAR) */
   .mob-portrait-wrap {
     display: flex;
     align-items: center;
@@ -4430,18 +4430,17 @@ button {
   }
 
   .mob-nav-portrait {
-    width: 20px !important;
-    height: 25px !important;
-    aspect-ratio: 4 / 5 !important;
-    border-radius: 4px !important;
-    object-fit: cover !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.16) !important;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(255, 255, 255, 0.16);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .mob-nav-item.active .mob-nav-portrait {
-    border-color: #B7FF3C !important;
-    box-shadow: 0 0 6px rgba(183, 255, 60, 0.5) !important;
+    border-color: #a3e635;
+    box-shadow: 0 0 6px rgba(163, 230, 53, 0.5);
   }
 
   /* Center Create (+) Action Slot */
@@ -4456,34 +4455,34 @@ button {
   }
 
   .mob-nav-plus-trigger {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 13px !important;
-    background: #B7FF3C !important;
-    border: none !important;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px 17px 14px 16px; /* Asymmetric embedded contour */
+    background: #131926;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     outline: none;
     padding: 0;
-    box-shadow: 0 4px 14px rgba(183, 255, 60, 0.35) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .mob-nav-plus-trigger:active {
     transform: scale(0.90);
-    background: #a3e635 !important;
-    box-shadow: 0 2px 6px rgba(183, 255, 60, 0.5) !important;
+    background: #0e1420;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 
   /* Smooth Stroke Morphing: + into × */
   .mob-plus-morph-box {
     position: relative;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4492,25 +4491,25 @@ button {
 
   .mob-morph-stem {
     position: absolute;
-    background: #080B0F !important;
+    background: #e2e8f0;
     border-radius: 2px;
     transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
   }
 
   .mob-morph-stem-h {
     width: 14px;
-    height: 2.2px;
+    height: 2px;
   }
 
   .mob-morph-stem-v {
-    width: 2.2px;
+    width: 2px;
     height: 14px;
   }
 
   .mob-nav-plus-trigger.open {
-    background: #080B0F !important;
-    border: 1px solid #B7FF3C !important;
-    box-shadow: 0 0 14px rgba(183, 255, 60, 0.35) !important;
+    background: #111724;
+    border-color: #a3e635;
+    box-shadow: 0 0 14px rgba(163, 230, 53, 0.35);
   }
 
   .mob-nav-plus-trigger.open .mob-plus-morph-box {
@@ -4518,7 +4517,7 @@ button {
   }
 
   .mob-nav-plus-trigger.open .mob-morph-stem {
-    background: #B7FF3C !important;
+    background: #a3e635;
   }
 
   /* =============================================================================

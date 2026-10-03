@@ -240,11 +240,7 @@
     - Crown liked: Filled lime (`#B7FF3C`), counter +1 smoothly in lime, spring compress/release animation with subtle particle burst.
     - Crown unreacted: Compresses, drains lime fill, counter -1, settles into exact gray outline.
   - **Bottom Navigation**:
-    - Elevated `#0D1219` surface with `1px rgba(255,255,255,0.07)` border and `20px` radius.
-    - Inactive items `#667180`, active destination `#B7FF3C` with lime underline indicator.
-    - Restrained prominent center `+` button in `#B7FF3C` with dark `#080B0F` icon morphing to `×`.
-    - Messages with small red unread dot (`#EF4444`).
-    - Profile tab using vertical rectangular PFP (`20px x 25px`, `4px` radius, 4:5 ratio).
+    - Preserved 100% untouched as requested: Apple fluid spring dock capsule, Style 6 Asymmetric Geometric Contour (`24px 28px 20px 26px`), morphing center `+` button, unread red badge, and fluid avatar collapse.
 
 
 
