@@ -243,9 +243,8 @@
     - Preserved 100% untouched as requested: Apple fluid spring dock capsule, Style 6 Asymmetric Geometric Contour (`24px 28px 20px 26px`), morphing center `+` button, unread red badge, and fluid avatar collapse.
     - **Tap Interaction Refinement**: When collapsed into the right docked profile capsule, tapping now smoothly expands the navigation bar back first (`nav.classList.remove('nav-collapsed')`) instead of directly jumping to the profile page. Once fully expanded, subsequent taps on Profile navigate as normal.
     - **Home Button Navigation Fix**: Unified `mobNavHome` / `navHome` / `brandLogo` click handling so tapping Home from any view (profile, edit profile, login, room, or search) properly routes to `Router.navigate('home')`, closes all active drawers and overlays, restores collapsed header/bottom bar states, resets feed tabs to "For You", and smoothly scrolls to top.
-  - **Laptop/Desktop Post Spacing Optimization**:
-    - Removed redundant duplicate CSS block overriding post card margins.
-    - Set streamlined `12px` stream gap, `14px 16px` card internal padding, tighter `8px` meta bottom margin, `6px` title margin, `8px` body text margin, `6px 0 10px` media frame margin, and compact action bar padding without double spacing.
+  - **Laptop/Desktop Brand Logo Restoration**:
+    - Restored exact original desktop brand presentation: Glowing 3D green Crown icon on the left followed by bold white `DRAGME` typography, preserving the mobile spring-collapsed `DR` + Crown + `GME` variant strictly for mobile viewports.
 
 
 
