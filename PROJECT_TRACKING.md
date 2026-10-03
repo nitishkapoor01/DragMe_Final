@@ -242,6 +242,7 @@
   - **Bottom Navigation**:
     - Preserved 100% untouched as requested: Apple fluid spring dock capsule, Style 6 Asymmetric Geometric Contour (`24px 28px 20px 26px`), morphing center `+` button, unread red badge, and fluid avatar collapse.
     - **Tap Interaction Refinement**: When collapsed into the right docked profile capsule, tapping now smoothly expands the navigation bar back first (`nav.classList.remove('nav-collapsed')`) instead of directly jumping to the profile page. Once fully expanded, subsequent taps on Profile navigate as normal.
+    - **Home Button Navigation Fix**: Unified `mobNavHome` / `navHome` / `brandLogo` click handling so tapping Home from any view (profile, edit profile, login, room, or search) properly routes to `Router.navigate('home')`, closes all active drawers and overlays, restores collapsed header/bottom bar states, resets feed tabs to "For You", and smoothly scrolls to top.
 
 
 

@@ -2522,16 +2522,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Mobile Bottom Navigation Bar Actions
-  document.getElementById('mobNavHome')?.addEventListener('click', () => {
-    document.querySelectorAll('.mob-nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('mobNavHome')?.classList.add('active');
-    store.currentRoom = null;
-    store.activeSort = 'hot';
-    activeFilterIndicator.style.display = 'none';
-    renderFeed();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  // Mobile Bottom Navigation Bar Actions (delegated to MobileNavSystem & Router)
 
   // Mobile Search Overlay Controls
   const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
@@ -2988,15 +2979,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     init() {
       // 1. Initialize mobile bottom nav items
-      document.getElementById('mobNavHome')?.addEventListener('click', () => {
+      const handleHomeNavigation = (e) => {
+        if (e) e.preventDefault();
         this.setActive('mobNavHome');
+
+        // Restore bottom & top navigation bars
+        const nav = document.getElementById('mobileBottomNav');
+        if (nav?.classList.contains('nav-collapsed')) {
+          nav.classList.remove('nav-collapsed');
+        }
+        const topNav = document.getElementById('topNav');
+        if (topNav?.classList.contains('top-nav-scrolled')) {
+          topNav.classList.remove('top-nav-scrolled');
+        }
+
+        // Close search overlays and all open drawers
+        document.getElementById('mobileSearchOverlay')?.classList.remove('open');
+        document.getElementById('dragmeProfileDrawerHub')?.classList.remove('open');
+        document.getElementById('dragmeProfileDrawerOverlay')?.classList.remove('open');
+        document.getElementById('mobDrawer')?.classList.remove('open');
+        document.getElementById('mobDrawerOverlay')?.classList.remove('open');
+
+        // Reset store filters
         store.currentRoom = null;
         store.activeSort = 'hot';
+        store.searchQuery = '';
         const activeFilterIndicator = document.getElementById('activeFilterIndicator');
         if (activeFilterIndicator) activeFilterIndicator.style.display = 'none';
-        renderFeed();
+
+        // Reset feed tabs to "For You"
+        document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.feed-tab[data-stream="for-you"]')?.classList.add('active');
+
+        // Route to Home SPA view
+        if (typeof Router !== 'undefined' && typeof Router.navigate === 'function') {
+          Router.navigate('home');
+        } else {
+          renderFeed();
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      };
+
+      document.getElementById('mobNavHome')?.addEventListener('click', handleHomeNavigation);
+      document.getElementById('navHome')?.addEventListener('click', handleHomeNavigation);
 
       const handleSearch = () => {
         this.setActive(document.getElementById('mobNavSearch') ? 'mobNavSearch' : 'mobNavDiscover');
