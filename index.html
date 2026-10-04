@@ -20,11 +20,13 @@
   <link rel="stylesheet" href="style.css?v=6.7">
 </head>
 <body>
-  <!-- EXACT TOP APP BAR WITH INTEGRATED FEED TABS (MATCHING SCREENSHOT) -->
+  <!-- TWO-TIER DESKTOP HEADER (GLOBAL APP BAR + SOCIAL FEED STREAM NAV) -->
   <header class="top-nav" id="topNav">
+    <!-- TIER 1 — GLOBAL APP BAR (56px) -->
     <div class="top-nav-main-row" id="topNavMainRow">
+      <!-- LEFT: Hamburger Menu + DRAGME Logo -->
       <div class="nav-left">
-        <!-- Left sidebar drawer toggle button (3 lines morphing to X) -->
+        <!-- Sidebar Drawer Toggle Button -->
         <button class="icon-btn-plain mob-drawer-toggle-btn" id="toggleSidebarBtn" title="Open Navigation Menu" type="button" aria-label="Open Navigation Drawer">
           <span class="ham-box">
             <span class="ham-line ham-top"></span>
@@ -43,34 +45,36 @@
         </a>
       </div>
 
-      <!-- Center Search Bar (Desktop only, hidden on mobile) -->
+      <!-- CENTER: Large Premium Search Field -->
       <div class="nav-center">
         <div class="search-container" id="searchContainer">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
           <input 
             type="text" 
             id="globalSearchInput" 
-            placeholder="Search posts, people, or communities..." 
+            placeholder="Search posts, people, or communities…" 
             autocomplete="off"
+            aria-label="Search posts, people, or communities"
           />
           <div class="search-shortcut-wrap">
             <kbd class="search-shortcut">/</kbd>
-            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" aria-label="Clear Search"><i class="fa-solid fa-xmark"></i></button>
           </div>
         </div>
       </div>
 
+      <!-- RIGHT: Create CTA, Cooked Meter, Messages, Notifications, Profile Avatar / Guest -->
       <div class="nav-right" id="navRightContainer">
-        <!-- Universal Capsule + Post Trigger (Desktop only) -->
-        <button class="nav-capsule-plus-btn dragme-plus-trigger" id="btn-header-create-post" title="Create Post" type="button">
-          <span class="capsule-plus-circle">
+        <!-- Distinctive Premium Create CTA -->
+        <button class="nav-create-post-btn dragme-plus-trigger" id="btn-header-create-post" title="Create Post" type="button">
+          <span class="create-btn-icon-wrap">
             <i class="fa-solid fa-plus"></i>
           </span>
-          <i class="fa-solid fa-chevron-down capsule-chevron"></i>
+          <span class="create-btn-label">Create</span>
         </button>
 
-        <!-- GUEST HEADER ACTIONS (Desktop only) -->
-        <div class="nav-right-guest" id="guestNavRight" style="display: flex;">
+        <!-- GUEST HEADER ACTIONS (Desktop only when unauthenticated) -->
+        <div class="nav-right-guest" id="guestNavRight" style="display: none;">
           <button type="button" class="btn-guest-auth-login" id="btnGuestHeaderLogin">
             <span>Log In</span>
           </button>
@@ -80,35 +84,37 @@
           </button>
         </div>
 
-        <!-- MAIN HEADER ACTIONS (Active on mobile & authenticated desktop) -->
+        <!-- AUTHENTICATED ACTIONS -->
         <div class="nav-right-auth" id="authNavRight">
-          <!-- Vertical Divider (Desktop only) -->
+          <!-- Vertical Divider -->
           <div class="nav-header-divider"></div>
 
-          <!-- 1. Cooked Metric [ 🔥 12 ] -->
-          <div class="stat-cooked-meter" id="cookedMeterBadge" title="Cooked Level" role="button" tabindex="0">
+          <!-- Cooked Metric / Streak [ 🔥 12 COOKED ] -->
+          <div class="stat-cooked-meter" id="cookedMeterBadge" title="Cooked Meter / Streak" role="button" tabindex="0">
             <i class="fa-solid fa-fire cooked-flame-icon"></i>
-            <span class="cooked-num-val" id="userCookedVal">12</span>
-            <span class="cooked-label-tag">COOKED</span>
+            <div class="cooked-text-stack">
+              <span class="cooked-num-val" id="userCookedVal">12</span>
+              <span class="cooked-label-tag">COOKED</span>
+            </div>
           </div>
 
-          <!-- Messages / Chat (Desktop only, mobile has bottom bar) -->
-          <button class="icon-nav-btn" id="chatBtn" title="Messages" type="button">
+          <!-- Messages / Chat [ 💬³ ] -->
+          <button class="icon-nav-btn" id="chatBtn" title="Messages" type="button" aria-label="Messages">
             <i class="fa-regular fa-comment"></i>
             <span class="nav-badge-pill" id="unreadMessagesCount">3</span>
           </button>
 
-          <!-- 2. Notifications [ 🔔³ ] -->
+          <!-- Notifications [ 🔔³ ] -->
           <button class="icon-nav-btn" id="notifBtn" title="Notifications" type="button" aria-label="Notifications">
             <i class="fa-regular fa-bell"></i>
             <span class="nav-badge-pill" id="unreadNotifsCount">3</span>
           </button>
 
-          <!-- 3. User Avatar with Online Dot & Dropdown Chevron [ PFP ⌄ ] -->
+          <!-- User Avatar & Dropdown [ PFP ⌄ ] -->
           <button class="user-nav-dropdown" id="userProfileDropdown" type="button" title="Profile &amp; Account" aria-controls="dragmeProfileDrawerHub" aria-haspopup="dialog" aria-expanded="false" aria-label="Profile and Settings">
             <div class="nav-avatar-wrap">
               <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="nav-user-avatar" id="navHeaderUserAvatar">
-              <span class="nav-user-status-dot"></span>
+              <span class="nav-user-status-dot" id="navUserStatusDot"></span>
             </div>
             <i class="fa-solid fa-chevron-down user-dropdown-chevron"></i>
           </button>
@@ -116,14 +122,32 @@
       </div>
     </div>
 
-    <!-- Feed Sort & Filter Tabs Bar (For You, Following, Trending) DIRECTLY INSIDE HEADER -->
+    <!-- TIER 2 — SOCIAL / FEED NAV (44px) -->
     <div class="feed-tabs-header" id="feedTabsHeader" role="tablist" aria-label="Feed Streams">
-      <div class="feed-main-tabs" id="feedMainTabs">
-        <button class="feed-tab sort-tab active" data-sort="hot" data-tab="for-you" role="tab" aria-selected="true" id="tabForYou">For You</button>
-        <button class="feed-tab sort-tab" data-sort="following" data-tab="following" role="tab" aria-selected="false" id="tabFollowing">Following</button>
-        <button class="feed-tab sort-tab" data-sort="top" data-tab="trending" role="tab" aria-selected="false" id="tabTrending">Trending</button>
-        <!-- Single Sliding Underline Indicator -->
-        <div class="feed-tab-slider" id="feedTabSlider" aria-hidden="true"></div>
+      <div class="feed-tabs-inner-wrap">
+        <div class="feed-main-tabs" id="feedMainTabs">
+          <button class="feed-tab sort-tab active" data-sort="hot" data-tab="for-you" role="tab" aria-selected="true" id="tabForYou">
+            <span class="tab-label">For You</span>
+          </button>
+          <button class="feed-tab sort-tab" data-sort="following" data-tab="following" role="tab" aria-selected="false" id="tabFollowing">
+            <span class="tab-label">Following</span>
+          </button>
+          <button class="feed-tab sort-tab feed-tab-trending" data-sort="top" data-tab="trending" role="tab" aria-selected="false" id="tabTrending">
+            <i class="fa-solid fa-fire text-orange tab-icon"></i>
+            <span class="tab-label">Trending</span>
+          </button>
+          <button class="feed-tab sort-tab" data-sort="communities" data-tab="communities" role="tab" aria-selected="false" id="tabCommunities">
+            <span class="tab-label">Communities</span>
+          </button>
+          <button class="feed-tab sort-tab" data-sort="rooms" data-tab="rooms" role="tab" aria-selected="false" id="tabRooms">
+            <span class="tab-label">Rooms</span>
+          </button>
+          <button class="feed-tab sort-tab" data-sort="stories" data-tab="stories" role="tab" aria-selected="false" id="tabStories">
+            <span class="tab-label">Stories</span>
+          </button>
+          <!-- Sliding Underline Indicator -->
+          <div class="feed-tab-slider" id="feedTabSlider" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
   </header>
