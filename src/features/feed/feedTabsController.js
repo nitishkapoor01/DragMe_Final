@@ -1,6 +1,6 @@
 /* ==========================================================================
    DRAGME FEATURE: FEED TABS (src/features/feed/feedTabsController.js)
-   Two-Tier Social Feed Tab Slider animation with spring physics and sort filtering
+   Top feed tab slider animation with spring physics and sort filtering
    ========================================================================== */
 
 import { store } from '../../app/store.js';
@@ -10,24 +10,13 @@ export class FeedTabsController {
   constructor() {
     this.slider = null;
     this.tabs = [];
-    this.initialized = false;
+    this.collapseTimer = null;
   }
 
   init() {
     this.slider = document.getElementById('feedTabSlider');
     this.tabs = Array.from(document.querySelectorAll('.feed-tab'));
     if (!this.tabs.length) return;
-
-    // Initial positioning after DOM layout settles
-    requestAnimationFrame(() => {
-      this.updateSliderPosition(false);
-      setTimeout(() => this.updateSliderPosition(false), 80);
-    });
-
-    // Window resize handler
-    window.addEventListener('resize', () => {
-      this.updateSliderPosition(false);
-    });
 
     this.tabs.forEach(tab => {
       tab.setAttribute('role', 'tab');
@@ -46,29 +35,6 @@ export class FeedTabsController {
         this.switchTab(tab);
       });
     });
-
-    this.initialized = true;
-  }
-
-  updateSliderPosition(animated = true) {
-    if (!this.slider) return;
-    const activeTab = document.querySelector('.feed-tab.active') || this.tabs[0];
-    if (!activeTab || activeTab.offsetWidth === 0) return;
-
-    const targetWidth = Math.max(32, activeTab.offsetWidth * 0.76);
-    const targetOffset = activeTab.offsetLeft + (activeTab.offsetWidth - targetWidth) / 2;
-
-    if (!animated) {
-      this.slider.style.transition = 'none';
-      this.slider.style.width = `${targetWidth}px`;
-      this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
-      this.slider.style.opacity = '1';
-    } else {
-      this.slider.style.transition = 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), width 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease';
-      this.slider.style.width = `${targetWidth}px`;
-      this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
-      this.slider.style.opacity = '1';
-    }
   }
 
   switchTab(tab) {
@@ -76,6 +42,36 @@ export class FeedTabsController {
     if (tab === prevActive) return;
 
     sfx.playTap();
+
+    if (this.slider && prevActive) {
+      if (this.collapseTimer) clearTimeout(this.collapseTimer);
+
+      const prevWidth = Math.max(36, Math.min(prevActive.offsetWidth * 0.68, 64));
+      const prevOffset = prevActive.offsetLeft + (prevActive.offsetWidth - prevWidth) / 2;
+
+      this.slider.style.transition = 'none';
+      this.slider.style.width = `${prevWidth}px`;
+      this.slider.style.transform = `translate3d(${prevOffset}px, 0, 0) scaleX(1)`;
+      this.slider.style.opacity = '1';
+      this.slider.classList.add('sliding');
+      void this.slider.offsetWidth;
+
+      const targetWidth = Math.max(36, Math.min(tab.offsetWidth * 0.68, 64));
+      const targetOffset = tab.offsetLeft + (tab.offsetWidth - targetWidth) / 2;
+
+      this.slider.style.transition = 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease';
+      this.slider.style.width = `${targetWidth}px`;
+      this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0) scaleX(1)`;
+
+      this.collapseTimer = setTimeout(() => {
+        if (this.slider) {
+          this.slider.style.transition = 'transform 0.24s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.22s ease';
+          this.slider.style.transform = `translate3d(${targetOffset}px, 0, 0) scaleX(0.2)`;
+          this.slider.style.opacity = '0';
+          this.slider.classList.remove('sliding');
+        }
+      }, 340);
+    }
 
     this.tabs.forEach(t => {
       t.classList.remove('active');
@@ -85,8 +81,6 @@ export class FeedTabsController {
     tab.classList.add('active');
     tab.setAttribute('aria-selected', 'true');
 
-    this.updateSliderPosition(true);
-
     const sort = tab.dataset.sort || 'hot';
     store.setSort(sort);
   }
@@ -94,4 +88,3 @@ export class FeedTabsController {
 
 export const feedTabs = new FeedTabsController();
 export default feedTabs;
-

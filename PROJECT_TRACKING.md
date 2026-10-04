@@ -17,21 +17,6 @@
 
 ## 🕒 Activity Log & Work History
 
-### [2026-10-04 10:35] — DRAGME Desktop Header Redesign (Two-Tier Global + Feed Nav)
-- **Status**: Implemented & Verified (Desktop Only)
-- **Architecture & Components**:
-  - **Tier 1 — Global App Bar (56px)**:
-    - Left: Animated hamburger drawer trigger (`#toggleSidebarBtn`), DRAGME Brand Logo (`#brandLogo`, `DR` + `crown_icon.png` + `GME`).
-    - Center: Premium search bar (`#globalSearchInput`, placeholder *"Search posts, people, or communities…"*, `<kbd>/</kbd>` shortcut indicator, `#clearSearchBtn`).
-    - Right: Distinctive lime `+ Create` CTA pill (`#btn-header-create-post`), Cooked / streak meter (`#cookedMeterBadge`, `#userCookedVal`), Messages (`#chatBtn`, `#unreadMessagesCount`), Notifications (`#notifBtn`, `#unreadNotifsCount`), Profile Avatar with status dot and dropdown (`#userProfileDropdown`, `#navHeaderUserAvatar`).
-  - **Tier 2 — Social / Feed Nav (44px)**:
-    - Horizontally centered content navigation layer: `For You` (active by default), `Following`, `🔥 Trending`, `Communities`, `Rooms`, `Stories`.
-    - Sliding active lime underline indicator (`#feedTabSlider`), responsive resize handling, and smooth hover/press physics.
-  - **Layout Spacing**:
-    - Configured `--top-nav-full-h: 100px` (`--header-tier1-h: 56px`, `--header-tier2-h: 44px`).
-    - Aligned `.app-layout-grid`, `.left-nav-drawer`, `.right-sidebar-sticky`, and `#create-post-modal` offsets.
-- **Tests**: 69 Passed | 0 Failed (100% Green).
-
 ### [2026-09-29 20:55] — DRAGME Sign-Up Page (Reference Matched)
 - **Status**: Implemented & Verified
 - **Components Created**:

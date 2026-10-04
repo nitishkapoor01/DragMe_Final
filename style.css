@@ -47,11 +47,9 @@
   --font-heading: 'Plus Jakarta Sans', sans-serif;
 
   /* Sizing & Dimensions */
-  --header-tier1-h: 56px;
-  --header-tier2-h: 44px;
-  --top-nav-full-h: 100px;
-  --header-h: 56px;
+  --header-h: 58px;
   --feed-tabs-h: 44px;
+  --top-nav-full-h: 102px;
   --sidebar-w: 240px;
   --sidebar-right-w: 320px;
   --bottom-nav-h: 62px;
@@ -124,55 +122,51 @@ button {
 .text-muted { color: var(--text-low) !important; }
 
 /* ==========================================================================
-   TOP APP BAR — TWO-TIER DESKTOP HEADER (GLOBAL APP BAR + SOCIAL FEED NAV)
+   TOP APP BAR (EXACT SCREENSHOT MATCH FOR DESKTOP)
    ========================================================================== */
 .top-nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--top-nav-full-h, 100px);
-  background: rgba(8, 11, 15, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  height: var(--header-h);
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
   z-index: 500;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* TIER 1 — GLOBAL APP BAR (56px) */
 .top-nav-main-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--header-tier1-h, 56px);
-  min-height: var(--header-tier1-h, 56px);
+  height: 100%;
   width: 100%;
-  padding: 0 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-sizing: border-box;
+}
+
+/* Feed tabs are integrated only in mobile header */
+.feed-tabs-header {
+  display: none !important;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   min-width: 200px;
 }
 
-/* Sidebar Drawer Toggle Button (Hamburger) */
+/* 3-Lines Hamburger Menu Button (Desktop & Mobile) */
 .mob-drawer-toggle-btn {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   background: transparent !important;
   border: none !important;
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -185,7 +179,7 @@ button {
 }
 
 .mob-drawer-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.07) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .mob-drawer-toggle-btn:active {
@@ -226,7 +220,7 @@ button {
   transform: translateY(-5px) rotate(-45deg);
 }
 
-/* DRAGME Brand Logo (DR + Crown + GME) */
+/* DRAGME Brand Logo with Crown Icon in place of 'A' (DR + 👑 + GME) */
 .brand-logo {
   display: inline-flex;
   align-items: center;
@@ -236,12 +230,11 @@ button {
   cursor: pointer;
   user-select: none;
   outline: none;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-logo:hover {
   opacity: 0.95;
-  transform: translateY(-0.5px);
 }
 
 .logo-text-dr {
@@ -267,7 +260,7 @@ button {
   width: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 8px rgba(183, 255, 60, 0.45));
+  filter: drop-shadow(0 0 8px rgba(163, 230, 53, 0.45));
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform: translateY(-0.5px);
 }
@@ -286,45 +279,33 @@ button {
   display: inline-block;
 }
 
-/* CENTER: Large Premium Search Field */
+/* Center Search */
 .nav-center {
   flex: 1;
-  max-width: 580px;
-  margin: 0 24px;
+  max-width: 640px;
+  margin: 0 20px;
 }
 
 .search-container {
   display: flex;
   align-items: center;
-  background: #0C1017;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #121620;
+  border: 1px solid #1e2533;
   border-radius: var(--radius-pill);
-  height: 38px;
-  padding: 0 14px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
-}
-
-.search-container:hover {
-  background: #10151E;
-  border-color: rgba(255, 255, 255, 0.16);
+  padding: 6px 14px;
+  transition: all 0.15s ease;
 }
 
 .search-container:focus-within {
   border-color: var(--lime-primary);
-  background: #111722;
-  box-shadow: 0 0 16px rgba(183, 255, 60, 0.18);
+  background: #161c28;
+  box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);
 }
 
 .search-icon {
   color: #556277;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   margin-right: 10px;
-  transition: color 0.18s ease;
-}
-
-.search-container:focus-within .search-icon {
-  color: var(--lime-primary);
 }
 
 .search-container input {
@@ -332,15 +313,12 @@ button {
   background: transparent;
   border: none;
   outline: none;
-  color: #F2F4F7;
-  font-size: 0.88rem;
-  font-family: var(--font-main);
-  font-weight: 450;
+  color: #f1f5f9;
+  font-size: 0.85rem;
 }
 
 .search-container input::placeholder {
   color: #556277;
-  font-weight: 400;
 }
 
 .search-shortcut-wrap {
@@ -350,229 +328,139 @@ button {
 }
 
 .search-shortcut {
-  background: #161E2B;
-  color: #7E8DA4;
+  background: #1c2331;
+  color: #8896ab;
   font-size: 0.72rem;
-  font-weight: 600;
   padding: 2px 7px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-family: inherit;
-  user-select: none;
-  pointer-events: none;
+  border: 1px solid #273145;
 }
 
 .clear-search-btn {
-  color: #64748B;
+  color: #64748b;
   font-size: 0.75rem;
-  cursor: pointer;
-  padding: 2px;
-  transition: color 0.15s ease;
 }
 
-.clear-search-btn:hover {
-  color: #F2F4F7;
-}
-
-/* RIGHT: Action Items (Create, Cooked, Messages, Notifs, Profile) */
+/* Nav Right Action Items */
 .nav-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* 1. Distinctive Premium Create CTA */
-.nav-create-post-btn,
+/* 1. Capsule Plus Button (Green circle + chevron inside dark pill) */
 .nav-capsule-plus-btn {
   background: #111722;
-  border: 1px solid rgba(183, 255, 60, 0.35);
+  border: 1px solid #1f293d;
   border-radius: 9999px !important;
-  height: 36px !important;
-  padding: 0 14px 0 6px !important;
+  padding: 3px 9px 3px 3px !important;
+  height: 34px !important;
+  width: auto !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 8px !important;
+  gap: 7px !important;
   cursor: pointer !important;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
   outline: none !important;
   flex-shrink: 0 !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
   box-sizing: border-box !important;
-  user-select: none;
 }
 
-.nav-create-post-btn:hover,
 .nav-capsule-plus-btn:hover {
   background: #162030 !important;
-  border-color: var(--lime-primary) !important;
-  box-shadow: 0 0 18px rgba(183, 255, 60, 0.28) !important;
-  transform: translateY(-1px);
+  border-color: rgba(163, 230, 53, 0.5) !important;
+  box-shadow: 0 0 16px rgba(163, 230, 53, 0.25) !important;
 }
 
-.nav-create-post-btn:active,
-.nav-capsule-plus-btn:active {
-  transform: scale(0.96) !important;
-}
-
-.create-btn-icon-wrap,
 .capsule-plus-circle {
-  width: 24px !important;
-  height: 24px !important;
+  width: 26px !important;
+  height: 26px !important;
   border-radius: 50% !important;
-  background: var(--lime-primary) !important;
-  color: #080B0F !important;
+  background: #a3e635 !important;
+  color: #07090e !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 0.82rem !important;
+  font-size: 0.85rem !important;
   font-weight: 900 !important;
-  box-shadow: 0 0 10px rgba(183, 255, 60, 0.5) !important;
+  box-shadow: 0 0 14px rgba(163, 230, 53, 0.6) !important;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   flex-shrink: 0 !important;
 }
 
-.nav-create-post-btn:hover .create-btn-icon-wrap,
 .nav-capsule-plus-btn:hover .capsule-plus-circle {
   transform: rotate(90deg) scale(1.08) !important;
-  box-shadow: 0 0 16px rgba(183, 255, 60, 0.8) !important;
+  box-shadow: 0 0 20px rgba(163, 230, 53, 0.85) !important;
 }
 
-.create-btn-label {
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #F2F4F7;
-  letter-spacing: -0.01em;
-  line-height: 1;
+.nav-capsule-plus-btn:active .capsule-plus-circle {
+  transform: rotate(135deg) scale(0.94) !important;
 }
 
 .capsule-chevron {
   font-size: 0.68rem !important;
-  color: var(--lime-primary) !important;
+  color: #a3e635 !important;
   font-weight: 800 !important;
   transition: transform 0.2s ease !important;
   flex-shrink: 0 !important;
   margin-right: 2px !important;
 }
 
-/* Guest Header Actions */
-.nav-right-guest {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn-guest-auth-login {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
-  padding: 6px 14px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #F2F4F7;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.btn-guest-auth-login:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.btn-guest-auth-signup {
-  background: var(--lime-primary);
-  border: 1px solid var(--lime-primary);
-  border-radius: 9999px;
-  padding: 6px 14px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #080B0F;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 0 12px rgba(183, 255, 60, 0.35);
-  transition: all 0.18s ease;
-}
-
-.btn-guest-auth-signup:hover {
-  background: var(--lime-hover);
-  box-shadow: 0 0 18px rgba(183, 255, 60, 0.55);
-  transform: translateY(-1px);
-}
-
-/* Authenticated Header Actions */
-.nav-right-auth {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+/* 2. Nav Header Divider */
 .nav-header-divider {
   width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 22px;
+  background: rgba(255, 255, 255, 0.12);
   margin: 0 2px;
   flex-shrink: 0;
 }
 
-/* Cooked Metric [ 🔥 12 COOKED ] */
+/* 3. 12 COOKED Metric (Fire icon + Stacked 12 / COOKED) */
 .stat-cooked-meter {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(255, 71, 87, 0.08);
-  border: 1px solid rgba(255, 71, 87, 0.22);
-  border-radius: 8px;
-  padding: 4px 10px;
-  height: 34px;
+  gap: 8px;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
-  user-select: none;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: opacity 0.15s ease;
 }
 
 .stat-cooked-meter:hover {
-  background: rgba(255, 71, 87, 0.14);
-  border-color: rgba(255, 71, 87, 0.45);
-  box-shadow: 0 0 12px rgba(255, 71, 87, 0.25);
-  transform: translateY(-1px);
+  opacity: 0.85;
 }
 
 .cooked-flame-icon {
-  font-size: 1.15rem;
-  color: #FF4757;
-  filter: drop-shadow(0 0 6px rgba(255, 71, 87, 0.5));
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.stat-cooked-meter:hover .cooked-flame-icon {
-  transform: scale(1.15);
+  font-size: 1.35rem;
+  color: #ff4757;
+  filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.45));
 }
 
 .cooked-text-stack {
   display: flex;
   flex-direction: column;
   line-height: 1;
-  gap: 1px;
+  gap: 2px;
 }
 
 .cooked-num-val {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 900;
-  color: #FF4757;
+  color: #ff4757;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .cooked-label-tag {
-  font-size: 0.56rem;
+  font-size: 0.58rem;
   font-weight: 900;
   letter-spacing: 0.08em;
-  color: #7E8DA4;
+  color: #64748b;
   text-transform: uppercase;
 }
 
-/* Icon Buttons (Messages, Notifications) */
+/* 4. Icon Buttons with Glowing Red Badges */
 .icon-nav-btn {
   position: relative;
   width: 34px;
@@ -581,47 +469,42 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94A3B8;
-  font-size: 1.08rem;
+  color: #cbd5e1;
+  font-size: 1.15rem;
   background: transparent;
   border: none;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s ease;
-  outline: none;
+  transition: all 0.15s;
 }
 
 .icon-nav-btn:hover {
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.08);
-}
-
-.icon-nav-btn:active {
-  transform: scale(0.92);
 }
 
 .nav-badge-pill,
 .badge-red-circle {
   position: absolute;
-  top: -2px;
-  right: -2px;
-  background: #FF3366;
-  color: #FFFFFF;
-  font-size: 0.6rem;
-  font-weight: 800;
-  min-width: 15px;
-  height: 15px;
+  top: -3px;
+  right: -3px;
+  background: #ff3366;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  min-width: 16px;
+  height: 16px;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-  box-shadow: 0 0 8px rgba(255, 51, 102, 0.8);
-  border: 2px solid #080B0F;
+  box-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+  border: 2px solid #07090e;
   line-height: 1;
 }
 
-/* User Avatar Dropdown [ PFP ⌄ ] */
+/* 5. User Avatar with Caret Button */
 .user-nav-dropdown {
   display: flex;
   align-items: center;
@@ -629,22 +512,10 @@ button {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 2px 6px 2px 2px;
+  padding: 0;
   border-radius: 9999px;
   flex-shrink: 0;
   outline: none;
-  transition: all 0.18s ease;
-}
-
-.user-nav-dropdown:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-avatar-wrap {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
 }
 
 .nav-user-avatar {
@@ -652,128 +523,31 @@ button {
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border: 1.5px solid #2a3346;
   transition: all 0.2s ease;
-  display: block;
 }
 
 .user-nav-dropdown:hover .nav-user-avatar {
-  border-color: var(--lime-primary);
-  box-shadow: 0 0 10px rgba(183, 255, 60, 0.35);
-}
-
-.nav-user-status-dot {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #22C55E;
-  border: 2px solid #080B0F;
-  box-shadow: 0 0 6px #22C55E;
+  border-color: #a3e635;
+  box-shadow: 0 0 12px rgba(163, 230, 53, 0.4);
 }
 
 .user-dropdown-chevron {
-  font-size: 0.65rem;
-  color: #7E8DA4;
+  font-size: 0.68rem;
+  color: #a3e635;
   font-weight: 800;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
-.user-nav-dropdown:hover .user-dropdown-chevron {
+.nav-user-caret {
+  font-size: 0.65rem;
   color: var(--lime-primary);
-  transform: translateY(1px);
-}
-
-/* ==========================================================================
-   TIER 2 — SOCIAL / FEED NAV (44px Stream Controller)
-   ========================================================================== */
-.feed-tabs-header {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  height: var(--header-tier2-h, 44px);
-  min-height: var(--header-tier2-h, 44px);
-  width: 100%;
-  padding: 0 24px;
-  background: rgba(10, 14, 20, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: relative;
-  box-sizing: border-box;
-}
-
-.feed-tabs-inner-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 1200px;
-  height: 100%;
-  position: relative;
-}
-
-.feed-main-tabs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 36px;
-  height: 100%;
-  position: relative;
-  margin: 0 auto;
-}
-
-.feed-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 100%;
-  padding: 0 4px;
-  font-size: 0.92rem;
-  font-weight: 500;
-  font-family: var(--font-main);
-  color: #7E8DA4;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  white-space: nowrap;
-  transition: color 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s ease;
-  outline: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.feed-tab:hover {
-  color: #F2F4F7;
-}
-
-.feed-tab:active {
-  transform: scale(0.96);
-}
-
-.feed-tab.active {
-  color: #FFFFFF;
-  font-weight: 700;
-}
-
-.feed-tab.feed-tab-trending .tab-icon {
-  font-size: 0.88rem;
-  color: #FF6B00;
-  filter: drop-shadow(0 0 5px rgba(255, 107, 0, 0.45));
-}
-
-.feed-tab-slider {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: var(--lime-primary);
-  border-radius: 3px 3px 0 0;
-  box-shadow: 0 0 10px rgba(183, 255, 60, 0.65);
+  transition: transform 0.15s;
   pointer-events: none;
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), width 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-  z-index: 2;
+}
+
+.user-nav-dropdown:hover .nav-user-caret {
+  transform: translateY(1px);
 }
 
 /* ==========================================================================
@@ -783,9 +557,9 @@ button {
   display: flex;
   width: 100%;
   max-width: 100%;
-  margin-top: var(--top-nav-full-h, 100px);
-  padding: 14px 24px;
-  gap: 24px;
+  margin-top: var(--header-h);
+  padding: 12px 20px;
+  gap: 20px;
   box-sizing: border-box;
 }
 
@@ -793,9 +567,9 @@ button {
 .left-nav-drawer {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
-  height: calc(100vh - var(--top-nav-full-h, 100px) - 24px);
+  height: calc(100vh - var(--header-h) - 24px);
   position: sticky;
-  top: calc(var(--top-nav-full-h, 100px) + 12px);
+  top: calc(var(--header-h) + 12px);
   overflow-y: auto;
   flex-shrink: 0;
   scrollbar-width: none;
@@ -2171,11 +1945,11 @@ button {
 
 .right-sidebar-sticky {
   position: sticky;
-  top: calc(var(--top-nav-full-h, 100px) + 12px);
+  top: calc(var(--header-h) + 12px);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: calc(100vh - var(--top-nav-full-h, 100px) - 24px);
+  max-height: calc(100vh - var(--header-h) - 24px);
   overflow-y: auto;
 }
 
@@ -2409,7 +2183,7 @@ button {
 #create-post-modal {
   position: fixed;
   inset: 0;
-  top: var(--top-nav-full-h, 100px); /* Sticks right beneath Two-Tier top navbar */
+  top: 58px; /* Sticks right beneath top navbar */
   background: rgba(4, 6, 12, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -12374,7 +12148,56 @@ button {
   box-shadow: 0 0 8px #22c55e;
 }
 
-/* Feed sort dropdown */
+/* 3. FEED TABS BAR (Minimalist Pure Clean) */
+.feed-tabs-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.feed-main-tabs {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+}
+
+.feed-tab {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  padding: 8px 4px 10px 4px;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.feed-tab:hover {
+  color: #94a3b8;
+}
+
+.feed-tab:active {
+  transform: scale(0.96);
+  color: #cbd5e1;
+}
+
+.feed-tab.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.feed-tab::after,
+.feed-tab::before {
+  display: none !important;
+  content: none !important;
+}
 
 .feed-trending-dropdown .btn-feed-sort-dropdown {
   display: inline-flex;
