@@ -308,7 +308,6 @@ export const CrownReactionEngine = {
     this.spawnShockwave(btn);
     this.spawnParticles(btn, true, true);
     this.showSupportFeedback(btn, 'Super Crown Awarded! ⚡');
-    triggerEvent('dragme:reaction:supercrown', { postId });
 
     this.inFlight[postId] = true;
     try {

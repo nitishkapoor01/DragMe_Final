@@ -375,7 +375,6 @@ export class CreatePostModal {
 
         if (res && res.post) {
           store.addPost(res.post);
-          eventBus.emit('dragme:post:created', { post: res.post });
         }
 
         if (contentInput) contentInput.value = '';

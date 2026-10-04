@@ -4,7 +4,6 @@
    ========================================================================== */
 
 import { $ } from '../../utils/domUtils.js';
-import { eventBus } from '../../core/eventBus.js';
 
 export class ToastManager {
   constructor(hubId = 'toastHub') {
@@ -31,9 +30,6 @@ export class ToastManager {
       duration = 3500,
       icon = null
     } = options;
-
-    // Notify Reactive Brand Mascot & other systems
-    eventBus.emit('dragme:toast', { type, message });
 
     const toast = document.createElement('div');
     toast.className = `toast-card toast-${type}`;
