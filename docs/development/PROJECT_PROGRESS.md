@@ -147,19 +147,34 @@
 
 #### Test Results:
 - **Total: 57 Passed | 0 Failed (100% Success)**
+### 2026-10-04: Left Sidebar Navigation Simplification & Cleanup
+#### Files Touched:
+- `index.html`: Cleaned left sidebar primary menu (`.nav-section-block`) by removing in-feed category filters (`Roast Battle`, `Daily Most Cooked`, `Help Wanted`, `Need Answers`, `Confessions`, `Before → After`) and leaving focused platform destinations:
+  - 🏠 Home (`#navHome`)
+  - 🔍 Discover (`#navDiscover`)
+  - 👥 Communities (`#navCommunities`)
+  - 💬 Rooms (`#navRooms`)
+  - ▶️ Stories (`#navStories`)
+  - 👤 Profile (`#navProfile`)
+- `src/features/navigation/sidebar.js`: Simplified active `navMenuItems` binding to match clean destination items.
+
+#### Tests Run & Verified:
+- `npm test`: 69 Passed | 0 Failed (100% Green).
   - Media Pipeline Suite: 34 Passed | 0 Failed
-  - Master Integration & API Suite: 18 Passed | 0 Failed
+  - Master Integration & API Suite: 20 Passed | 0 Failed
   - Crown Reaction Suite: 5 Passed | 0 Failed
+  - Profile Media Suite: 10 Passed | 0 Failed
 
 #### Known Issues:
 - None
 
 #### Remaining Work:
-- Foundation phase complete.
+- Continue UI and feed polish as requested.
 
 #### Technical Debt (Documented for Future Multi-Instance Scale Phase):
 - In-memory sliding-window rate limiter (`backend/middleware/rateLimiter.js`) ➔ upgrade to Redis rate limiter for horizontal multi-instance scale.
 - In-memory media processing queue (`services/mediaQueue.js`) ➔ upgrade to BullMQ / Redis for distributed worker clusters.
 
 #### Exact Next Step:
-- Perform final ZIP sanity check of the codebase archive and prepare for normal product feature development.
+- Ready for next user instruction.
+

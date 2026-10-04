@@ -81,16 +81,11 @@ export class SidebarController {
       toast.info('Switched to Anonymous Confessions arena.');
     });
 
-    // Other Navigation Rows
+    // Main Navigation Rows
     const navMenuItems = [
       { id: 'navCommunities', filter: 'General' },
       { id: 'navRooms', filter: 'all' },
-      { id: 'navStories', filter: 'stories' },
-      { id: 'navRoastBattle', filter: 'Roast Me' },
-      { id: 'navDailyCooked', filter: 'daily_cooked' },
-      { id: 'navHelpWanted', filter: 'Help Me' },
-      { id: 'navNeedAnswers', filter: 'I Need Answers' },
-      { id: 'navBeforeAfter', filter: 'before_after' }
+      { id: 'navStories', filter: 'stories' }
     ];
     navMenuItems.forEach(({ id, filter }) => {
       document.getElementById(id)?.addEventListener('click', (e) => {

@@ -17,6 +17,15 @@
 
 ## 🕒 Activity Log & Work History
 
+### [2026-10-04 10:46] — DRAGME Left Sidebar Navigation Cleanup
+- **Status**: Implemented & Verified
+- **Changes**:
+  - Cleaned primary navigation block by removing in-feed category filters (`Roast Battle`, `Daily Most Cooked`, `Help Wanted`, `Need Answers`, `Confessions`, `Before → After`).
+  - Left sidebar now focuses purely on top-level destinations: `Home` (`#navHome`), `Discover` (`#navDiscover`), `Communities` (`#navCommunities`), `Rooms` (`#navRooms`), `Stories` (`#navStories`), and `Profile` (`#navProfile`).
+  - Followed by `+ Create Room` CTA, `YOUR ACTIVE ROOMS`, and bottom mini user profile card.
+  - Simplified `src/features/navigation/sidebar.js` menu bindings cleanly.
+- **Tests**: 69 Passed | 0 Failed (100% Green).
+
 ### [2026-09-29 20:55] — DRAGME Sign-Up Page (Reference Matched)
 - **Status**: Implemented & Verified
 - **Components Created**:
