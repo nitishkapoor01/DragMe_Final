@@ -129,6 +129,10 @@ const MediaProcessor = {
    * Validate upload against Centralized Media Limits
    */
   async validateMedia(buffer, uploadType = 'avatar', user = null) {
+    // Normalize upload types
+    if (uploadType === 'avatarVideo') uploadType = 'animatedAvatar';
+    if (uploadType === 'bannerVideo') uploadType = 'animatedBanner';
+
     const limits = MEDIA_LIMITS[uploadType] || MEDIA_LIMITS.avatar;
 
     // 1. File Size Validation
@@ -152,10 +156,10 @@ const MediaProcessor = {
       throw new Error('Animated avatars and motion banners can only be uploaded via the DRAGME Nitro VIP section.');
     }
 
-    // 4. Premium Entitlement Check
-    const isEntitled = Boolean(user && (user.is_premium || user.role === 'admin'));
+    // 4. Premium Entitlement Check (Unlocked for @nitish, Admin, and Nitro accounts)
+    const isEntitled = Boolean(user && (user.is_premium || user.role === 'admin' || (user.username && user.username.toLowerCase() === 'nitish')));
     if (limits.requiresPremium && !isEntitled) {
-      throw new Error(`Animated and video ${uploadType} is a DRAGME Nitro VIP feature. Upgrade to unlock.`);
+      throw new Error(`Animated and video ${uploadType} is a DRAGME Nitro VIP feature exclusive to @nitish and Nitro members.`);
     }
 
     // 5. Safety Filter
@@ -548,8 +552,10 @@ const MediaProcessor = {
 
       if (uploadType === 'postVideo') {
         result = await this.processPostVideo(buffer, fileInfo, uploadType, user);
-      } else if (uploadType === 'animatedAvatar' || uploadType === 'animatedBanner') {
-        result = await this.processAnimatedMedia(buffer, fileInfo, uploadType, user);
+      } else if (uploadType === 'animatedAvatar' || uploadType === 'avatarVideo') {
+        result = await this.processAnimatedMedia(buffer, fileInfo, 'animatedAvatar', user);
+      } else if (uploadType === 'animatedBanner' || uploadType === 'bannerVideo') {
+        result = await this.processAnimatedMedia(buffer, fileInfo, 'animatedBanner', user);
       } else if (fileInfo.isVideo) {
         // Fallback for video in other types
         result = await this.processPostVideo(buffer, fileInfo, uploadType, user);

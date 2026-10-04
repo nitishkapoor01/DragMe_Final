@@ -223,17 +223,26 @@
         <!-- Bottom Mini User Profile Card -->
         <div class="sidebar-bottom-user-card" id="sidebarBottomUserCard">
           <div class="sb-user-row">
-            <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="sb-user-avatar" id="sbUserAvatar">
+            <div class="sb-avatar-wrapper">
+              <img src="https://api.dicebear.com/7.x/bottts/svg?seed=tester" alt="Avatar" class="sb-user-avatar" id="sbUserAvatar">
+              <span class="sb-status-indicator" title="Online"></span>
+            </div>
             <div class="sb-user-meta">
               <div class="sb-user-name" id="sbUserName">Tester Supreme</div>
               <div class="sb-user-handle-row">
                 <span class="sb-user-handle" id="sbUserHandle">@tester</span>
-                <span class="sb-status-dots">●●</span>
+                <span class="sb-user-badge-mini" id="sbUserBadgeMini">PRO</span>
               </div>
             </div>
-            <button class="sb-more-btn"><i class="fa-solid fa-ellipsis"></i></button>
+            <button class="sb-more-btn" id="sbMoreActionsBtn" title="Options" type="button" aria-label="Options">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
           </div>
-          <button class="btn-sb-view-profile" id="btnSidebarViewProfile">View Profile</button>
+          <button class="btn-sb-view-profile" id="btnSidebarViewProfile" type="button">
+            <i class="fa-regular fa-user" style="font-size: 0.75rem;"></i>
+            <span>View Profile</span>
+            <i class="fa-solid fa-arrow-right sb-btn-arrow"></i>
+          </button>
         </div>
 
       </div>
@@ -1354,6 +1363,10 @@
                   <i class="fa-solid fa-camera"></i>
                   <span>Upload Banner</span>
                 </button>
+                <button type="button" class="btn-banner-action" id="btnOpenBannerStudio" title="Open Media Studio with Pan, Zoom & Crop">
+                  <i class="fa-solid fa-crop-simple"></i>
+                  <span>Adjust in Studio</span>
+                </button>
                 <button type="button" class="btn-banner-action danger" id="btnRemoveBannerPhoto">
                   <i class="fa-regular fa-trash-can"></i>
                   <span>Remove</span>
@@ -1401,6 +1414,10 @@
                   <button type="button" class="btn-avatar-upload" id="btnTriggerAvatarUpload2">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i>
                     <span>Upload New Avatar</span>
+                  </button>
+                  <button type="button" class="btn-avatar-upload" id="btnOpenAvatarStudio" title="Open Media Studio with Pan, Zoom & 4:5 Crop">
+                    <i class="fa-solid fa-crop-simple"></i>
+                    <span>Adjust in Studio</span>
                   </button>
                   <button type="button" class="btn-avatar-remove" id="btnRemoveAvatarPhoto">
                     <i class="fa-regular fa-trash-can"></i>
@@ -2654,162 +2671,257 @@
   </div>
 
   <!-- =========================================================================
-       MEDIA TRIM & CROP STUDIO MODAL (UNIVERSAL PINCH-ZOOM, PAN, ROTATE & TRIM)
+       1. PROFILE PICTURE STUDIO MODAL (DEDICATED 4:5 PORTRAIT AVATAR STUDIO)
        ========================================================================= -->
-  <div class="modal-overlay media-studio-overlay" id="mediaStudioModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="mediaStudioTitle">
+  <div class="modal-overlay media-studio-overlay pfp-studio-overlay" id="pfpStudioModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="pfpStudioTitle">
     <div class="modal-window media-studio-window">
+      <input type="file" id="pfpStudioFileInput" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,image/avif" style="display: none;">
       
       <!-- Studio Header -->
       <div class="media-studio-header">
         <div class="media-studio-title-group">
-          <i class="fa-solid fa-crop-simple text-lime" id="mediaStudioIcon"></i>
+          <i class="fa-solid fa-user-gear text-lime"></i>
           <div>
-            <h3 class="media-studio-title" id="mediaStudioTitle">Adjust &amp; Position Media</h3>
-            <span class="media-studio-sub" id="mediaStudioSub">Pinch or scroll to zoom • Drag to frame your shot</span>
+            <h3 class="media-studio-title" id="pfpStudioTitle">Profile Picture Studio (4:5 Portrait)</h3>
+            <span class="media-studio-sub">Drag to position • Pinch or scroll to zoom • Auto-framed in 4:5</span>
           </div>
         </div>
-        <button type="button" class="btn-close-studio" id="btnCloseMediaStudio" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="btn-close-studio" id="btnClosePfpStudio" title="Close"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Studio Stage Viewport (Unified Interactive Surface for Photo & Video) -->
-      <div class="media-studio-stage" id="mediaStudioStage">
-        
+      <!-- Stage Viewport (4:5 Avatar Frame) -->
+      <div class="media-studio-stage" id="pfpStudioStage">
         <!-- Video Viewport -->
-        <div class="media-video-container" id="studioVideoWrap" style="display: none;">
-          <div class="studio-crop-canvas-box" id="studioVideoCanvasBox">
-            <video id="studioVideoPlayer" playsinline loop muted autoplay preload="auto" class="studio-video-element"></video>
-            <div class="crop-grid-overlay" id="cropGridOverlayVideo"></div>
+        <div class="media-video-container" id="pfpStudioVideoWrap" style="display: none;">
+          <div class="studio-crop-canvas-box" id="pfpStudioVideoCanvasBox">
+            <video id="pfpStudioVideoPlayer" playsinline loop muted autoplay preload="auto" class="studio-video-element"></video>
           </div>
         </div>
 
         <!-- Image Crop & Pan Viewport -->
-        <div class="media-crop-container" id="studioImageWrap" style="display: none;">
-          <div class="studio-crop-canvas-box" id="studioCropCanvasBox">
-            <img src="" alt="Crop Preview" id="studioCropImg" class="studio-crop-image">
-            <div class="crop-grid-overlay" id="cropGridOverlay"></div>
+        <div class="media-crop-container" id="pfpStudioImageWrap" style="display: none;">
+          <div class="studio-crop-canvas-box" id="pfpStudioCropCanvasBox">
+            <img src="" alt="Crop Preview" id="pfpStudioCropImg" class="studio-crop-image">
           </div>
         </div>
 
-        <!-- Floating Stage Interaction Badges -->
+        <!-- Single Centered 4:5 Portrait Mask Overlay -->
+        <div class="crop-grid-overlay avatar-mode" id="pfpCropOverlay"></div>
+
+        <!-- Floating Stage Badges -->
         <div class="stage-floating-badges">
-          <span class="stage-badge-pill" id="stageZoomBadge"><i class="fa-solid fa-magnifying-glass"></i> <span id="valZoomLevelText">100%</span></span>
-          <span class="stage-badge-pill" id="stagePanBadge"><i class="fa-solid fa-arrows-up-down-left-right"></i> <span id="valPanPosText">0, 0</span></span>
-          <span class="stage-badge-pill" id="stageRotationBadge"><i class="fa-solid fa-arrows-rotate"></i> <span id="valRotationText">0°</span></span>
+          <span class="stage-badge-pill"><i class="fa-solid fa-magnifying-glass"></i> <span id="pfpZoomLevelText">100%</span></span>
+          <span class="stage-badge-pill"><i class="fa-solid fa-arrows-up-down-left-right"></i> <span id="pfpPanPosText">0, 0</span></span>
+          <span class="stage-badge-pill"><i class="fa-solid fa-arrows-rotate"></i> <span id="pfpRotationText">0°</span></span>
         </div>
       </div>
 
-      <!-- Universal Transform Controls Bar (Zoom, Pan, Rotate, Flip, Presets) -->
-      <div class="studio-controls-panel" id="studioTransformControls">
-        
-        <!-- Zoom Suite Row -->
+      <!-- Transform Controls -->
+      <div class="studio-controls-panel" id="pfpStudioTransformControls">
+        <!-- Zoom Row -->
         <div class="transform-deck-row zoom-deck-row">
           <div class="zoom-slider-group">
             <span class="control-section-label"><i class="fa-solid fa-magnifying-glass"></i> ZOOM</span>
-            <button type="button" class="btn-step-ctrl" id="btnZoomOut" title="Zoom Out (-10%)"><i class="fa-solid fa-minus"></i></button>
-            <input type="range" id="photoZoomSlider" min="1" max="4" step="0.02" value="1" class="studio-zoom-slider" aria-label="Zoom Level">
-            <button type="button" class="btn-step-ctrl" id="btnZoomIn" title="Zoom In (+10%)"><i class="fa-solid fa-plus"></i></button>
+            <button type="button" class="btn-step-ctrl" id="btnPfpZoomOut" title="Zoom Out (-10%)"><i class="fa-solid fa-minus"></i></button>
+            <input type="range" id="pfpZoomSlider" min="1" max="4" step="0.02" value="1" class="studio-zoom-slider" aria-label="Zoom Level">
+            <button type="button" class="btn-step-ctrl" id="btnPfpZoomIn" title="Zoom In (+10%)"><i class="fa-solid fa-plus"></i></button>
           </div>
-
-          <!-- Quick Zoom Preset Pills -->
-          <div class="zoom-preset-pills" id="zoomPresetPills">
-            <button type="button" class="btn-preset-zoom active" data-scale="1.0">1x</button>
-            <button type="button" class="btn-preset-zoom" data-scale="1.25">1.25x</button>
-            <button type="button" class="btn-preset-zoom" data-scale="1.5">1.5x</button>
-            <button type="button" class="btn-preset-zoom" data-scale="2.0">2x</button>
-            <button type="button" class="btn-preset-zoom" data-scale="3.0">3x</button>
+          <div class="zoom-preset-pills">
+            <button type="button" class="btn-preset-zoom btn-pfp-preset active" data-scale="1.0">1x</button>
+            <button type="button" class="btn-preset-zoom btn-pfp-preset" data-scale="1.25">1.25x</button>
+            <button type="button" class="btn-preset-zoom btn-pfp-preset" data-scale="1.5">1.5x</button>
+            <button type="button" class="btn-preset-zoom btn-pfp-preset" data-scale="2.0">2x</button>
           </div>
         </div>
 
-        <!-- Position & Orientation Deck Row -->
+        <!-- Position & Orientation Row -->
         <div class="transform-deck-row tools-deck-row">
-          
-          <!-- Precision Pan Nudge D-Pad -->
           <div class="pan-dpad-container">
             <span class="control-section-label"><i class="fa-solid fa-arrows-up-down-left-right"></i> POSITION</span>
             <div class="pan-dpad-grid">
-              <button type="button" class="btn-dpad btn-dpad-up" id="btnPanUp" title="Pan Up"><i class="fa-solid fa-chevron-up"></i></button>
-              <button type="button" class="btn-dpad btn-dpad-left" id="btnPanLeft" title="Pan Left"><i class="fa-solid fa-chevron-left"></i></button>
-              <button type="button" class="btn-dpad btn-dpad-center" id="btnPanCenter" title="Re-center Pan"><i class="fa-solid fa-crosshairs"></i></button>
-              <button type="button" class="btn-dpad btn-dpad-right" id="btnPanRight" title="Pan Right"><i class="fa-solid fa-chevron-right"></i></button>
-              <button type="button" class="btn-dpad btn-dpad-down" id="btnPanDown" title="Pan Down"><i class="fa-solid fa-chevron-down"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-up" id="btnPfpPanUp" title="Pan Up"><i class="fa-solid fa-chevron-up"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-left" id="btnPfpPanLeft" title="Pan Left"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-center" id="btnPfpPanCenter" title="Re-center"><i class="fa-solid fa-crosshairs"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-right" id="btnPfpPanRight" title="Pan Right"><i class="fa-solid fa-chevron-right"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-down" id="btnPfpPanDown" title="Pan Down"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
           </div>
 
-          <!-- Rotation & Flip Actions -->
           <div class="orientation-tools-group">
-            <span class="control-section-label"><i class="fa-solid fa-rotate"></i> ROTATE &amp; FLIP</span>
             <div class="action-buttons-wrap">
-              <button type="button" class="btn-studio-tool" id="btnRotateLeft" title="Rotate 90° Counter-Clockwise">
-                <i class="fa-solid fa-rotate-left"></i> -90°
-              </button>
-              <button type="button" class="btn-studio-tool" id="btnRotatePhoto" title="Rotate 90° Clockwise">
-                <i class="fa-solid fa-rotate-right"></i> +90°
-              </button>
-              <button type="button" class="btn-studio-tool" id="btnFlipH" title="Flip Horizontally">
-                <i class="fa-solid fa-arrows-left-right"></i> Flip H
-              </button>
-              <button type="button" class="btn-studio-tool" id="btnFlipV" title="Flip Vertically">
-                <i class="fa-solid fa-arrows-up-down"></i> Flip V
-              </button>
-              <button type="button" class="btn-studio-tool btn-reset-frame" id="btnResetTransform" title="Reset All Transforms">
-                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
-              </button>
+              <button type="button" class="btn-studio-tool" id="btnPfpRotateLeft" title="Rotate -90°"><i class="fa-solid fa-rotate-left"></i> -90°</button>
+              <button type="button" class="btn-studio-tool" id="btnPfpRotateRight" title="Rotate +90°"><i class="fa-solid fa-rotate-right"></i> +90°</button>
+              <button type="button" class="btn-studio-tool" id="btnPfpFlipH" title="Flip Horizontally"><i class="fa-solid fa-arrows-left-right"></i> Flip H</button>
+              <button type="button" class="btn-studio-tool" id="btnPfpFlipV" title="Flip Vertically"><i class="fa-solid fa-arrows-up-down"></i> Flip V</button>
+              <button type="button" class="btn-studio-tool btn-reset-frame" id="btnPfpReset" title="Reset Transforms"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
             </div>
           </div>
-
         </div>
 
-        <div class="gesture-hint-row">
-          <span class="gesture-hint-pill"><i class="fa-solid fa-hand-pointer"></i> Touch / Drag or D-Pad to Pan</span>
-          <span class="gesture-hint-pill"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> 2-Finger Pinch or Scroll to Zoom</span>
-          <span class="gesture-hint-pill"><i class="fa-solid fa-expand"></i> Double-tap to Toggle 2x</span>
-        </div>
-      </div>
-
-      <!-- Video Duration Trim Bar (Visible Only for Video Clips) -->
-      <div class="studio-controls-panel video-trim-panel" id="studioVideoControls" style="display: none;">
-        <div class="playback-action-row">
-          <button type="button" class="btn-studio-preview-play" id="btnToggleVideoPlayback">
-            <i class="fa-solid fa-play" id="iconVideoPlayState"></i>
-            <span>Play Clip</span>
-          </button>
-          <span class="playback-timer" id="videoPlaybackTimer">0:00.0 / 0:10.0</span>
-        </div>
-
-        <div class="range-selector-section">
-          <div class="range-label-row">
-            <span class="range-section-title" id="trimRangeTitle">TRIM CLIP RANGE (Max 3.0s Loop)</span>
+        <!-- Video Duration Trim Bar (Visible Only for Video Avatar Clips) -->
+        <div class="video-trim-panel" id="pfpVideoControls" style="display: none;">
+          <div class="playback-action-row">
+            <button type="button" class="btn-studio-preview-play" id="btnTogglePfpVideoPlayback">
+              <i class="fa-solid fa-play" id="iconPfpVideoPlay"></i>
+              <span>Play Avatar Loop</span>
+            </button>
+            <span class="playback-timer" id="pfpVideoTimer">0:00.0 / 0:03.0</span>
           </div>
 
-          <div class="dual-range-track-box">
-            <div class="range-highlight-bar" id="rangeHighlightBar"></div>
-            <input type="range" id="videoStartSlider" min="0" max="100" step="0.1" value="0" class="studio-timeline-slider start-slider" aria-label="Start Trim Position">
-            <input type="range" id="videoEndSlider" min="0" max="100" step="0.1" value="100" class="studio-timeline-slider end-slider" aria-label="End Trim Position">
-          </div>
-
-          <div class="range-readouts-row">
-            <div class="readout-pill start-pill">
-              <span class="readout-label">START</span>
-              <span class="readout-value" id="valStartTimestamp">0:00.0</span>
+          <div class="range-selector-section">
+            <div class="range-label-row">
+              <span class="range-section-title">TRIM AVATAR LOOP (Max 3.0s Loop)</span>
             </div>
-            <div class="clip-duration-badge" id="valClipDuration">Clip: 3.0s</div>
-            <div class="readout-pill end-pill">
-              <span class="readout-label">END</span>
-              <span class="readout-value" id="valEndTimestamp">0:03.0</span>
+            <div class="dual-range-track-box">
+              <div class="range-highlight-bar" id="pfpRangeHighlight"></div>
+              <input type="range" id="pfpStartSlider" min="0" max="100" step="0.1" value="0" class="studio-timeline-slider start-slider" aria-label="Start Trim">
+              <input type="range" id="pfpEndSlider" min="0" max="100" step="0.1" value="100" class="studio-timeline-slider end-slider" aria-label="End Trim">
+            </div>
+            <div class="range-readouts-row">
+              <div class="readout-pill"><span class="readout-label">START</span> <span class="readout-value" id="pfpValStart">0:00.0</span></div>
+              <div class="clip-duration-badge" id="pfpValDuration">Clip: 3.0s</div>
+              <div class="readout-pill"><span class="readout-label">END</span> <span class="readout-value" id="pfpValEnd">0:03.0</span></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Studio Modal Actions Footer -->
+      <!-- Actions Footer -->
       <div class="media-studio-footer">
-        <button type="button" class="btn-studio-cancel" id="btnCancelMediaStudio">Cancel</button>
-        <button type="button" class="btn-studio-apply" id="btnApplyMediaStudio">
+        <button type="button" class="btn-studio-cancel" id="btnCancelPfpStudio">Cancel</button>
+        <button type="button" class="btn-studio-apply" id="btnApplyPfpStudio">
           <i class="fa-solid fa-check"></i>
-          <span id="btnApplyStudioText">Apply &amp; Frame</span>
+          <span id="btnApplyPfpText">Save Avatar</span>
         </button>
       </div>
+    </div>
+  </div>
 
+
+  <!-- =========================================================================
+       2. HEADER BANNER STUDIO MODAL (DEDICATED 3:1 WIDESCREEN BANNER STUDIO)
+       ========================================================================= -->
+  <div class="modal-overlay media-studio-overlay banner-studio-overlay" id="bannerStudioModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="bannerStudioTitle">
+    <div class="modal-window media-studio-window banner-studio-window">
+      <input type="file" id="bannerStudioFileInput" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,image/avif" style="display: none;">
+      
+      <!-- Studio Header -->
+      <div class="media-studio-header">
+        <div class="media-studio-title-group">
+          <i class="fa-solid fa-panorama text-cyan"></i>
+          <div>
+            <h3 class="media-studio-title" id="bannerStudioTitle">Header Banner Studio (3:1 Widescreen)</h3>
+            <span class="media-studio-sub">Drag to frame banner • Pinch or scroll to zoom • Responsive 1920x640 frame</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-studio" id="btnCloseBannerStudio" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Stage Viewport (3:1 Panoramic Banner Frame) -->
+      <div class="media-studio-stage stage-banner-mode" id="bannerStudioStage">
+        <!-- Video Viewport -->
+        <div class="media-video-container" id="bannerStudioVideoWrap" style="display: none;">
+          <div class="studio-crop-canvas-box" id="bannerStudioVideoCanvasBox">
+            <video id="bannerStudioVideoPlayer" playsinline loop muted autoplay preload="auto" class="studio-video-element"></video>
+          </div>
+        </div>
+
+        <!-- Image Crop & Pan Viewport -->
+        <div class="media-crop-container" id="bannerStudioImageWrap" style="display: none;">
+          <div class="studio-crop-canvas-box" id="bannerStudioCropCanvasBox">
+            <img src="" alt="Banner Crop Preview" id="bannerStudioCropImg" class="studio-crop-image">
+          </div>
+        </div>
+
+        <!-- Single Centered 3:1 Banner Mask Overlay -->
+        <div class="crop-grid-overlay" id="bannerCropOverlay"></div>
+
+        <!-- Floating Stage Badges -->
+        <div class="stage-floating-badges">
+          <span class="stage-badge-pill"><i class="fa-solid fa-magnifying-glass"></i> <span id="bannerZoomLevelText">100%</span></span>
+          <span class="stage-badge-pill"><i class="fa-solid fa-arrows-up-down-left-right"></i> <span id="bannerPanPosText">0, 0</span></span>
+          <span class="stage-badge-pill"><i class="fa-solid fa-arrows-rotate"></i> <span id="bannerRotationText">0°</span></span>
+        </div>
+      </div>
+
+      <!-- Transform Controls -->
+      <div class="studio-controls-panel" id="bannerStudioTransformControls">
+        <!-- Zoom Row -->
+        <div class="transform-deck-row zoom-deck-row">
+          <div class="zoom-slider-group">
+            <span class="control-section-label"><i class="fa-solid fa-magnifying-glass"></i> ZOOM</span>
+            <button type="button" class="btn-step-ctrl" id="btnBannerZoomOut" title="Zoom Out (-10%)"><i class="fa-solid fa-minus"></i></button>
+            <input type="range" id="bannerZoomSlider" min="1" max="4" step="0.02" value="1" class="studio-zoom-slider" aria-label="Zoom Level">
+            <button type="button" class="btn-step-ctrl" id="btnBannerZoomIn" title="Zoom In (+10%)"><i class="fa-solid fa-plus"></i></button>
+          </div>
+          <div class="zoom-preset-pills">
+            <button type="button" class="btn-preset-zoom btn-banner-preset active" data-scale="1.0">1x</button>
+            <button type="button" class="btn-preset-zoom btn-banner-preset" data-scale="1.25">1.25x</button>
+            <button type="button" class="btn-preset-zoom btn-banner-preset" data-scale="1.5">1.5x</button>
+            <button type="button" class="btn-preset-zoom btn-banner-preset" data-scale="2.0">2x</button>
+          </div>
+        </div>
+
+        <!-- Position & Orientation Row -->
+        <div class="transform-deck-row tools-deck-row">
+          <div class="pan-dpad-container">
+            <span class="control-section-label"><i class="fa-solid fa-arrows-up-down-left-right"></i> POSITION</span>
+            <div class="pan-dpad-grid">
+              <button type="button" class="btn-dpad btn-dpad-up" id="btnBannerPanUp" title="Pan Up"><i class="fa-solid fa-chevron-up"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-left" id="btnBannerPanLeft" title="Pan Left"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-center" id="btnBannerPanCenter" title="Re-center"><i class="fa-solid fa-crosshairs"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-right" id="btnBannerPanRight" title="Pan Right"><i class="fa-solid fa-chevron-right"></i></button>
+              <button type="button" class="btn-dpad btn-dpad-down" id="btnBannerPanDown" title="Pan Down"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+          </div>
+
+          <div class="orientation-tools-group">
+            <div class="action-buttons-wrap">
+              <button type="button" class="btn-studio-tool" id="btnBannerRotateLeft" title="Rotate -90°"><i class="fa-solid fa-rotate-left"></i> -90°</button>
+              <button type="button" class="btn-studio-tool" id="btnBannerRotateRight" title="Rotate +90°"><i class="fa-solid fa-rotate-right"></i> +90°</button>
+              <button type="button" class="btn-studio-tool" id="btnBannerFlipH" title="Flip Horizontally"><i class="fa-solid fa-arrows-left-right"></i> Flip H</button>
+              <button type="button" class="btn-studio-tool" id="btnBannerFlipV" title="Flip Vertically"><i class="fa-solid fa-arrows-up-down"></i> Flip V</button>
+              <button type="button" class="btn-studio-tool btn-reset-frame" id="btnBannerReset" title="Reset Transforms"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Duration Trim Bar (Visible Only for Video Banner Clips) -->
+        <div class="video-trim-panel" id="bannerVideoControls" style="display: none;">
+          <div class="playback-action-row">
+            <button type="button" class="btn-studio-preview-play" id="btnToggleBannerVideoPlayback">
+              <i class="fa-solid fa-play" id="iconBannerVideoPlay"></i>
+              <span>Play Motion Banner</span>
+            </button>
+            <span class="playback-timer" id="bannerVideoTimer">0:00.0 / 0:04.0</span>
+          </div>
+
+          <div class="range-selector-section">
+            <div class="range-label-row">
+              <span class="range-section-title">TRIM MOTION BANNER LOOP (Max 4.0s Loop)</span>
+            </div>
+            <div class="dual-range-track-box">
+              <div class="range-highlight-bar" id="bannerRangeHighlight"></div>
+              <input type="range" id="bannerStartSlider" min="0" max="100" step="0.1" value="0" class="studio-timeline-slider start-slider" aria-label="Start Trim">
+              <input type="range" id="bannerEndSlider" min="0" max="100" step="0.1" value="100" class="studio-timeline-slider end-slider" aria-label="End Trim">
+            </div>
+            <div class="range-readouts-row">
+              <div class="readout-pill"><span class="readout-label">START</span> <span class="readout-value" id="bannerValStart">0:00.0</span></div>
+              <div class="clip-duration-badge" id="bannerValDuration">Clip: 4.0s</div>
+              <div class="readout-pill"><span class="readout-label">END</span> <span class="readout-value" id="bannerValEnd">0:04.0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Footer -->
+      <div class="media-studio-footer">
+        <button type="button" class="btn-studio-cancel" id="btnCancelBannerStudio">Cancel</button>
+        <button type="button" class="btn-studio-apply" id="btnApplyBannerStudio">
+          <i class="fa-solid fa-check"></i>
+          <span id="btnApplyBannerText">Save Banner</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2878,7 +2990,7 @@
   <!-- TOAST CONTAINER -->
   <div class="toast-hub" id="toastHub"></div>
 
-  <script src="app.js?v=6.4"></script>
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
 

@@ -1903,7 +1903,137 @@ Maintain documentation for:
 Update documentation when architecture changes.
 
 ====================================================================
-72. FINAL FEATURE CHECKLIST
+72. PROJECT CONTINUITY & PROGRESS TRACKING
+====================================================================
+
+Development must be tracked continuously so work can always resume
+from the exact point where it stopped.
+
+1. CANONICAL PROJECT PROGRESS FILE
+
+Maintain one canonical project progress file:
+
+docs/development/PROJECT_PROGRESS.md
+
+This file is the source of truth for CURRENT DEVELOPMENT PROGRESS only.
+
+It must NOT duplicate the entire architecture or engineering rulebook.
+
+2. UPDATE AFTER EVERY MEANINGFUL WORK UNIT
+
+Whenever a meaningful task, feature phase, refactor phase, bug fix,
+audit, documentation task, or architectural change is completed,
+update PROJECT_PROGRESS.md.
+
+3. REQUIRED PROGRESS INFORMATION
+
+Each update should record, where applicable:
+
+- Date
+- Current phase
+- Current task/feature
+- Status
+- What was completed
+- Files created
+- Files modified
+- Files deleted
+- API changes
+- Database/schema changes
+- Tests executed
+- Test results
+- Known issues
+- Remaining work
+- Technical debt
+- Exact next step
+- Current Git commit/hash
+
+4. RESUME RULE
+
+The project must always contain enough information in PROJECT_PROGRESS.md
+that development can resume later without depending on ChatGPT/AI
+conversation history, memory, or verbal explanation.
+
+The "NEXT STEP" must be concrete and actionable.
+
+Bad:
+"Continue working on the feature."
+
+Good:
+"Implement backend validator for POST /api/example, then add integration tests."
+
+5. NO FALSE STATUS
+
+Never mark a task COMPLETE if implementation, testing, documentation,
+migration, or required verification is still incomplete.
+
+Use clear statuses such as:
+
+- NOT STARTED
+- IN PROGRESS
+- BLOCKED
+- READY FOR REVIEW
+- VERIFIED
+- COMPLETED
+
+6. GIT CONTINUITY
+
+After a meaningful completed work unit:
+
+WORK
+→ TEST
+→ UPDATE PROJECT_PROGRESS.md
+→ REVIEW git diff
+→ COMMIT
+→ PUSH when appropriate
+
+The progress document should be committed together with the work it
+describes whenever practical.
+
+This ensures the Git repository itself contains the project state
+and the exact point from which development can resume.
+
+7. FEATURE DEVELOPMENT + PROGRESS
+
+The existing Feature Development Protocol remains mandatory.
+
+After implementation and testing, update PROJECT_PROGRESS.md with
+the final state and exact next step.
+
+8. FOUNDATION FREEZE
+
+Record the current Foundation Verification state in PROJECT_PROGRESS.md:
+
+- Foundation restructuring completed
+- Foundation Verification completed
+- 57 Passed | 0 Failed
+- Legacy app.js removed
+- components/ removed
+- styles/ removed
+- src/main.js is canonical frontend entrypoint
+- style.css is canonical active stylesheet
+- desktop/mobile separation verified
+- backend layering verified
+- storage abstraction verified
+- database abstraction verified
+- in-memory rate limiter remains documented future multi-instance scale work
+- in-memory media queue remains documented future multi-instance scale work
+- no new product feature is part of the foundation work
+
+Current next state:
+
+FOUNDATION FREEZE
+→ FINAL ZIP SANITY CHECK
+→ NORMAL PRODUCT FEATURE DEVELOPMENT
+
+9. CHANGE DISCIPLINE
+
+Do not create progress files for every tiny code line or trivial edit.
+
+Track meaningful development units, phases, features, audits, fixes,
+and architectural work.
+
+====================================================================
+73. FINAL FEATURE CHECKLIST
 ====================================================================
 
 FUNCTIONAL
@@ -1977,7 +2107,7 @@ QUALITY
 [ ] no unrelated changes
 
 ====================================================================
-73. FINAL DEVELOPMENT PHILOSOPHY
+74. FINAL DEVELOPMENT PHILOSOPHY
 ====================================================================
 
 DRAGME must be developed as:

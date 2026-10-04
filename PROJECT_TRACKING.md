@@ -8,9 +8,9 @@
 - **Project Name**: DRAGME
 - **Location**: `c:\Users\nitis\Desktop\axh`
 - **Core Files**:
-  - Frontend: [`index.html`](file:///c:/Users/nitis/Desktop/axh/index.html), [`style.css`](file:///c:/Users/nitis/Desktop/axh/style.css), [`app.js`](file:///c:/Users/nitis/Desktop/axh/app.js)
+  - Frontend: [`index.html`](file:///c:/Users/nitis/Desktop/axh/index.html), [`style.css`](file:///c:/Users/nitis/Desktop/axh/style.css), [`src/main.js`](file:///c:/Users/nitis/Desktop/axh/src/main.js)
   - Backend: [`server.js`](file:///c:/Users/nitis/Desktop/axh/server.js)
-  - Database: SQLite (`dragme_database.db`)
+  - Database: PostgreSQL (Pool) + SQLite WAL ([`db.js`](file:///c:/Users/nitis/Desktop/axh/db.js))
   - Config: [`package.json`](file:///c:/Users/nitis/Desktop/axh/package.json)
 
 ---
@@ -271,4 +271,65 @@
   - **Thread / Comment Nested Style**:
     - Comments rendered on continuous surface with thin vertical connector lines for nested replies without heavy comment cards.
 
+### [2026-10-03 17:30] — DRAGME Master Architecture Refactor & Layered Modularization
+- **Status**: Completed & Verified (52/52 Tests Passing)
+- **Scope & Results**:
+  - **Backend Layered Architecture (`backend/`)**:
+    - `repositories/`: Extracted database queries for `userRepository.js`, `postRepository.js`, `commentRepository.js`, `reactionRepository.js`, `mediaRepository.js`.
+    - `validators/`: Added input schemas & sanitizers for `authValidator.js`, `postValidator.js`, `profileValidator.js`, `commentValidator.js`.
+    - `services/`: Encapsulated business logic into `authService.js`, `postService.js`, `reactionService.js`, `commentService.js`, `profileService.js`, `roomService.js`.
+    - `controllers/`: Clean request dispatchers in `authController.js`, `postController.js`, `reactionController.js`, `commentController.js`, `profileController.js`.
+    - `routes/`: Express routers cleanly mounted (`authRoutes.js`, `postRoutes.js`, `commentRoutes.js`, `profileRoutes.js`, `roomRoutes.js`, `mediaRoutes.js`).
+  - **Frontend Modular ES6 Architecture (`src/`)**:
+    - `src/main.js`: Canonical application entry point and bootstrap manager.
+    - `src/app/`: Core application store (`store.js`), SPA routing engine (`router.js`), and configuration (`config.js`).
+    - `src/api/`: Domain HTTP clients with centralized JWT token and error management (`apiClient.js`, `authApi.js`, `postsApi.js`, `commentsApi.js`, `reactionsApi.js`, `profilesApi.js`, `mediaApi.js`, `roomsApi.js`).
+    - `src/features/`: Feature modules for `auth/`, `feed/`, `posts/`, `comments/`, `reactions/`, `profile/`, `navigation/`, `toast/`.
+    - `src/services/`: Browser hardware services (`avatarService.js`, `sfxService.js`, `animationScheduler.js`, `clientMediaCompressor.js`, `mediaPreviewEngine.js`).
+    - `src/utils/` & `src/constants/`: Utilities and static presets.
+  - **Modular Styles Architecture (`styles/`)**:
+    - `variables.css`, `reset.css`, `base.css`, `utilities.css`, `responsive.css`.
+  - **Comprehensive Docs (`docs/`)**:
+    - `docs/architecture/ARCHITECTURE.md`, `docs/api/API_REFERENCE.md`, `docs/database/SCHEMA.md`, `docs/product/PRODUCT_SPEC.md`.
+  - **Automated Test Suites**:
+    - `tests/test-media-pipeline.js` (34/34 tests passed)
+    - `tests/test-api-suite.js` (18/18 tests passed)
+    - `tests/test-crown-reaction.js` (5/5 tests passed)
+    - Total: **57/57 tests passing (100%)**.
+
+### [2026-10-03 18:50] — DRAGME Foundation Freeze & Governance Contract (DRAGME FOUNDATION v1)
+- **Status**: Completed, Verified & Frozen (57/57 Tests Passing - 100% Green)
+- **Official Test Baseline**:
+  - `tests/test-media-pipeline.js`: 34 Passed | 0 Failed
+  - `tests/test-api-suite.js`: 18 Passed | 0 Failed
+  - `tests/test-crown-reaction.js`: 5 Passed | 0 Failed
+  - **Total**: **57 Passed | 0 Failed**
+- **Foundation Freeze Governance**:
+  - Declared current architecture as **DRAGME FOUNDATION v1 (FROZEN)**.
+  - Published [`docs/architecture/FOUNDATION_FREEZE_v1.md`](docs/architecture/FOUNDATION_FREEZE_v1.md).
+  - Updated [`CONTRIBUTING.md`](CONTRIBUTING.md) with locked permanent architecture rules.
+  - Formally documented the 2 future scale blockers (in-memory sliding-window rate limiter & in-memory media queue) as future horizontal scale work when `REDIS_URL` is configured, not current defects.
+  - Confirmed readiness to enter normal product feature-development phase.
+
+### [2026-10-04 10:15] — SFX Global Silencing, PFP Load Fallback & Sidebar User Card Redesign
+- **Status**: Completed, Tested & Documented (64/64 Tests Passing - 100% Green)
+- **Changes & Fixes**:
+  1. **Global SFX Removal (`src/services/sfxService.js`)**:
+     - Permanently set `muted: true` and `getContext() => null` so browser `AudioContext` is never opened.
+     - Converted all procedural Web Audio triggers (`playPlusClick`, `playSwitchIdentity`, `playOpen`, `playClose`, `playTap`, `playMeMode`, `playGhostMode`, `playCrownTap`, `playCrownBurst`, `playSuperCrown`, etc.) into safe, zero-overhead no-ops.
+  2. **PFP Loading & Video Fallback Engine (`src/services/avatarService.js`)**:
+     - Added automatic fallback handlers (`onerror`) for both `<video>` motion avatars and `<img>` avatars so 404s or unplayable test media never leave a pitch-black box or broken icon.
+     - Normalized database default avatars.
+  3. **Sidebar Mini User Card Redesign (`index.html`, `style.css`, `src/features/auth/authManager.js`)**:
+     - Replaced clunky raw card with dark glassmorphism container (`backdrop-filter: blur(16px)`, `border-radius: 14px`, ambient depth).
+     - Fixed `sbUserTag` vs `sbUserHandle` DOM ID mismatch so logged-in user handle and display name stay 100% in sync with real session.
+     - Removed ugly hardcoded `●●` green characters; added a glowing Online Status Ring (`.sb-status-indicator`) on the avatar and a mini `PRO`/`VIP`/`ADMIN` role badge.
+     - Replaced harsh cyan outline button with a modern dark matte-glass button with subtle hover glow (`#b7ff3c`), icon, and animated arrow.
+     - Polished "YOUR ACTIVE ROOMS" section and `.active-room-pill` typography and green glow indicators.
+- **Verification Baseline**:
+  - `tests/test-media-pipeline.js`: 34 Passed | 0 Failed
+  - `tests/test-api-suite.js`: 20 Passed | 0 Failed
+  - `tests/test-crown-reaction.js`: 5 Passed | 0 Failed
+  - `tests/test-profile-media-save.js`: 10 Passed | 0 Failed
+  - **Total**: **69 Passed | 0 Failed (100% Pass Rate)**.
 

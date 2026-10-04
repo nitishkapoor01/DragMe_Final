@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+*.db
+*.db-shm
+*.db-wal
+uploads/temp/*
+uploads/profile/*
+uploads/post/*
+uploads/posters/*
+uploads/variants/*
+.agents
+.vscode
+.idea
+*.zip

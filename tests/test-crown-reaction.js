@@ -1,4 +1,9 @@
 const http = require('http');
+const app = require('../server');
+const db = require('../db');
+
+let server = null;
+let currentPort = 5173;
 
 function makeRequest(path, method = 'GET', body = null, token = null) {
   return new Promise((resolve, reject) => {
@@ -9,10 +14,9 @@ function makeRequest(path, method = 'GET', body = null, token = null) {
     if (data) headers['Content-Length'] = Buffer.byteLength(data);
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const port = process.env.PORT || 5173;
     const req = http.request({
       hostname: '127.0.0.1',
-      port: port,
+      port: currentPort,
       path,
       method,
       headers
@@ -38,6 +42,14 @@ async function runCrownTests() {
   console.log('🧪 Starting DRAGME Crown Reaction Full-Stack Verification...\n');
 
   try {
+    await db.initSchema();
+    server = http.createServer(app);
+    await new Promise((resolve) => {
+      server.listen(0, '127.0.0.1', () => {
+        currentPort = server.address().port;
+        resolve();
+      });
+    });
     // 1. Fetch public feed to get a valid post ID
     const feedRes = await makeRequest('/api/posts');
     if (feedRes.status !== 200 || !feedRes.data.posts || feedRes.data.posts.length === 0) {
@@ -113,8 +125,11 @@ async function runCrownTests() {
     }
 
     console.log('\n🎉 ALL CROWN REACTION SUITE TESTS PASSED WITH 100% SUCCESS!');
+    if (server) server.close();
+    process.exit(0);
   } catch (err) {
     console.error('❌ Test failed:', err.message);
+    if (server) server.close();
     process.exit(1);
   }
 }

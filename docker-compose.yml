@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # DRAGME Fullstack Application Node.js Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dragme_app
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - PORT=5173
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://dragme_user:dragme_password@postgres:5432/dragme_db
+      - JWT_SECRET=dragme_super_secret_production_key_2026_jwt_token_scale
+      - STORAGE_PROVIDER=local
+      - MEDIA_WORKER_CONCURRENCY=4
+    volumes:
+      - dragme_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # High-Performance PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: dragme_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dragme_user
+      POSTGRES_PASSWORD: dragme_password
+      POSTGRES_DB: dragme_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - dragme_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dragme_user -d dragme_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dragme_uploads:
+  dragme_pgdata:

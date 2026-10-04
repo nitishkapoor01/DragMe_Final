@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node tests/test-media-pipeline.js"
+    "test": "node tests/test-media-pipeline.js && node tests/test-api-suite.js && node tests/test-crown-reaction.js && node tests/test-profile-media-save.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

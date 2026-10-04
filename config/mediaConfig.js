@@ -69,6 +69,21 @@ const MEDIA_LIMITS = {
       { name: 'sm', width: 256, height: 320, fit: 'cover' }
     ]
   },
+  avatarVideo: {
+    maxFileSize: 500 * 1024 * 1024,
+    maxDuration: 10,
+    recommendedDuration: 3,
+    maxWidth: 3840,
+    maxHeight: 3840,
+    minWidth: 64,
+    minHeight: 80,
+    targetWidth: 512,
+    targetHeight: 640,
+    aspectRatio: 4 / 5,
+    requiresPremium: true,
+    allowedMimes: ['image/gif', 'image/webp', 'video/mp4', 'video/webm'],
+    outputFormat: 'webp'
+  },
 
   // 4. ANIMATED BANNER (3:1 wide ratio, 1-4 sec loop, Animated WebP + static poster)
   animatedBanner: {
@@ -89,6 +104,21 @@ const MEDIA_LIMITS = {
       { name: 'full', width: 1920, height: 640, fit: 'cover' },
       { name: 'md', width: 960, height: 320, fit: 'cover' }
     ]
+  },
+  bannerVideo: {
+    maxFileSize: 1024 * 1024 * 1024,
+    maxDuration: 15,
+    recommendedDuration: 4,
+    maxWidth: 3840,
+    maxHeight: 2160,
+    minWidth: 480,
+    minHeight: 160,
+    targetWidth: 1920,
+    targetHeight: 640,
+    aspectRatio: 3 / 1,
+    requiresPremium: true,
+    allowedMimes: ['image/gif', 'image/webp', 'video/mp4', 'video/webm'],
+    outputFormat: 'webp'
   },
 
   // 5. POST IMAGES (Normal static images, NOT converted to animated)
