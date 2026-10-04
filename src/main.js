@@ -40,49 +40,61 @@ class DragmeApplication {
   }
 
   async init() {
-    console.log('⚡ [DRAGME Engine] Bootstrapping Unified Enterprise Social Arena v5.0...');
+    try {
+      console.log('⚡ [DRAGME Engine] Bootstrapping Unified Enterprise Social Arena v5.0...');
 
-    // 1. Expose globals for backward-compatibility & inline DOM handlers
-    this.bindGlobals();
+      // 1. Expose globals for backward-compatibility & inline DOM handlers
+      this.bindGlobals();
 
-    // 2. Initialize Navigation & Layout Controllers
-    navbar.init();
-    bottomNav.init();
-    sidebar.init();
-    desktopLayout.init();
-    mobileLayout.init();
-    dragmeMascot.init();
-    toast.init();
+      // 2. Initialize Navigation & Layout Controllers
+      navbar?.init?.();
+      bottomNav?.init?.();
+      sidebar?.init?.();
+      desktopLayout?.init?.();
+      mobileLayout?.init?.();
+      dragmeMascot?.init?.();
+      toast?.init?.();
 
-    // 3. Initialize Auth Subsystems
-    AuthPromptManager.init();
-    LoginManager.init();
-    SignupManager.init();
-    LogoutManager.init();
+      // 3. Initialize Auth Subsystems
+      AuthPromptManager?.init?.();
+      LoginManager?.init?.();
+      SignupManager?.init?.();
+      LogoutManager?.init?.();
 
-    // 4. Initialize Core Feed, Post, Comments & Reaction Subsystems
-    feedTabs.init();
-    feedManager.init();
-    createPostModal.init();
-    commentsSheet.init();
-    CrownReactionEngine.init();
-    WhoReactedModal.init();
+      // 4. Initialize Core Feed, Post, Comments & Reaction Subsystems
+      feedTabs?.init?.();
+      feedManager?.init?.();
+      createPostModal?.init?.();
+      commentsSheet?.init?.();
+      CrownReactionEngine?.init?.();
+      WhoReactedModal?.init?.();
 
-    // 5. Initialize Profile Subsystems
-    profileManager.init();
-    editProfileManager.init();
-    mediaStudioManager.init();
+      // 5. Initialize Profile Subsystems
+      profileManager?.init?.();
+      editProfileManager?.init?.();
+      mediaStudioManager?.init?.();
 
-    // 6. Register Application Routes
-    this.registerRoutes();
+      // 6. Register Application Routes
+      this.registerRoutes();
 
-    // 7. Check User Session & Remove Splash
-    await authManager.checkSession();
+      // 7. Check User Session & Remove Splash
+      await authManager.checkSession();
 
-    // 8. Start Router
-    router.init();
+      // 8. Start Router
+      router.init();
 
-    console.log('✅ [DRAGME Engine] Application Architecture Initialized Successfully.');
+      console.log('✅ [DRAGME Engine] Application Architecture Initialized Successfully.');
+    } catch (err) {
+      console.error('⚠️ [DRAGME Engine] Initialization error:', err);
+    } finally {
+      const splash = document.getElementById('appInitSplash');
+      if (splash) {
+        splash.classList.add('fade-out', 'splash-fade-out');
+        setTimeout(() => {
+          try { splash.remove(); } catch (_) {}
+        }, 300);
+      }
+    }
   }
 
   registerRoutes() {

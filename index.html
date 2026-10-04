@@ -2972,6 +2972,16 @@
   <!-- TOAST CONTAINER -->
   <div class="toast-hub" id="toastHub"></div>
 
+  <script>
+    // Fail-safe: dismiss splash after 1000ms max if not already dismissed
+    setTimeout(function() {
+      var sp = document.getElementById('appInitSplash');
+      if (sp) {
+        sp.classList.add('fade-out', 'splash-fade-out');
+        setTimeout(function() { try { sp.remove(); } catch(e){} }, 300);
+      }
+    }, 1000);
+  </script>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

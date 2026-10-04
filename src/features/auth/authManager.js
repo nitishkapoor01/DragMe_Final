@@ -92,8 +92,10 @@ export class AuthManager {
       // Remove splash loader once auth check finishes
       const splash = document.getElementById('appInitSplash');
       if (splash) {
-        splash.classList.add('splash-fade-out');
-        setTimeout(() => splash.remove(), 400);
+        splash.classList.add('fade-out', 'splash-fade-out');
+        setTimeout(() => {
+          try { splash.remove(); } catch (_) {}
+        }, 300);
       }
     }
   }
