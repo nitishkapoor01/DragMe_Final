@@ -273,6 +273,10 @@ button {
 /* =============================================================================
    REACTIVE LOGO / BRAND MASCOT ANIMATION SYSTEM
    ============================================================================= */
+/* =============================================================================
+   REACTIVE LOGO / BRAND MASCOT ANIMATION SYSTEM
+   Official DRAGME Origami Crown Brand Mascot & Micro-Expression Engine
+   ============================================================================= */
 .reactive-logo-wrap {
   display: inline-flex;
   align-items: center;
@@ -280,19 +284,21 @@ button {
   position: relative;
   line-height: 1;
   vertical-align: middle;
-  transform-origin: center bottom;
   cursor: pointer;
   user-select: none;
+  perspective: 600px;
+  outline: none;
 }
 
+/* Sizing Tokens */
 .reactive-logo-wrap.size-sm {
   width: 26px;
   height: 22px;
 }
 
 .reactive-logo-wrap.size-md {
-  width: 36px;
-  height: 30px;
+  width: 38px;
+  height: 32px;
 }
 
 .reactive-logo-wrap.size-lg {
@@ -305,175 +311,309 @@ button {
   height: 80px;
 }
 
-.reactive-crown-svg {
+.reactive-logo-wrap.size-hero {
+  width: 140px;
+  height: 116px;
+}
+
+/* 3D Perspective Body Container */
+.reactive-crown-body {
   width: 100%;
   height: 100%;
-  overflow: visible;
-  display: block;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transform-origin: 50% 65%;
-  filter: drop-shadow(0 0 10px rgba(183, 255, 60, 0.45));
+  transform-style: preserve-3d;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
 }
 
-/* SVG Elements Styling */
-.origami-facet {
-  transition: fill 0.3s ease, stroke 0.3s ease;
+/* Authentic 3D DRAGME Neon Origami Crown Image */
+.reactive-crown-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(183, 255, 60, 0.5));
+  transition: filter 0.28s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.mascot-face-group {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+/* Superimposed Vector Micro-Expression Overlay */
+.reactive-expression-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 2;
 }
 
+/* Interactive Eye-Tracking Layer & Natural Blink */
+.eye-tracking-layer {
+  transform-origin: 50% 53%;
+  transition: transform 0.08s linear;
+}
+
+.eye-tracking-layer.mascot-blinking {
+  transform: scaleY(0.08) !important;
+  transform-origin: 50% 53% !important;
+  transition: transform 0.06s ease-in-out !important;
+}
+
+/* Eye and Mouth Shapes Transition */
 .eye-shape,
 .mouth-shape,
 .accessory-badge,
 .mascot-blush-group {
-  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Hover & Active Interactions */
-.reactive-logo-wrap:hover .reactive-crown-svg {
-  filter: drop-shadow(0 0 16px rgba(183, 255, 60, 0.75)) drop-shadow(0 0 30px rgba(183, 255, 60, 0.35));
-  transform: translateY(-2px) scale(1.08);
+/* Hover & Active States */
+.reactive-logo-wrap:hover .reactive-crown-img {
+  filter: drop-shadow(0 0 16px rgba(183, 255, 60, 0.85)) drop-shadow(0 0 28px rgba(183, 255, 60, 0.4));
+  transform: scale(1.06) translateY(-1px);
 }
 
-.reactive-logo-wrap:active .reactive-crown-svg {
-  transform: translateY(1px) scale(0.94);
+.reactive-logo-wrap:active .reactive-crown-img {
+  transform: scale(0.95) translateY(1px);
 }
 
-/* -------------------------------------------------------------
-   BEHAVIOR ANIMATIONS
-   ------------------------------------------------------------- */
-.reactive-logo-wrap.behavior-breathing .reactive-crown-svg {
-  animation: mascotBreathe 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Outer Aura Ring (Loading / Achievements) */
+.reactive-aura-ring {
+  position: absolute;
+  width: 130%;
+  height: 130%;
+  top: -15%;
+  left: -15%;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(183, 255, 60, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-.reactive-logo-wrap.behavior-hover .reactive-crown-svg {
-  animation: mascotHoverBounce 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.reactive-logo-wrap.behavior-look .mascot-face-group {
-  animation: mascotLookAround 1.6s ease-in-out;
-}
-
-.reactive-logo-wrap.behavior-stretch .reactive-crown-svg {
-  animation: mascotElasticStretch 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.reactive-logo-wrap.behavior-rotate .reactive-crown-svg {
-  animation: mascotTilt3D 1.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reactive-logo-wrap.behavior-spin .reactive-crown-svg {
-  animation: mascotPlayfulSpin 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Keyframes */
-@keyframes mascotBreathe {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-3.5px) scale(1.03);
-    filter: drop-shadow(0 0 14px rgba(183, 255, 60, 0.6));
-  }
-}
-
-@keyframes mascotHoverBounce {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  40% {
-    transform: translateY(-6px) scale(1.1);
-    filter: drop-shadow(0 0 16px rgba(183, 255, 60, 0.8));
-  }
-  70% {
-    transform: translateY(-1px) scale(0.97);
-  }
-}
-
-@keyframes mascotLookAround {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(-3.5px, 0);
-  }
-  75% {
-    transform: translate(3.5px, 0);
-  }
-}
-
-@keyframes mascotElasticStretch {
-  0%, 100% {
-    transform: scale(1, 1);
-  }
-  30% {
-    transform: scale(1.14, 0.88);
-  }
-  60% {
-    transform: scale(0.92, 1.12);
-  }
-  80% {
-    transform: scale(1.04, 0.97);
-  }
-}
-
-@keyframes mascotTilt3D {
-  0%, 100% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(-8deg) scale(1.04);
-  }
-  75% {
-    transform: rotate(8deg) scale(1.04);
-  }
-}
-
-@keyframes mascotPlayfulSpin {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  40% {
-    transform: rotate(180deg) scale(1.18);
-    filter: drop-shadow(0 0 20px rgba(183, 255, 60, 0.9));
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-/* Loading & Aura Animations */
-.reactive-logo-wrap[data-expression="loading"] .crown-aura-ring {
+.reactive-logo-wrap[data-expression="loading"] .reactive-aura-ring,
+.reactive-logo-wrap.behavior-celebrate .reactive-aura-ring {
   opacity: 1;
   animation: mascotAuraSpin 2s linear infinite;
 }
 
 @keyframes mascotAuraSpin {
-  0% {
-    transform: rotate(0deg);
-    transform-origin: 60px 50px;
-  }
-  100% {
-    transform: rotate(360deg);
-    transform-origin: 60px 50px;
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Floating Emote Badges Keyframes */
+.badge-curious {
+  animation: badgeFloat 1.8s ease-in-out infinite alternate;
+}
+
+.badge-confused {
+  animation: badgeWobble 1.6s ease-in-out infinite alternate;
+}
+
+.badge-thinking .think-dot {
+  animation: thinkDotPulse 1.2s ease-in-out infinite alternate;
+}
+.badge-thinking .dot-1 { animation-delay: 0s; }
+.badge-thinking .dot-2 { animation-delay: 0.2s; }
+.badge-thinking .dot-3 { animation-delay: 0.4s; }
+
+.badge-angry {
+  animation: angryVeinPop 0.8s ease-in-out infinite alternate;
+}
+
+.badge-sleepy .zzz-letter {
+  animation: sleepyZzzDrift 2s ease-in-out infinite;
+}
+.badge-sleepy .z-1 { animation-delay: 0s; }
+.badge-sleepy .z-2 { animation-delay: 0.35s; }
+.badge-sleepy .z-3 { animation-delay: 0.7s; }
+
+.badge-notif {
+  animation: badgePopAlert 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate;
+}
+
+.badge-achievement {
+  animation: achievementShine 1.4s ease-in-out infinite alternate;
+}
+
+.badge-nervous {
+  animation: sweatDropDrip 1.3s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0% { transform: translate(72px, 14px); }
+  100% { transform: translate(72px, 10px); }
+}
+
+@keyframes badgeWobble {
+  0% { transform: translate(72px, 14px) rotate(-6deg); }
+  100% { transform: translate(72px, 12px) rotate(6deg); }
+}
+
+@keyframes thinkDotPulse {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes angryVeinPop {
+  0% { transform: translate(73px, 14px) scale(0.9); }
+  100% { transform: translate(73px, 14px) scale(1.15); }
+}
+
+@keyframes sleepyZzzDrift {
+  0% { opacity: 0; transform: translate(0, 3px) scale(0.7); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translate(3px, -6px) scale(1.1); }
+}
+
+@keyframes badgePopAlert {
+  0% { transform: translate(72px, 14px) scale(0.9); }
+  100% { transform: translate(72px, 12px) scale(1.18); }
+}
+
+@keyframes achievementShine {
+  0% { transform: translate(41px, -2px) scale(0.95); filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.6)); }
+  100% { transform: translate(41px, -5px) scale(1.1); filter: drop-shadow(0 0 12px rgba(253, 224, 71, 0.95)); }
+}
+
+@keyframes sweatDropDrip {
+  0% { transform: translate(73px, 14px) scale(0.8); opacity: 0.5; }
+  50% { transform: translate(73px, 17px) scale(1); opacity: 1; }
+  100% { transform: translate(73px, 20px) scale(0.6); opacity: 0; }
+}
+
+/* -------------------------------------------------------------
+   BEHAVIOR ANIMATIONS (Physics-driven WAAPI & Keyframes)
+   ------------------------------------------------------------- */
+.reactive-logo-wrap.behavior-breathing .reactive-crown-body {
+  animation: mascotBreathe 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reactive-logo-wrap.behavior-hover .reactive-crown-body {
+  animation: mascotHoverBounce 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reactive-logo-wrap.behavior-look .eye-tracking-layer {
+  animation: mascotLookScan 1.6s ease-in-out;
+}
+
+.reactive-logo-wrap.behavior-stretch .reactive-crown-body {
+  animation: mascotElasticStretch 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reactive-logo-wrap.behavior-rotate .reactive-crown-body {
+  animation: mascotTilt3D 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reactive-logo-wrap.behavior-spin .reactive-crown-body {
+  animation: mascotPlayfulSpin 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reactive-logo-wrap.behavior-glitch .reactive-crown-body {
+  animation: mascotGlitchShake 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.reactive-logo-wrap.behavior-celebrate .reactive-crown-body {
+  animation: mascotCelebration 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mascotBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3.5px) scale(1.04); }
+}
+
+@keyframes mascotHoverBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-6px) scale(1.1); }
+  70% { transform: translateY(-1px) scale(0.97); }
+}
+
+@keyframes mascotLookScan {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-3.2px, 0); }
+  75% { transform: translate(3.2px, 0); }
+}
+
+@keyframes mascotElasticStretch {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.15, 0.86); }
+  60% { transform: scale(0.9, 1.14); }
+  80% { transform: scale(1.04, 0.97); }
+}
+
+@keyframes mascotTilt3D {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-9deg) scale(1.04); }
+  75% { transform: rotate(9deg) scale(1.04); }
+}
+
+@keyframes mascotPlayfulSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  40% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes mascotGlitchShake {
+  0%, 100% { transform: translate(0, 0) scale(1); filter: drop-shadow(0 0 8px rgba(183, 255, 60, 0.5)); }
+  15% { transform: translate(-4px, 2px) scale(0.96); filter: drop-shadow(0 0 14px rgba(255, 71, 87, 0.9)); }
+  30% { transform: translate(4px, -2px) scale(1.02); filter: drop-shadow(0 0 16px rgba(255, 71, 87, 0.9)); }
+  45% { transform: translate(-3px, -1px) scale(0.97); }
+  60% { transform: translate(3px, 1px) scale(1.01); }
+  75% { transform: translate(-1px, 1px); }
+}
+
+@keyframes mascotCelebration {
+  0%, 100% { transform: scale(1) translateY(0); }
+  20% { transform: scale(0.88, 1.15) translateY(-8px); }
+  40% { transform: scale(1.18, 0.88) translateY(-14px) rotate(-8deg); }
+  60% { transform: scale(1.05, 0.96) translateY(-6px) rotate(8deg); }
+  80% { transform: scale(0.98, 1.02) translateY(-2px); }
+}
+
+/* Mascot Particle Confetti */
+.mascot-particles-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.mascot-particle {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: particleBurst 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes particleBurst {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
 }
 
 /* Accessibility: Prefers Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .reactive-crown-svg,
-  .mascot-face-group,
+  .reactive-crown-body,
+  .reactive-crown-img,
+  .eye-tracking-layer,
   .eye-shape,
   .mouth-shape,
-  .accessory-badge {
+  .accessory-badge,
+  .reactive-aura-ring {
     animation: none !important;
     transition: opacity 0.15s ease !important;
     transform: none !important;
   }
 
-  .reactive-logo-wrap:hover .reactive-crown-svg {
+  .reactive-logo-wrap:hover .reactive-crown-img {
     transform: none !important;
   }
 }
@@ -5891,6 +6031,74 @@ button {
     border-color: rgba(239, 68, 68, 0.5);
     transform: scale(0.98);
   }
+}
+
+/* -------------------------------------------------------------
+   MASCOT BRAND SHOWCASE (DRAWER HEADER)
+   ------------------------------------------------------------- */
+.dragme-drawer-mascot-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 10px 14px;
+  margin-bottom: 12px;
+  background: radial-gradient(circle at 50% 30%, rgba(183, 255, 60, 0.08) 0%, transparent 70%);
+  border-radius: 18px;
+  border: 1px solid rgba(183, 255, 60, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.drawer-mascot-crown-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0 10px;
+  cursor: pointer;
+}
+
+.drawer-mascot-mood-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+}
+
+.drawer-mascot-mood-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-mascot-mood-pill {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-mascot-mood-pill:hover {
+  background: rgba(183, 255, 60, 0.12);
+  border-color: rgba(183, 255, 60, 0.3);
+  color: #F1F5F9;
+  transform: translateY(-1px);
+}
+
+.btn-mascot-mood-pill.active {
+  background: #B7FF3C;
+  border-color: #B7FF3C;
+  color: #080B0F;
+  box-shadow: 0 0 10px rgba(183, 255, 60, 0.4);
 }
 
 /* -------------------------------------------------------------

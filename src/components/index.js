@@ -3,3 +3,4 @@
    ========================================================================== */
 
 export { ReactiveLogo, EXPRESSIONS, BEHAVIORS, PRIORITY, default as ReactiveLogoDefault } from './reactiveLogo/reactiveLogo.js';
+

@@ -190,12 +190,52 @@ export class NavbarController {
     const btnLogOut = document.getElementById('btnDrawerLogOut');
     const panel = document.getElementById('dragmeProfileDrawerPanel');
 
+    this.drawerMascot = null;
+    const drawerMascotWrap = document.getElementById('drawerMascotLogoWrap');
+    if (drawerMascotWrap) {
+      this.drawerMascot = ReactiveLogo.mount(drawerMascotWrap, { size: 'xl', enableIdle: true, enableEvents: true });
+    }
+
+    // Bind Mascot Mood Pills Controller
+    const moodPills = document.querySelectorAll('.btn-mascot-mood-pill');
+    moodPills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sfx.playTap();
+        const mood = pill.dataset.mood;
+        moodPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        if (this.drawerMascot) {
+          this.drawerMascot.setExpression(mood, 3);
+          this.drawerMascot.triggerBehavior(BEHAVIORS.HOVER, 600);
+        }
+        if (this.reactiveLogo) {
+          this.reactiveLogo.setExpression(mood, 3);
+        }
+      });
+    });
+
+    // Clicking Drawer Mascot triggers spin & confetti
+    drawerMascotWrap?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sfx.playTap();
+      this.drawerMascot?.triggerReaction(EXPRESSIONS.LAUGHING, 1400);
+      this.drawerMascot?.triggerBehavior(BEHAVIORS.SPIN, 1000);
+      this.drawerMascot?.triggerSparkles(16);
+    });
+
     const openDrawer = () => {
       if (this.profileDrawer) {
         authManager.updateUserSessionUI();
         this.profileDrawer.classList.add('active', 'open');
         this.profileDrawer.setAttribute('aria-hidden', 'false');
         sfx.playOpen();
+
+        if (this.drawerMascot) {
+          this.drawerMascot.triggerReaction(EXPRESSIONS.HAPPY, 1800);
+          this.drawerMascot.triggerBehavior(BEHAVIORS.HOVER, 800);
+        }
       }
     };
 
