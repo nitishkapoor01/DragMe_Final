@@ -7,6 +7,7 @@
 import { store } from './app/store.js';
 import { router } from './app/router.js';
 import { apiClient } from './api/apiClient.js';
+import { eventBus } from './core/eventBus.js';
 
 // 2. Services
 import { AvatarService, GUEST_SILHOUETTE_SVG, ANONYMOUS_MASK_SVG } from './services/avatarService.js';
@@ -79,6 +80,9 @@ class DragmeApplication {
 
     // 8. Start Router
     router.init();
+
+    // 9. Notify Mascot & Subsystems
+    eventBus.emit('dragme:app:loaded');
 
     console.log('✅ [DRAGME Engine] Application Architecture Initialized Successfully.');
   }

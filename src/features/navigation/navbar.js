@@ -8,12 +8,14 @@ import { store } from '../../app/store.js';
 import { sfx } from '../../services/sfxService.js';
 import { authManager } from '../auth/authManager.js';
 import { toast } from '../toast/toastManager.js';
+import { ReactiveLogo, EXPRESSIONS, BEHAVIORS } from '../../components/reactiveLogo/reactiveLogo.js';
 
 export class NavbarController {
   constructor() {
     this.topNav = null;
     this.toggleBtn = null;
     this.brandLogo = null;
+    this.reactiveLogo = null;
     this.searchInput = null;
     this.clearSearchBtn = null;
     this.createBtn = null;
@@ -29,6 +31,12 @@ export class NavbarController {
     this.createBtn = document.getElementById('btn-header-create-post');
     this.profileDrawer = document.getElementById('dragmeProfileDrawerHub');
 
+    // Mount Reactive Brand Logo Mascot
+    const crownWrap = document.querySelector('#brandLogo .logo-crown-wrap');
+    if (crownWrap) {
+      this.reactiveLogo = ReactiveLogo.mount(crownWrap, { size: 'sm', enableIdle: true, enableEvents: true });
+    }
+
     this.bindEvents();
     this.bindProfileDrawer();
   }
@@ -38,6 +46,9 @@ export class NavbarController {
     this.brandLogo?.addEventListener('click', (e) => {
       e.preventDefault();
       sfx.playTap();
+
+      this.reactiveLogo?.triggerReaction(EXPRESSIONS.LAUGHING, 1200);
+      this.reactiveLogo?.triggerBehavior(BEHAVIORS.SPIN, 800);
 
       // Clear any mobile touch focus so monochromatic state returns cleanly
       this.brandLogo?.blur();
