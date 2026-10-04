@@ -806,7 +806,7 @@ button {
 /* 5. Desktop Sidebar Mascot Zone (Phase 1 Locked Visual Companion) */
 .sidebar-mascot-zone {
   margin-top: auto;
-  padding: 12px 6px 8px 6px;
+  padding: 10px 4px 6px 4px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -821,55 +821,31 @@ button {
 .dragme-mascot-wrapper {
   position: relative;
   width: 100%;
-  max-width: 200px;
+  max-width: 195px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
 }
 
-.dragme-mascot-ground-glow {
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(183, 255, 60, 0.26) 0%, rgba(164, 241, 62, 0.10) 45%, transparent 75%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.dragme-mascot-picture {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.dragme-sidebar-mascot-img {
+.dragme-sidebar-mascot-svg {
   display: block;
   width: 100%;
-  max-width: 190px;
   height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 10px rgba(183, 255, 60, 0.16));
-  user-select: none;
-  pointer-events: none;
+  max-height: 165px;
+  overflow: visible;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5));
 }
 
 @media (max-height: 800px) {
   .sidebar-mascot-zone {
-    padding: 6px 4px 4px 4px;
+    padding: 6px 2px 4px 2px;
   }
   .dragme-mascot-wrapper {
     max-width: 160px;
   }
-  .dragme-sidebar-mascot-img {
-    max-width: 155px;
+  .dragme-sidebar-mascot-svg {
+    max-height: 135px;
   }
 }
 
