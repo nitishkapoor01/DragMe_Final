@@ -117,11 +117,10 @@ export class SidebarController {
     };
     bindRoomPills();
 
-    // Left sidebar user card click -> open profile
+    // Left sidebar user profile trigger (if present)
     const sbUserCard = document.getElementById('sbUserCard');
-    const sbBottomCard = document.getElementById('sidebarBottomUserCard');
     const btnSbViewProfile = document.getElementById('btnSidebarViewProfile');
-    [sbUserCard, sbBottomCard, btnSbViewProfile].forEach(el => {
+    [sbUserCard, btnSbViewProfile].forEach(el => {
       el?.addEventListener('click', (e) => {
         if (e.target.closest('.sb-more-btn')) return;
         e.preventDefault();

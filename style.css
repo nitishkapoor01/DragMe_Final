@@ -803,125 +803,80 @@ button {
   color: #94A3B8;
 }
 
-/* 5. Sleek Compact Mini User Card */
-.sidebar-bottom-user-card {
+/* 5. Desktop Sidebar Mascot Zone (Phase 1 Locked Visual Companion) */
+.sidebar-mascot-zone {
   margin-top: auto;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: #0C1017;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 12px 6px 8px 6px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  user-select: none;
+  pointer-events: none;
+}
+
+.dragme-mascot-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  justify-content: center;
   box-sizing: border-box;
 }
 
-.sidebar-bottom-user-card:hover {
-  background: #111722;
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-
-.sb-user-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-}
-
-.sb-avatar-wrapper {
-  position: relative;
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-}
-
-.sb-user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
-  display: block;
-}
-
-.sb-status-indicator {
+.dragme-mascot-ground-glow {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 24px;
   border-radius: 50%;
-  background: #22C55E;
-  border: 1.5px solid #0C1017;
-  box-shadow: 0 0 6px #22C55E;
+  background: radial-gradient(ellipse at center, rgba(183, 255, 60, 0.26) 0%, rgba(164, 241, 62, 0.10) 45%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.sb-user-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.sb-user-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #F2F4F7;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.2;
-}
-
-.sb-user-handle-row {
+.dragme-mascot-picture {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 6px;
-  line-height: 1;
+  justify-content: center;
+  width: 100%;
 }
 
-.sb-user-handle {
-  font-size: 0.72rem;
-  color: #64748B;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.dragme-sidebar-mascot-img {
+  display: block;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 10px rgba(183, 255, 60, 0.16));
+  user-select: none;
+  pointer-events: none;
 }
 
-.sb-user-badge-mini {
-  font-size: 0.58rem;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: rgba(183, 255, 60, 0.15);
-  color: var(--lime-primary, #B7FF3C);
-  border: 1px solid rgba(183, 255, 60, 0.3);
-  text-transform: uppercase;
+@media (max-height: 800px) {
+  .sidebar-mascot-zone {
+    padding: 6px 4px 4px 4px;
+  }
+  .dragme-mascot-wrapper {
+    max-width: 160px;
+  }
+  .dragme-sidebar-mascot-img {
+    max-width: 155px;
+  }
 }
 
-.sb-more-btn {
-  color: #64748B;
-  font-size: 0.82rem;
-  padding: 6px;
-  border-radius: 6px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.sb-more-btn:hover {
-  color: #F2F4F7;
-  background: rgba(255, 255, 255, 0.08);
-}
-  text-transform: uppercase;
-  padding: 14px 8px 6px 8px;
+@media (max-width: 860px) {
+  .sidebar-mascot-zone {
+    display: none !important;
+  }
 }
 
 .menu-founder-stack {

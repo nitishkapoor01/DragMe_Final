@@ -22,6 +22,7 @@ import { commentsSheet } from './features/comments/index.js';
 import { CrownReactionEngine, WhoReactedModal } from './features/reactions/index.js';
 import { profileManager, editProfileManager, mediaStudioManager } from './features/profile/index.js';
 import { toast } from './features/toast/toastManager.js';
+import { dragmeMascot } from './components/index.js';
 
 // 4. Platform Layers (Desktop & Mobile)
 import { desktopLayout } from './platforms/desktop/index.js';
@@ -50,6 +51,7 @@ class DragmeApplication {
     sidebar.init();
     desktopLayout.init();
     mobileLayout.init();
+    dragmeMascot.init();
     toast.init();
 
     // 3. Initialize Auth Subsystems
