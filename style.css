@@ -565,8 +565,8 @@ button {
 
 /* Left Sidebar */
 .left-nav-drawer {
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
+  width: var(--sidebar-w, 240px);
+  min-width: var(--sidebar-w, 240px);
   height: calc(100vh - var(--header-h) - 24px);
   position: sticky;
   top: calc(var(--header-h) + 12px);
@@ -574,7 +574,9 @@ button {
   flex-shrink: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0 4px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
 }
 
 .left-nav-drawer::-webkit-scrollbar {
@@ -588,7 +590,9 @@ button {
 .left-nav-scroller {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+  height: 100%;
+  min-height: 100%;
   scrollbar-width: none;
 }
 
@@ -596,143 +600,326 @@ button {
   display: none;
 }
 
-/* Sidebar Menu Rows (Raycast/Linear High-Contrast Aesthetic) */
-.sidebar-top-hero {
-  margin-bottom: 2px;
+/* 1. Unified Navigation Menu Rows */
+.nav-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.sidebar-home-card,
-.sidebar-menu-row,
-.sidebar-row,
-.community-row-item {
+.sidebar-menu-row {
   position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 12px 9px 18px;
+  height: 40px;
+  padding: 0 14px;
   border-radius: 10px;
   text-decoration: none;
-  color: #7e8da4;
+  color: #8A99AD;
   font-size: 0.92rem;
   font-weight: 500;
-  border: 1px solid transparent;
   background: transparent;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
+  user-select: none;
+  outline: none;
 }
 
-.sidebar-home-card:active,
-.sidebar-menu-row:active,
-.sidebar-row:active,
-.community-row-item:active {
+.sidebar-menu-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #F2F4F7;
+}
+
+.sidebar-menu-row:hover .menu-row-icon {
+  color: #F2F4F7;
+}
+
+.sidebar-menu-row:active {
   transform: scale(0.97);
 }
 
-.home-card-title,
-.menu-row-title,
-.nav-title,
-.community-name {
-  color: inherit;
-  font-size: 0.92rem;
-  font-weight: inherit;
-  line-height: 1.25;
+.sidebar-menu-row.active {
+  background: rgba(183, 255, 60, 0.08) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(183, 255, 60, 0.22) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
-.menu-row-icon,
-.home-glow-icon,
-.nav-icon {
+.sidebar-menu-row.active .menu-row-icon {
+  color: var(--lime-primary, #B7FF3C) !important;
+  filter: drop-shadow(0 0 6px rgba(183, 255, 60, 0.5)) !important;
+}
+
+.sidebar-menu-row::before {
+  display: none !important;
+  content: none !important;
+}
+
+.menu-row-icon {
   font-size: 1.05rem;
-  width: 22px;
+  width: 20px;
   text-align: center;
-  color: #64748b;
-  transition: all 0.18s ease;
+  color: #64748B;
+  transition: color 0.16s ease;
   flex-shrink: 0;
 }
 
-/* Hover State */
-.sidebar-home-card:hover,
-.sidebar-menu-row:hover,
-.sidebar-row:hover,
-.community-row-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #ffffff;
+.menu-row-title {
+  color: inherit;
+  font-size: 0.92rem;
+  font-weight: inherit;
+  line-height: 1;
 }
 
-.sidebar-home-card:hover .home-glow-icon,
-.sidebar-menu-row:hover .menu-row-icon,
-.sidebar-row:hover .nav-icon {
-  color: #ffffff;
+/* 2. Sleek Create Room CTA */
+.sidebar-action-wrap {
+  padding: 0 2px;
 }
 
-/* ACTIVE SELECTOR (High-Contrast Slate Pill + Internal Glowing Lime Indicator) */
-.sidebar-home-card.active,
-.sidebar-menu-row.active,
-.sidebar-row.active,
-.community-row-item.active {
-  background: #181d28 !important;
-  border: 1px solid rgba(163, 230, 53, 0.28) !important;
-  border-radius: 10px !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+.btn-sidebar-create-room {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(183, 255, 60, 0.07);
+  border: 1px dashed rgba(183, 255, 60, 0.32);
+  border-radius: 10px;
+  color: var(--lime-primary, #B7FF3C);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
-/* Floating Internal Left Indicator Pill */
-.sidebar-home-card.active::before,
-.sidebar-menu-row.active::before,
-.sidebar-row.active::before,
-.community-row-item.active::before {
-  content: '';
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3.5px;
-  height: 16px;
-  background: var(--lime-primary, #a3e635);
-  border-radius: 99px;
-  box-shadow: 0 0 8px rgba(163, 230, 53, 0.9);
-  pointer-events: none;
+.btn-sidebar-create-room:hover {
+  background: rgba(183, 255, 60, 0.15);
+  border-style: solid;
+  border-color: var(--lime-primary, #B7FF3C);
+  box-shadow: 0 0 14px rgba(183, 255, 60, 0.25);
+  transform: translateY(-1px);
 }
 
-.sidebar-home-card.active .home-glow-icon,
-.sidebar-menu-row.active .menu-row-icon,
-.sidebar-row.active .nav-icon {
-  color: var(--lime-primary, #a3e635) !important;
-  filter: drop-shadow(0 0 6px rgba(163, 230, 53, 0.5)) !important;
+.btn-sidebar-create-room:active {
+  transform: scale(0.97);
 }
 
-.sidebar-home-card.active .home-card-title,
-.sidebar-menu-row.active .menu-row-title,
-.sidebar-row.active .nav-title,
-.community-row-item.active .community-name {
-  color: #ffffff !important;
-  font-weight: 700 !important;
+/* 3. Section Dividers & Headers */
+.sidebar-divider-line {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 2px 4px;
 }
 
-/* Feed Switch Animation */
-@keyframes feedFadeSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.feed-animate-enter {
-  animation: feedFadeSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-
-/* Discover Section Label */
-.sidebar-section-label {
+.sidebar-section-header-title {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.08em;
-  color: #475569;
+  color: #556277;
+  text-transform: uppercase;
+  padding: 4px 10px 2px 10px;
+}
+
+/* 4. Active Rooms List */
+.active-rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.active-room-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: #8A99AD;
+  font-weight: 500;
+  font-size: 0.86rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.active-room-pill:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #F2F4F7;
+}
+
+.active-room-pill.active-selection {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.room-code-tag {
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: #64748B;
+  margin-right: 8px;
+}
+
+.room-icon-dim {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin-right: 8px;
+}
+
+.room-name-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-glow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 6px #22C55E;
+  flex-shrink: 0;
+}
+
+.sidebar-view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #64748B;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.sidebar-view-all-link:hover {
+  color: #94A3B8;
+}
+
+/* 5. Sleek Compact Mini User Card */
+.sidebar-bottom-user-card {
+  margin-top: auto;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #0C1017;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.sidebar-bottom-user-card:hover {
+  background: #111722;
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.sb-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-avatar-wrapper {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.sb-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  display: block;
+}
+
+.sb-status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  border: 1.5px solid #0C1017;
+  box-shadow: 0 0 6px #22C55E;
+}
+
+.sb-user-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sb-user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #F2F4F7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.sb-user-handle-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.sb-user-handle {
+  font-size: 0.72rem;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb-user-badge-mini {
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(183, 255, 60, 0.15);
+  color: var(--lime-primary, #B7FF3C);
+  border: 1px solid rgba(183, 255, 60, 0.3);
+  text-transform: uppercase;
+}
+
+.sb-more-btn {
+  color: #64748B;
+  font-size: 0.82rem;
+  padding: 6px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sb-more-btn:hover {
+  color: #F2F4F7;
+  background: rgba(255, 255, 255, 0.08);
+}
   text-transform: uppercase;
   padding: 14px 8px 6px 8px;
 }
@@ -12112,41 +12299,7 @@ button {
   border: 1.5px solid #2a3346 !important;
 }
 
-/* 2. LEFT SIDEBAR ACTIVE ROOMS */
-.active-rooms-section .sidebar-section-label-cyan {
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #38bdf8;
-  margin-bottom: 10px;
-}
-
-.active-room-pill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: #94a3b8;
-  font-weight: 600;
-  font-size: 0.88rem;
-  text-decoration: none;
-  transition: all 0.15s;
-}
-
-.active-room-pill:hover,
-.active-room-pill.active-selection {
-  background: #151c27;
-  color: #f8fafc;
-}
-
-.room-glow-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 8px #22c55e;
-}
+/* End of header actions */
 
 /* 3. FEED TABS BAR (Minimalist Pure Clean) */
 .feed-tabs-header {

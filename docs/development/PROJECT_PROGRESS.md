@@ -147,16 +147,14 @@
 
 #### Test Results:
 - **Total: 57 Passed | 0 Failed (100% Success)**
-### 2026-10-04: Left Sidebar Navigation Simplification & Cleanup
+### 2026-10-04: Left Sidebar Visual Restructuring & Clean Design System
 #### Files Touched:
-- `index.html`: Cleaned left sidebar primary menu (`.nav-section-block`) by removing in-feed category filters (`Roast Battle`, `Daily Most Cooked`, `Help Wanted`, `Need Answers`, `Confessions`, `Before → After`) and leaving focused platform destinations:
-  - 🏠 Home (`#navHome`)
-  - 🔍 Discover (`#navDiscover`)
-  - 👥 Communities (`#navCommunities`)
-  - 💬 Rooms (`#navRooms`)
-  - ▶️ Stories (`#navStories`)
-  - 👤 Profile (`#navProfile`)
-- `src/features/navigation/sidebar.js`: Simplified active `navMenuItems` binding to match clean destination items.
+- `index.html`: Cleaned left sidebar structure (`<aside class="left-nav-drawer" id="leftNavDrawer">`).
+  - Removed awkward vertical indicator bar inside Home, removed random `.sidebar-profile-pill` wrapper on Profile.
+  - Formatted `+ Create Room` as a sleek dashed lime CTA pill ([#btnSidebarCreateRoom](file:///c:/Users/nitis/Desktop/axh/index.html#L170)).
+  - Replaced bright cyan header with muted, elegant `Active Rooms` label and uniform room pills with green status indicators.
+  - Compacted `#sidebarBottomUserCard` to dock cleanly at the bottom without taking up excessive vertical height.
+- `style.css`: Unified all `.sidebar-menu-row` styles, removed clunky boxy borders and vertical dash pseudoelements, styled active state with smooth lime icon and subtle dark tint (`rgba(183, 255, 60, 0.08)`), streamlined room pills and user card.
 
 #### Tests Run & Verified:
 - `npm test`: 69 Passed | 0 Failed (100% Green).
@@ -169,7 +167,7 @@
 - None
 
 #### Remaining Work:
-- Continue UI and feed polish as requested.
+- Continue iterative UI refinement.
 
 #### Technical Debt (Documented for Future Multi-Instance Scale Phase):
 - In-memory sliding-window rate limiter (`backend/middleware/rateLimiter.js`) ➔ upgrade to Redis rate limiter for horizontal multi-instance scale.
@@ -177,4 +175,5 @@
 
 #### Exact Next Step:
 - Ready for next user instruction.
+
 

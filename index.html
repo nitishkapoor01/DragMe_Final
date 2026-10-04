@@ -138,7 +138,7 @@
     <aside class="left-nav-drawer" id="leftNavDrawer">
       <div class="left-nav-scroller">
         
-        <!-- Navigation Menu List -->
+        <!-- Primary Navigation List -->
         <div class="nav-section-block">
           <a href="#" class="sidebar-menu-row active" data-nav="home" id="navHome">
             <i class="fa-solid fa-house menu-row-icon"></i>
@@ -160,7 +160,7 @@
             <i class="fa-solid fa-play menu-row-icon"></i>
             <span class="menu-row-title">Stories</span>
           </a>
-          <a href="#" class="sidebar-menu-row sidebar-profile-pill" data-nav="profile" id="navProfile">
+          <a href="#" class="sidebar-menu-row" data-nav="profile" id="navProfile">
             <i class="fa-regular fa-user menu-row-icon"></i>
             <span class="menu-row-title">Profile</span>
           </a>
@@ -168,15 +168,17 @@
 
         <!-- Create Room CTA Button -->
         <div class="sidebar-action-wrap">
-          <button class="btn-sidebar-create-room" id="btnSidebarCreateRoom">
+          <button class="btn-sidebar-create-room" id="btnSidebarCreateRoom" type="button">
             <i class="fa-solid fa-plus"></i>
             <span>Create Room</span>
           </button>
         </div>
 
+        <div class="sidebar-divider-line"></div>
+
         <!-- YOUR ACTIVE ROOMS Section -->
         <div class="nav-section-block active-rooms-section">
-          <div class="sidebar-section-label-cyan">YOUR ACTIVE ROOMS</div>
+          <div class="sidebar-section-header-title">Active Rooms</div>
           <div class="active-rooms-list">
             <a href="#" class="active-room-pill active-selection" data-room="Tech & AI">
               <span class="room-code-tag">&lt;/&gt;</span>
@@ -189,11 +191,14 @@
               <span class="room-glow-dot"></span>
             </a>
           </div>
-          <a href="#" class="sidebar-view-all-link" id="btnViewAllRooms">Show more <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px;"></i></a>
+          <a href="#" class="sidebar-view-all-link" id="btnViewAllRooms">
+            <span>Show more</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i>
+          </a>
         </div>
 
         <!-- Bottom Mini User Profile Card -->
-        <div class="sidebar-bottom-user-card" id="sidebarBottomUserCard">
+        <div class="sidebar-bottom-user-card" id="sidebarBottomUserCard" role="button" tabindex="0" title="View Profile">
           <div class="sb-user-row">
             <div class="sb-avatar-wrapper">
               <img src="https://api.dicebear.com/7.x/bottts/svg?seed=tester" alt="Avatar" class="sb-user-avatar" id="sbUserAvatar">
@@ -210,11 +215,6 @@
               <i class="fa-solid fa-ellipsis"></i>
             </button>
           </div>
-          <button class="btn-sb-view-profile" id="btnSidebarViewProfile" type="button">
-            <i class="fa-regular fa-user" style="font-size: 0.75rem;"></i>
-            <span>View Profile</span>
-            <i class="fa-solid fa-arrow-right sb-btn-arrow"></i>
-          </button>
         </div>
 
       </div>
