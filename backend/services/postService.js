@@ -79,7 +79,7 @@ const postService = {
 
     const authorId = user.id;
     const authorUsername = isAnon ? 'Masked Persona' : user.username;
-    const authorAvatar = isAnon ? '' : (user.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`);
+    const authorAvatar = isAnon ? '' : (user.avatar_url || '');
 
     const postId = `post-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
     const heatPercent = Math.floor(Math.random() * 15) + 85;

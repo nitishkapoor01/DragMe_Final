@@ -52,7 +52,7 @@ const authService = {
 
     const userId = `usr_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const passwordHash = bcrypt.hashSync(cleanPassword, 10);
-    const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanUsername)}`;
+    const defaultAvatar = '';
 
     const newUser = await userRepository.createUser({
       id: userId,

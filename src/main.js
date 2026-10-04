@@ -9,7 +9,7 @@ import { router } from './app/router.js';
 import { apiClient } from './api/apiClient.js';
 
 // 2. Services
-import { AvatarService, GUEST_SILHOUETTE_SVG, ANONYMOUS_MASK_SVG } from './services/avatarService.js';
+import { AvatarService, DEFAULT_AVATAR_SVG, GUEST_SILHOUETTE_SVG, ANONYMOUS_MASK_SVG } from './services/avatarService.js';
 import { sfx } from './services/sfxService.js';
 import { AnimationScheduler, MediaDeliveryManager } from './services/animationScheduler.js';
 
@@ -187,6 +187,7 @@ class DragmeApplication {
     if (typeof window !== 'undefined') {
       window.DRAGME_APP = this;
       window.DRAGME_STORE = this.store;
+      window.DEFAULT_AVATAR_SVG = DEFAULT_AVATAR_SVG;
       window.GUEST_SILHOUETTE_SVG = GUEST_SILHOUETTE_SVG;
       window.ANONYMOUS_MASK_SVG = ANONYMOUS_MASK_SVG;
       window.AvatarService = AvatarService;

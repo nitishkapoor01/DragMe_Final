@@ -3,7 +3,9 @@
    Resolves Dicebear, uploaded avatars, animated videos, guest & anonymous masks
    ========================================================================== */
 
-export const GUEST_SILHOUETTE_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%"><rect width="100%" height="100%" fill="%230d121c"/><circle cx="50" cy="50" r="47" fill="%23141b29" stroke="%23253145" stroke-width="2.5"/><circle cx="50" cy="38" r="16" fill="%2364748b"/><path d="M22,82 C22,64 34,58 50,58 C66,58 78,64 78,82 Z" fill="%2364748b"/></svg>`;
+export const DEFAULT_AVATAR_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%"><rect width="100%" height="100%" fill="%230d121c"/><circle cx="50" cy="50" r="47" fill="%23141b29" stroke="%23253145" stroke-width="2.5"/><circle cx="50" cy="38" r="16" fill="%2364748b"/><path d="M22,82 C22,64 34,58 50,58 C66,58 78,64 78,82 Z" fill="%2364748b"/></svg>`;
+
+export const GUEST_SILHOUETTE_SVG = DEFAULT_AVATAR_SVG;
 
 export const ANONYMOUS_MASK_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%"><rect width="100%" height="100%" fill="%23171026"/><circle cx="50" cy="50" r="47" fill="%23231438" stroke="%23a855f7" stroke-width="2.5"/><path d="M25,42 Q50,30 75,42 Q78,65 50,78 Q22,65 25,42 Z" fill="%23a855f7" opacity="0.35"/><ellipse cx="38" cy="48" rx="6" ry="4" fill="%23c084fc"/><ellipse cx="62" cy="48" rx="6" ry="4" fill="%23c084fc"/></svg>`;
 
@@ -33,17 +35,18 @@ export const AvatarService = {
       return ANONYMOUS_MASK_SVG;
     }
     if (!userOrAuthor) {
-      return GUEST_SILHOUETTE_SVG;
+      return DEFAULT_AVATAR_SVG;
     }
 
     if (typeof userOrAuthor === 'string') {
       const lower = userOrAuthor.trim().toLowerCase();
       if (lower === 'masked persona' || lower === 'anonymous') return ANONYMOUS_MASK_SVG;
-      if (lower === 'guest' || lower === 'guest visitor') return GUEST_SILHOUETTE_SVG;
+      if (lower === 'guest' || lower === 'guest visitor') return DEFAULT_AVATAR_SVG;
+      if (lower.includes('dicebear.com')) return DEFAULT_AVATAR_SVG;
       if (lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('/uploads/') || lower.startsWith('data:') || lower.startsWith('blob:') || lower.startsWith('/')) {
         return userOrAuthor.trim();
       }
-      return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userOrAuthor.trim())}`;
+      return DEFAULT_AVATAR_SVG;
     }
 
     if (userOrAuthor.isAnonymous || userOrAuthor.is_anonymous) {
@@ -51,16 +54,19 @@ export const AvatarService = {
     }
 
     const custom = userOrAuthor.avatar_url || userOrAuthor.avatar || userOrAuthor.avatarUrl;
-    if (custom && typeof custom === 'string' && custom.trim() !== '') {
+    if (custom && typeof custom === 'string' && custom.trim() !== '' && !custom.includes('dicebear.com')) {
       return custom.trim();
     }
 
-    const username = userOrAuthor.username || userOrAuthor.author || userOrAuthor.displayName || 'dragme';
-    return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
+    return DEFAULT_AVATAR_SVG;
   },
 
   getGuest() {
-    return GUEST_SILHOUETTE_SVG;
+    return DEFAULT_AVATAR_SVG;
+  },
+
+  getDefault() {
+    return DEFAULT_AVATAR_SVG;
   },
 
   getAnonymous() {
@@ -74,11 +80,7 @@ export const AvatarService = {
 
     const getFallbackUrl = () => {
       if (isAnon) return ANONYMOUS_MASK_SVG;
-      if (!userOrAuthor) return GUEST_SILHOUETTE_SVG;
-      const uname = (typeof userOrAuthor === 'object' && userOrAuthor)
-        ? (userOrAuthor.username || userOrAuthor.author || userOrAuthor.displayName || 'user')
-        : String(userOrAuthor);
-      return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(uname.trim())}`;
+      return DEFAULT_AVATAR_SVG;
     };
 
     if (isVideo) {

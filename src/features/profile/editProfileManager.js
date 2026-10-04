@@ -8,7 +8,7 @@ import { mediaApi } from '../../api/mediaApi.js';
 import { authManager } from '../auth/authManager.js';
 import { toast } from '../toast/toastManager.js';
 import { sfx } from '../../services/sfxService.js';
-import { AvatarService } from '../../services/avatarService.js';
+import { AvatarService, DEFAULT_AVATAR_SVG } from '../../services/avatarService.js';
 import { ClientMediaCompressor } from '../../services/clientMediaCompressor.js';
 import { mediaStudioManager } from './mediaStudioManager.js';
 import { router } from '../../app/router.js';
@@ -318,9 +318,9 @@ export class EditProfileManager {
     // Remove Avatar
     document.getElementById('btnRemoveAvatarPhoto')?.addEventListener('click', () => {
       sfx.playTap();
-      const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(this.draftProfile?.username || 'user')}`;
+      const defaultAvatar = DEFAULT_AVATAR_SVG;
       if (this.draftProfile) {
-        this.draftProfile.avatarUrl = defaultAvatar;
+        this.draftProfile.avatarUrl = '';
         this.pendingAvatarData = null;
         this.updateAvatarPreview(defaultAvatar);
         this.markDirty(true);
@@ -585,7 +585,7 @@ export class EditProfileManager {
     const bannerUrl = d.bannerUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80';
     this.updateBannerPreview(bannerUrl);
 
-    const avatarUrl = d.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(d.username || 'user')}`;
+    const avatarUrl = AvatarService.get(d);
     this.updateAvatarPreview(avatarUrl);
 
     this.updateLiveSocialPills();

@@ -114,7 +114,7 @@ const reactionService = {
         userId: r.user_id,
         username: r.username || 'dragme_user',
         displayName: r.display_name || r.username || 'Arena Member',
-        avatarUrl: r.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(r.username || 'reactor')}`,
+        avatarUrl: r.avatar_url || '',
         rankTitle: r.rank_title || 'Roaster',
         isPremium: Boolean(r.is_premium),
         isSuper: Boolean(r.is_super),

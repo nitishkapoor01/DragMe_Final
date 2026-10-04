@@ -15,7 +15,7 @@ const profileService = {
 
     if (!user && typeof target === 'string' && /^[a-zA-Z0-9_]{3,30}$/.test(target.trim())) {
       const cleanTarget = target.trim();
-      const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanTarget)}`;
+      const defaultAvatar = '';
       const newId = `usr_${cleanTarget.toLowerCase()}`;
       try {
         await userRepository.createUser({
@@ -64,7 +64,7 @@ const profileService = {
       gender: user.gender || 'Male',
       socialLinks: parsedSocialLinks,
       visibility: user.visibility || 'public',
-      avatarUrl: user.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`,
+      avatarUrl: user.avatar_url || '',
       bannerUrl: user.banner_url || '',
       avatarFrame: user.avatar_frame || 'none',
       avatarShape: user.avatar_shape || 'rectangular',
