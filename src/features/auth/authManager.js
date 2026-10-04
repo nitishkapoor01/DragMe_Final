@@ -118,6 +118,7 @@ export class AuthManager {
     const drawerBadge = document.getElementById('drawerUserBadge');
     const drawerHandle = document.getElementById('drawerUserHandle');
     const glassStatCooked = document.getElementById('glassStatCooked');
+    const glassStatStreak = document.getElementById('glassStatStreak');
     const btnDrawerLogOut = document.getElementById('btnDrawerLogOut');
     const btnDrawerSignIn = document.getElementById('btnDrawerSignIn');
     const btnDrawerSignUp = document.getElementById('btnDrawerSignUp');
@@ -133,11 +134,13 @@ export class AuthManager {
       if (sbAvatar) AvatarService.apply(sbAvatar, user);
       if (drawerAvatar) AvatarService.apply(drawerAvatar, user);
 
-      const cookedVal = user.cooked_ratio !== undefined ? user.cooked_ratio : (user.cookedRatio !== undefined ? user.cookedRatio : 12);
+      const cookedVal = user.cooked_ratio !== undefined ? user.cooked_ratio : (user.cookedRatio !== undefined ? user.cookedRatio : 82);
+      const streakVal = user.streak !== undefined ? user.streak : 14;
       if (navScore) navScore.textContent = cookedVal;
-      if (glassStatCooked) glassStatCooked.innerHTML = `<i class="fa-solid fa-fire-flame-curved" style="font-size: 0.8rem; margin-right: 2px;"></i>${cookedVal}`;
+      if (glassStatCooked) glassStatCooked.innerHTML = `${cookedVal} <span class="stat-arrow-up">↑</span>`;
+      if (glassStatStreak) glassStatStreak.innerHTML = `${streakVal} <span class="stat-arrow-up">↑</span>`;
 
-      const dName = user.display_name || user.displayName || user.username;
+      const dName = user.display_name || user.displayName || user.username || 'Nitish Kapoor';
       if (sbName) sbName.textContent = dName;
       if (sbHandle) sbHandle.textContent = `@${user.username}`;
       if (sbBadge) {
@@ -145,7 +148,7 @@ export class AuthManager {
       }
       if (drawerName) drawerName.textContent = dName;
       if (drawerBadge) drawerBadge.textContent = user.rank_title || user.rankTitle || 'Senior Roaster';
-      if (drawerHandle) drawerHandle.textContent = `@${user.username} • ${user.location || 'Hamirpur, HP'}`;
+      if (drawerHandle) drawerHandle.textContent = `@${user.username}`;
 
       if (btnDrawerLogOut) btnDrawerLogOut.style.display = 'flex';
       if (btnDrawerSignIn) btnDrawerSignIn.style.display = 'none';
@@ -166,7 +169,9 @@ export class AuthManager {
       if (sbBadge) sbBadge.textContent = 'GUEST';
       if (drawerName) drawerName.textContent = 'Guest Visitor';
       if (drawerBadge) drawerBadge.textContent = 'Explorer';
-      if (drawerHandle) drawerHandle.textContent = 'Sign in to join the conversation';
+      if (drawerHandle) drawerHandle.textContent = '@guest';
+      if (glassStatCooked) glassStatCooked.innerHTML = `0 <span class="stat-arrow-up">↑</span>`;
+      if (glassStatStreak) glassStatStreak.innerHTML = `0 <span class="stat-arrow-up">↑</span>`;
 
       if (btnDrawerLogOut) btnDrawerLogOut.style.display = 'none';
       if (btnDrawerSignIn) btnDrawerSignIn.style.display = 'flex';

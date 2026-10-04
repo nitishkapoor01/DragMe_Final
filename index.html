@@ -2443,155 +2443,166 @@
   <!-- =========================================================================
        TRANSLUCENT GLASS PROFILE DRAWER (DRAGME ARENA HUB)
        ========================================================================= -->
-  <div class="dragme-glass-drawer-backdrop" id="dragmeProfileDrawerHub" role="dialog" aria-modal="true" aria-label="Profile and Arena drawer" aria-hidden="true">
+  <div class="dragme-glass-drawer-backdrop" id="dragmeProfileDrawerHub" role="dialog" aria-modal="true" aria-label="Profile and Account Menu" aria-hidden="true">
     <div class="dragme-glass-drawer-panel" id="dragmeProfileDrawerPanel">
       
-      <!-- Drawer Header -->
-      <div class="glass-drawer-header">
-        <div class="glass-drawer-badge">
-          <i class="fa-solid fa-crown text-gold"></i>
-          <span>DRAGME IDENTITY HUB</span>
+      <!-- Mobile Drag Handle -->
+      <div class="dragme-drawer-drag-handle" aria-hidden="true"></div>
+
+      <!-- Top Profile Identity Header -->
+      <div class="dragme-drawer-header-card" id="drawerUserHeroCard" title="View Profile Arena">
+        <div class="dragme-drawer-avatar-wrap">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=160&auto=format&fit=crop&q=80" alt="Avatar" class="dragme-drawer-avatar" id="drawerUserAvatar">
+          <span class="dragme-drawer-status-dot" aria-label="Online"></span>
         </div>
-        <button class="btn-glass-drawer-close" id="btnCloseGlassProfileDrawer" title="Close Drawer (Esc)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <div class="dragme-drawer-user-meta">
+          <div class="dragme-drawer-user-name" id="drawerUserName">Nitish Kapoor</div>
+          <div class="dragme-drawer-user-handle" id="drawerUserHandle">@nitish</div>
+          <button class="dragme-drawer-view-chip desktop-only-chip" id="btnDrawerMyProfile" type="button" title="View Profile">
+            <i class="fa-solid fa-plus"></i>
+            <span>View Profile</span>
+          </button>
+        </div>
+        <i class="fa-solid fa-chevron-right dragme-drawer-header-arrow"></i>
       </div>
 
-      <!-- User Identity Glass Card -->
-      <div class="glass-user-hero-card" id="drawerUserHeroCard" title="Go to My Profile Arena">
-        <div class="glass-user-avatar-wrap">
-          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=120&auto=format&fit=crop&q=80" alt="Avatar" class="glass-user-avatar" id="drawerUserAvatar">
-          <span class="avatar-online-beacon"></span>
+      <!-- Mobile Dedicated View Profile Full-Width Row -->
+      <button class="dragme-drawer-mobile-view-profile mobile-only-block" id="btnMobViewProfile" type="button">
+        <div class="drawer-row-left">
+          <i class="fa-regular fa-user drawer-row-icon"></i>
+          <span>View Profile</span>
         </div>
-        <div class="glass-user-meta">
-          <div class="glass-user-name-line">
-            <h4 class="glass-user-name" id="drawerUserName">Tester Supreme</h4>
-            <span class="badge-role-gold" id="drawerUserBadge">Senior Roaster</span>
+        <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
+      </button>
+
+      <!-- 2-Column DRAGME Stat Cards: Cooked Score & Streak -->
+      <div class="dragme-drawer-stats-row">
+        <div class="dragme-stat-card card-cooked">
+          <div class="stat-icon-pill flame-pill">
+            <i class="fa-solid fa-fire-flame-curved"></i>
           </div>
-          <div class="glass-user-handle-line" id="drawerUserHandle">@tester • Hamirpur, HP</div>
+          <div class="stat-meta">
+            <span class="stat-label">Cooked Score</span>
+            <span class="stat-value" id="glassStatCooked">82 <span class="stat-arrow-up">↑</span></span>
+          </div>
         </div>
-        <i class="fa-solid fa-chevron-right glass-hero-arrow"></i>
-      </div>
-
-      <!-- Live Quick Stats Strip -->
-      <div class="glass-drawer-stats-strip">
-        <div class="glass-stat-card">
-          <span class="glass-stat-val" id="glassStatPosts">40</span>
-          <span class="glass-stat-lbl">POSTS</span>
-        </div>
-        <div class="glass-stat-card">
-          <span class="glass-stat-val text-lime" id="glassStatRep">1.8K</span>
-          <span class="glass-stat-lbl">REPUTATION</span>
-        </div>
-        <div class="glass-stat-card">
-          <span class="glass-stat-val text-orange" id="glassStatCooked">
-            <i class="fa-solid fa-fire-flame-curved" style="font-size: 0.8rem; margin-right: 2px;"></i>12
-          </span>
-          <span class="glass-stat-lbl">COOKED</span>
+        <div class="dragme-stat-card card-streak">
+          <div class="stat-icon-pill streak-pill">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Streak</span>
+            <span class="stat-value" id="glassStatStreak">14 <span class="stat-arrow-up">↑</span></span>
+          </div>
         </div>
       </div>
 
-      <!-- Divider -->
-      <div class="glass-drawer-divider"></div>
-
-      <!-- Quick Action Buttons List -->
-      <div class="glass-drawer-actions">
+      <!-- Menu Items List -->
+      <div class="dragme-drawer-menu-list">
         
-        <button class="glass-drawer-action-btn primary-glow" id="btnDrawerMyProfile">
-          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-user-astronaut"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">My Profile Arena</span>
-            <span class="action-meta-sub">Rankings, top badges &amp; cooked level</span>
+        <!-- Profile & Content Section -->
+        <button class="dragme-drawer-row" id="btnDrawerEditProfile" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-user drawer-row-icon"></i>
+            <span class="drawer-row-label">Edit Profile</span>
           </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
+          <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
         </button>
 
-        <button class="glass-drawer-action-btn" id="btnDrawerMyConfessions">
-          <div class="action-icon-pill icon-gold"><i class="fa-solid fa-mask"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">My Anonymous Drops</span>
-            <span class="action-meta-sub">Masked confessions &amp; secrets</span>
+        <button class="dragme-drawer-row" id="btnDrawerDrafts" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-file-lines drawer-row-icon"></i>
+            <span class="drawer-row-label">Drafts</span>
           </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <button class="glass-drawer-action-btn" id="btnDrawerEditProfile">
-          <div class="action-icon-pill icon-cyan"><i class="fa-solid fa-pen-to-square"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Edit Profile Details</span>
-            <span class="action-meta-sub">Change avatar, banner, bio &amp; location</span>
-          </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <button class="glass-drawer-action-btn" id="btnDrawerBookmarks">
-          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-bookmark"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Saved Bookmarks</span>
-            <span class="action-meta-sub">Private collection of saved posts</span>
-          </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <button class="glass-drawer-action-btn" id="btnDrawerActivity">
-          <div class="action-icon-pill icon-gold"><i class="fa-solid fa-bolt"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Activity &amp; Upvotes</span>
-            <span class="action-meta-sub">Your crowns, replies and heat</span>
-          </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <button class="glass-drawer-action-btn" id="btnDrawerSettings">
-          <div class="action-icon-pill"><i class="fa-solid fa-gear"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Account Settings</span>
-            <span class="action-meta-sub">Security, privacy &amp; preferences</span>
-          </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <button class="glass-drawer-action-btn" id="btnDrawerHelp">
-          <div class="action-icon-pill"><i class="fa-solid fa-circle-question"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Help &amp; Support</span>
-            <span class="action-meta-sub">Arena rules, guides &amp; contact</span>
-          </div>
-          <i class="fa-solid fa-arrow-right action-nav-arrow"></i>
-        </button>
-
-        <div class="glass-drawer-divider"></div>
-
-        <!-- Auth Section -->
-        <button class="glass-drawer-action-btn" id="btnDrawerSignIn">
-          <div class="action-icon-pill"><i class="fa-solid fa-right-to-bracket"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Sign In to DRAGME</span>
-            <span class="action-meta-sub">Switch account or login</span>
+          <div class="drawer-row-right">
+            <span class="drawer-count-badge">3</span>
+            <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
           </div>
         </button>
 
-        <button class="glass-drawer-action-btn" id="btnDrawerSignUp">
-          <div class="action-icon-pill icon-lime"><i class="fa-solid fa-user-plus"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title">Create New Account</span>
-            <span class="action-meta-sub">Join the unfiltered arena</span>
+        <button class="dragme-drawer-row" id="btnDrawerAchievements" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-solid fa-trophy drawer-row-icon"></i>
+            <span class="drawer-row-label">Achievements</span>
+          </div>
+          <div class="drawer-row-right">
+            <span class="drawer-count-badge">8</span>
+            <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
           </div>
         </button>
 
-        <button class="glass-drawer-action-btn danger-glow" id="btnDrawerLogOut" style="display: none;">
-          <div class="action-icon-pill icon-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
-          <div class="action-meta-col">
-            <span class="action-meta-title text-danger">Log Out</span>
-            <span class="action-meta-sub">End current active session</span>
+        <button class="dragme-drawer-row" id="btnDrawerBookmarks" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-bookmark drawer-row-icon"></i>
+            <span class="drawer-row-label">Saved</span>
+          </div>
+          <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
+        </button>
+
+        <button class="dragme-drawer-row" id="btnDrawerActivity" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-clock drawer-row-icon"></i>
+            <span class="drawer-row-label">Your Activity</span>
+          </div>
+          <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
+        </button>
+
+        <!-- Divider -->
+        <div class="dragme-drawer-separator"></div>
+
+        <!-- Preferences & Support Section -->
+        <button class="dragme-drawer-row" id="btnDrawerAppearance" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-moon drawer-row-icon"></i>
+            <span class="drawer-row-label">Appearance</span>
+          </div>
+          <div class="drawer-row-right">
+            <span class="drawer-meta-tag">Dark</span>
+            <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
           </div>
         </button>
 
-      </div>
+        <button class="dragme-drawer-row" id="btnDrawerSettings" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-solid fa-gear drawer-row-icon"></i>
+            <span class="drawer-row-label">Settings</span>
+          </div>
+          <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
+        </button>
 
-      <!-- Drawer Footer -->
-      <div class="glass-drawer-footer">
-        <span>DRAGME ARENA v2.4 • SECURE</span>
+        <button class="dragme-drawer-row" id="btnDrawerHelp" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-regular fa-circle-question drawer-row-icon"></i>
+            <span class="drawer-row-label">Help &amp; Feedback</span>
+          </div>
+          <i class="fa-solid fa-chevron-right drawer-row-arrow"></i>
+        </button>
+
+        <!-- Divider -->
+        <div class="dragme-drawer-separator"></div>
+
+        <!-- Account Section (Auth / Log Out) -->
+        <button class="dragme-drawer-row dragme-row-logout" id="btnDrawerLogOut" type="button">
+          <div class="drawer-row-left">
+            <i class="fa-solid fa-arrow-right-from-bracket drawer-row-icon"></i>
+            <span class="drawer-row-label">Log Out</span>
+          </div>
+        </button>
+
+        <button class="dragme-drawer-row" id="btnDrawerSignIn" type="button" style="display: none;">
+          <div class="drawer-row-left">
+            <i class="fa-solid fa-right-to-bracket drawer-row-icon"></i>
+            <span class="drawer-row-label">Sign In to DRAGME</span>
+          </div>
+        </button>
+
+        <button class="dragme-drawer-row" id="btnDrawerSignUp" type="button" style="display: none;">
+          <div class="drawer-row-left">
+            <i class="fa-solid fa-user-plus drawer-row-icon text-lime"></i>
+            <span class="drawer-row-label text-lime">Create Account</span>
+          </div>
+        </button>
+
       </div>
 
     </div>

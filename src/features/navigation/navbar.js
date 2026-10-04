@@ -163,18 +163,21 @@ export class NavbarController {
 
   bindProfileDrawer() {
     const dropdownBtn = document.getElementById('userProfileDropdown');
-    const closeBtn = document.getElementById('btnCloseGlassProfileDrawer');
     const heroCard = document.getElementById('drawerUserHeroCard');
     const btnMyProfile = document.getElementById('btnDrawerMyProfile');
-    const btnMyConfessions = document.getElementById('btnDrawerMyConfessions');
+    const btnMobViewProfile = document.getElementById('btnMobViewProfile');
     const btnEditProfile = document.getElementById('btnDrawerEditProfile');
+    const btnDrafts = document.getElementById('btnDrawerDrafts');
+    const btnAchievements = document.getElementById('btnDrawerAchievements');
     const btnBookmarks = document.getElementById('btnDrawerBookmarks');
     const btnActivity = document.getElementById('btnDrawerActivity');
+    const btnAppearance = document.getElementById('btnDrawerAppearance');
     const btnSettings = document.getElementById('btnDrawerSettings');
     const btnHelp = document.getElementById('btnDrawerHelp');
     const btnSignIn = document.getElementById('btnDrawerSignIn');
     const btnSignUp = document.getElementById('btnDrawerSignUp');
     const btnLogOut = document.getElementById('btnDrawerLogOut');
+    const panel = document.getElementById('dragmeProfileDrawerPanel');
 
     const openDrawer = () => {
       if (this.profileDrawer) {
@@ -199,11 +202,6 @@ export class NavbarController {
       openDrawer();
     });
 
-    closeBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeDrawer();
-    });
-
     this.profileDrawer?.addEventListener('click', (e) => {
       if (e.target === this.profileDrawer) {
         closeDrawer();
@@ -216,6 +214,41 @@ export class NavbarController {
       }
     });
 
+    // Mobile Swipe-Down to Dismiss Bottom Sheet
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+    let isSwiping = false;
+
+    panel?.addEventListener('touchstart', (e) => {
+      if (window.innerWidth <= 860) {
+        touchStartY = e.touches[0].clientY;
+        isSwiping = true;
+      }
+    }, { passive: true });
+
+    panel?.addEventListener('touchmove', (e) => {
+      if (!isSwiping || window.innerWidth > 860) return;
+      touchCurrentY = e.touches[0].clientY;
+      const diffY = touchCurrentY - touchStartY;
+      if (diffY > 0 && panel.scrollTop <= 0) {
+        panel.style.transform = `translateY(${diffY}px)`;
+      }
+    }, { passive: true });
+
+    panel?.addEventListener('touchend', () => {
+      if (!isSwiping || window.innerWidth > 860) return;
+      isSwiping = false;
+      const diffY = touchCurrentY - touchStartY;
+      if (diffY > 80 && panel.scrollTop <= 0) {
+        panel.style.transform = '';
+        closeDrawer();
+      } else {
+        panel.style.transform = '';
+      }
+      touchStartY = 0;
+      touchCurrentY = 0;
+    });
+
     const navigateToUserProfile = () => {
       closeDrawer();
       if (authManager.isAuthenticated()) {
@@ -226,14 +259,11 @@ export class NavbarController {
     };
 
     heroCard?.addEventListener('click', navigateToUserProfile);
-    btnMyProfile?.addEventListener('click', navigateToUserProfile);
-
-    btnMyConfessions?.addEventListener('click', () => {
-      closeDrawer();
-      store.setRoom('confessions');
-      router.navigate('feed');
-      toast.info('Switched to Anonymous Confessions arena.');
+    btnMyProfile?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigateToUserProfile();
     });
+    btnMobViewProfile?.addEventListener('click', navigateToUserProfile);
 
     btnEditProfile?.addEventListener('click', () => {
       closeDrawer();
@@ -241,6 +271,20 @@ export class NavbarController {
         authManager.requireAuth({ type: 'profile' }, 'Sign in to edit your profile.');
       } else {
         router.navigate('edit-profile');
+      }
+    });
+
+    btnDrafts?.addEventListener('click', () => {
+      closeDrawer();
+      toast.info('Drafts (3) — Offline post drafts available in compose modal.');
+    });
+
+    btnAchievements?.addEventListener('click', () => {
+      closeDrawer();
+      if (authManager.isAuthenticated()) {
+        router.navigate(`profile/${authManager.currentUser.username}`);
+      } else {
+        toast.info('DRAGME Achievements: 8 badges unlocked.');
       }
     });
 
@@ -260,6 +304,10 @@ export class NavbarController {
       if (authManager.isAuthenticated()) {
         router.navigate(`profile/${authManager.currentUser.username}`);
       }
+    });
+
+    btnAppearance?.addEventListener('click', () => {
+      toast.success('Appearance: DRAGME Obsidian Dark (Default)');
     });
 
     btnSettings?.addEventListener('click', () => {

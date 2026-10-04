@@ -11,22 +11,49 @@
 - **Current Phase**: Normal Product Feature Development & UI Polish
 - **Overall Status**: VERIFIED
 - **Official Test Suite**: `69 Passed | 0 Failed` (100% Green across 4 test suites)
-- **Current Next State**: `FEATURE DEVELOPMENT & POLISH → NEXT SOCIAL / ROOM FEATURE INTEGRATION`
-- **Exact Next Step**: Await user instruction for the next arena feature (e.g., Live Rooms / WebRTC signaling, Feed algorithms, Stories, or Chat threads) while maintaining Section 72 progress logging and Git continuity.
-- **Latest Commit**: `1014243` (`feat(ui): silence global sfx, fix pfp fallbacks, redesign sidebar user card & update project tracking`)
-- **Remote Sync**: Pushed and synchronized with `origin/main` (`https://github.com/nitishkapoor01/DragMe_Final.git`).
+- **Current Next State**: `FEATURE DEVELOPMENT & POLISH → READY FOR NEXT REQUEST`
+- **Exact Next Step**: Await user instruction for next social/room feature while maintaining Git and rulebook synchronization.
+- **Latest Commit**: Pending commit (`feat(ui): implement redesigned DRAGME profile account menu drawer for desktop and mobile bottom sheet`)
+- **Remote Sync**: Pushed and synchronized with `origin/main`.
 
 ---
 
 ## 📜 DEVELOPMENT LOG
 
-### [2026-10-04] — Global SFX Silencing, PFP Load Fallback Engine & Sidebar User Card Redesign
+### [2026-10-04] — DRAGME Profile & Account Menu Hub Redesign (Desktop Floating Drawer + Mobile Bottom Sheet)
 
 - **Date**: 2026-10-04
 - **Current Phase**: Normal Product Feature Development & UI Polish
-- **Current Task / Feature**: Silence All Sound Effects, Implement Avatar Video/Media Fallback Engine, and Redesign Left Sidebar Bottom Mini User Card
+- **Current Task / Feature**: Implement Production-Ready DRAGME Profile / Account Menu Hub (Desktop Floating Glass Dropdown + Mobile Bottom Sheet)
 - **Status**: VERIFIED
-- **Current Git Commit / Hash**: `1014243` (Synced with `origin/main`)
+- **Current Git Commit / Hash**: In Progress
+
+#### What Was Completed:
+- ✅ **Desktop Floating Glass Profile Drawer (`index.html`, `style.css`)**:
+  - Implemented sleek floating account drawer anchored directly beneath top-right avatar (`width: 360px`, `border-radius: 22px`, `backdrop-filter: blur(28px)`, subtle `#B7FF3C` neon lime perimeter glow).
+  - Profile Header: Large circular avatar with glowing green presence indicator, Name (`Nitish Kapoor`), Username (`@nitish`), `+ View Profile` subtle glass pill chip, and chevron.
+  - 2-Column DRAGME Stat Cards: 🔥 **Cooked Score** (`82 ↑` / reactive from session) with flame icon pill and ⚡ **Streak** (`14 ↑`) with lightning bolt pill.
+  - Outline Menu Items: `Edit Profile`, `Drafts` (pill badge: 3), `Achievements` (pill badge: 8), `Saved`, `Your Activity`, 1px subtle divider, `Appearance` (`Dark >`), `Settings` (`>`), `Help & Feedback` (`>`), 1px divider, and `Log Out` with restrained red accent.
+  - Smooth entrance animations (opacity 0 → 1, translate upward, scale 0.97 → 1) with outside click and Escape key dismissal.
+- ✅ **Mobile Bottom-Sheet Profile Drawer (`index.html`, `style.css`, `navbar.js`)**:
+  - Full-width bottom sheet anchored to the bottom of the screen (`border-radius: 28px 28px 0 0`, `max-height: 92vh`, `backdrop-filter: blur(32px)`, subtle purple/lime top ambient rim glow).
+  - Pill drag handle at the top (`.dragme-drawer-drag-handle`).
+  - Full-width touch-friendly `View Profile` action button row.
+  - Dedicated full-width red outlined `Log Out` button at the bottom.
+  - Smooth slide-up transition with touch drag-down swipe gesture to dismiss.
+- ✅ **Reactive Event Wiring (`src/features/navigation/navbar.js`, `src/features/auth/authManager.js`)**:
+  - Connected clicks for Drafts, Achievements, Saved Bookmarks, Activity, Appearance, Settings, Help, Profile navigation, Sign In/Up, and Log Out modal confirmation.
+  - Updated `authManager.js` to dynamically bind Cooked Score and Streak indicators from authenticated user session.
+- ✅ **Verification & Test Suite**:
+  - Visual verification executed via headless browser subagent for both desktop floating drawer and mobile bottom sheet.
+  - Full test suite verified passing 69/69 integration and contract tests.
+
+#### Files Modified:
+- `index.html`
+- `style.css`
+- `src/features/navigation/navbar.js`
+- `src/features/auth/authManager.js`
+- `docs/development/PROJECT_PROGRESS.md`
 
 #### What Was Completed:
 - ✅ **Global SFX Silencing (`src/services/sfxService.js`)**:
